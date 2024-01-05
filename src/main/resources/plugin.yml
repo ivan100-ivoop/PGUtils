@@ -9,7 +9,7 @@ commands:
   pgutils:
     description: Reload the configuration.
     permission: pgutils.reload
-    usage: "Usage: /pgutils <reload, setlobby, tool>"
+    usage: "Usage: /pgutils <reload, setlobby, setpotal, tool>"
 
 permissions:
   pgutils.reload:
