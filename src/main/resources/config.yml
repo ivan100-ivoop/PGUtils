@@ -1,5 +1,7 @@
 prefix: "&7[&e&lPGUtils&7] "
 reload-message: "&aSuccesval reload!"
+save-lobby-message: "&aSuccesval saved Lobby Location!"
+save-portal-message: "&aSuccesval saved Portal Location's!"
 
 rewards:
   1:
