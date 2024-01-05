@@ -1,0 +1,12 @@
+prefix: "&7[&e&lPGUtils&7] "
+reload-message: "&aSuccesval reload!"
+
+rewards:
+  1:
+    type: command
+    item: eco give %player% 100
+  2:
+    type: item
+    item:
+      Material: Gold
+      name:
