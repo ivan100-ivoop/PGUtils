@@ -1,0 +1,17 @@
+name: PGUtils
+version: 1.0
+api-version: 1.20
+author: [Penchev, Ivan]
+website: https://github.com/ivan100-ivoop/PGUtils
+main: com.github.pgutils.Launcher
+
+commands:
+  pgutils:
+    description: Reload the configuration.
+    permission: pgutils.reload
+    usage: "Usage: /pgutils <reload, setlobby, setpotal, tool>"
+
+permissions:
+  pgutils.reload:
+    permission-message: You do not have permission to use this command.
+    default: op
