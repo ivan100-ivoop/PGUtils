@@ -1,0 +1,5 @@
+prefix: "&7[&e&lPGUtils&7] "
+reload-message: "&aSuccesval reload!"
+
+rewards: 
+- eco give %player% 100
