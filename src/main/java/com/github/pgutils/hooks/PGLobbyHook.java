@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.github.pgutils.hooks;
 
 import com.github.pgutils.PGSpawn;
@@ -13,6 +12,7 @@ import com.github.pgutils.GeneralUtils;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.commands.PGCommand;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
 
