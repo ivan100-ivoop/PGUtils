@@ -9,8 +9,13 @@ commands:
   pg:
     description: Reload the configuration.
     permission: pgutils.reload
+<<<<<<< Updated upstream:src/plugin.yml
     usage: "Usage: /pg <reload, setlobby, tool>"
       
+=======
+    usage: "Usage: /pgutils <reload, setlobby, setpotal, tool, tp>"
+
+>>>>>>> Stashed changes:src/main/resources/plugin.yml
 permissions:
   pgutils.reload:
     permission-message: You do not have permission to use this command.

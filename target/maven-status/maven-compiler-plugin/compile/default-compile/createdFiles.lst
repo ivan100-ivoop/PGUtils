@@ -1,0 +1,6 @@
+com\github\pgutils\PGSpawn.class
+com\github\pgutils\hooks\PGLobbyHook.class
+com\github\pgutils\commands\PGCommand.class
+com\github\pgutils\GeneralUtils.class
+com\github\pgutils\PGUtils.class
+com\github\pgutils\commands\PGTabComplete.class
