@@ -10,7 +10,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="PGUtils" target="1.8" />
       <module name="PGUtils-Angel" target="1.5" />
     </bytecodeTargetLevel>
   </component>

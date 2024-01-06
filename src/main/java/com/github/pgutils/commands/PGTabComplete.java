@@ -17,6 +17,7 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("reload");
                 tab.add("setlobby");
                 tab.add("tool");
+                tab.add("setportal");
             }
         }
         return tab;

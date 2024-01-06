@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import com.github.pgutils.GeneralUtils;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.commands.PGCommand;
+import org.bukkit.inventory.EquipmentSlot;
 
 
 public class PGLobbyHook implements Listener {
@@ -22,7 +23,7 @@ public class PGLobbyHook implements Listener {
     public void onBlockClick(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         if(player.getItemInHand().equals(PGCommand.getTool())) {
-        	if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        	if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand() == EquipmentSlot.HAND) {
 				pos2 = player.getLocation();
 				player.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + "&eYour selected &bpos2&e!"));
 			}
