@@ -4,14 +4,17 @@ import com.github.pgutils.enums.GameStatus;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlaySpace {
-    public static List<PlaySpace> playSpaces;
+    private int playSpaceID;
+
+    public static List<PlaySpace> playSpaces = new ArrayList<>();
 
     public Location pos;
 
-    protected List<Player> players;
+    protected List<Player> players = new ArrayList<>();
 
     private Lobby currentLobby = null;
 
@@ -19,8 +22,11 @@ public abstract class PlaySpace {
 
     protected int tick = 0;
 
+    protected String type = "Typeless";
+
     public PlaySpace() {
         playSpaces.add(this);
+        playSpaceID = playSpaces.size();
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -32,7 +38,7 @@ public abstract class PlaySpace {
     }
 
     public void setup(List<Player> players) {
-        this.players = players;
+        this.players.addAll(players);
         status = GameStatus.STARTING;
         start();
     }
@@ -49,9 +55,17 @@ public abstract class PlaySpace {
     abstract public void endProcedure();
 
     public void end() {
+        endProcedure();
+        reset();
         if (currentLobby != null) {
             currentLobby.reset();
         }
+    }
+
+    public void reset() {
+        status = GameStatus.INACTIVE;
+        tick = 0;
+        players = new ArrayList<>();
     }
 
     public void setPos(Location pos) {
@@ -60,6 +74,27 @@ public abstract class PlaySpace {
 
     public Location getPos() {
         return pos;
+    }
+
+
+    public int getID() {
+        return playSpaceID;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setLobby(Lobby lobby) {
+        currentLobby = lobby;
+    }
+
+    public Lobby getLobby() {
+        return currentLobby;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
 

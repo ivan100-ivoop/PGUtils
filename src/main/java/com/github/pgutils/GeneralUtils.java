@@ -1,5 +1,9 @@
 package com.github.pgutils;
 
+import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.entities.PlaySpace;
+import com.github.pgutils.selections.PlayerLobbySelector;
+import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
@@ -11,6 +15,7 @@ import org.bukkit.command.CommandSender;
 
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,4 +66,26 @@ public class GeneralUtils {
     public static void runCommand(CommandSender sender, String cmd) {
         Bukkit.getServer().dispatchCommand(sender, cmd);
     }
+
+    public static void playerSelectPlaySpace(Player sender, PlaySpace playSpace) {
+        if (PGUtils.selectedPlaySpace.stream().anyMatch(selector -> selector.player.equals(sender))) {
+            PGUtils.selectedPlaySpace.stream()
+                    .filter(selector -> selector.player.equals(sender))
+                    .forEach(selector -> selector.playSpace = playSpace);
+        } else {
+            PGUtils.selectedPlaySpace.add(new PlayerPlaySpaceSelector(sender, playSpace));
+        }
+    }
+
+    public static void playerSelectLobby(Player sender, Lobby lobby) {
+        if (PGUtils.selectedLobby.stream().anyMatch(selector -> selector.player.equals(sender))) {
+            PGUtils.selectedLobby.stream()
+                    .filter(selector -> selector.player.equals(sender))
+                    .forEach(selector -> selector.lobby = lobby);
+        } else {
+            PGUtils.selectedLobby.add(new PlayerLobbySelector(sender, lobby));
+        }
+
+    }
+
 }

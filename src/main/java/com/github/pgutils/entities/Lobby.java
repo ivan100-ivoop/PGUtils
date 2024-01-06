@@ -10,12 +10,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 
 import com.github.pgutils.enums.LobbyStatus;
 
 public class Lobby {
 
-    private static int lobbyID;
+    public static List<Lobby> lobbies = new ArrayList<>();
+
+    private int ID;
 
     private Location pos;
 
@@ -23,7 +26,7 @@ public class Lobby {
 
     private LobbyStatus status;
 
-    private List<PlaySpace> playSpaces;
+    private List<PlaySpace> playSpaces = new ArrayList<>();
 
     private PlaySpace currentPlaySpace = null;
 
@@ -33,30 +36,28 @@ public class Lobby {
 
     private int maxPlayers = 32;
 
-    private int minPlayers = 4;
+    private int minPlayers = 2;
 
-    private int lobbyStartingTime = 20;
+    private int lobbyStartingTime = 60;
 
-    private int lobbyResettingTime = 10;
+    private int lobbyResettingTime = 200;
 
     private int lobbyStartingTick = 0;
 
     private int lobbyResettingTick = 0;
 
-    private int showPlayersMessageTime = 100;
+    private int showPlayersMessageTime = 5;
 
     private int showPlayersMessageTick = 0;
 
-    private int gameStartingTime = 20;
 
-    private int gameStartingTick = 0;
-
-    private boolean autoStart = false;
+    private boolean autoStart = true;
 
     public Lobby() {
         players = new ArrayList<>();
         status = LobbyStatus.WAITING_FOR_PLAYERS;
-        lobbyID++;
+        lobbies.add(this);
+        ID = lobbies.size();
     }
 
     public void update() {
@@ -77,10 +78,10 @@ public class Lobby {
                 start();
             }
             lobbyStartingTick++;
-            gameStartingTime++;
-            players.stream()
+            if (lobbyStartingTick % 20 == 0)
+                players.stream()
                     .forEach(player -> player.spigot()
-                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe game will start in &b" + (lobbyStartingTime - lobbyStartingTick) + "&e seconds!"))));
+                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe game will start in &b" + (lobbyStartingTime / 20 - lobbyStartingTick / 20) + "&e seconds!"))));
             if (players.size() < minPlayers) {
                 status = LobbyStatus.WAITING_FOR_PLAYERS;
                 lobbyStartingTick = 0;
@@ -94,9 +95,14 @@ public class Lobby {
         }
         else if (status == LobbyStatus.RESETTING) {
             if (lobbyResettingTick >= lobbyResettingTime) {
-                reset();
+                status = LobbyStatus.WAITING_FOR_PLAYERS;
+                lobbyResettingTick = 0;
             }
             lobbyResettingTick++;
+            if (lobbyResettingTick % 20 == 0)
+                players.stream()
+                        .forEach(player -> player.spigot()
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe lobby is resetting!"))));
         }
     }
 
@@ -123,16 +129,21 @@ public class Lobby {
 
     public void startSequence() {
         status = LobbyStatus.STARTING;
+        lobbyStartingTick = 0;
     }
 
     private void start() {
         if (autoStart) pickedGameID = pickRandomGame();
         status = LobbyStatus.IN_PROGRESS;
+        System.out.println("Starting game " + pickedGameID);
         currentPlaySpace = playSpaces.get(pickedGameID);
+        currentPlaySpace.setup(players);
     }
 
     public void reset() {
+        System.out.println("Resetting lobby " + ID);
         status = LobbyStatus.RESETTING;
+        lobbyResettingTick = 0;
         pickedGameID = lastGame;
         players.stream()
                 .forEach(player -> player.spigot()
@@ -140,13 +151,34 @@ public class Lobby {
                                 new TextComponent(GeneralUtils.fixColors("&eThe game has been ended!"))));
         players.stream()
                 .forEach(player -> player.teleport(pos));
+
     }
 
     public void addPlayer(Player player) {
+        if (players.size() >= maxPlayers){
+            player.sendMessage(GeneralUtils.fixColors("&cLobby is full!"));
+            return;
+        }
+        if (players.contains(player)) {
+            player.sendMessage(GeneralUtils.fixColors("&cYou are already in the lobby!"));
+            return;
+        }
+        player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID +" !"));
+        player.teleport(pos);
         players.add(player);
     }
 
     public void removePlayer(Player player) {
+        if (!players.contains(player)) {
+            player.sendMessage(GeneralUtils.fixColors("&cYou are not in the lobby!"));
+            return;
+        }
+        if (currentPlaySpace != null) {
+            if (currentPlaySpace.players.contains(player)) {
+                currentPlaySpace.players.remove(player);
+            }
+        }
+        player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID +" !"));
         players.remove(player);
     }
 
@@ -174,6 +206,17 @@ public class Lobby {
         pickedGameID = gameID;
     }
 
+    public void setPos(Location pos) {
+        this.pos = pos;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
 
 
 
