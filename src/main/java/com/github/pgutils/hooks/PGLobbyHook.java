@@ -47,6 +47,7 @@ public class PGLobbyHook implements Listener {
 		if(portal.size() >= 1){
 			if(player.getLocation().distance(portal.get(0)) <= 1 || player.getLocation().distance(portal.get(1)) <= 1){
 				player.teleport(PGSpawn.getLobby());
+				PGSpawn.AddPlayer(player);
 				player.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
 			}
 		}

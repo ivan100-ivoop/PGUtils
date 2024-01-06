@@ -2,6 +2,7 @@ package com.github.pgutils;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,17 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class PGSpawn {
+    public static ArrayList<Player> joinPlayer = new ArrayList<Player>();
+
+    public static boolean AddPlayer(Player player){
+        if(joinPlayer.contains(player)){
+            joinPlayer.add(player);
+            //PGSpawn.saveInv(player);
+            return true;
+        }
+        return false;
+    }
+
 
     public static Location getLobby() {
 
