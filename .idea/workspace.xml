@@ -14,7 +14,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PGUtils.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PGUtils.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
