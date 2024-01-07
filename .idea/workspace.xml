@@ -4,17 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b5701248-d6e7-4953-83ea-6fde41080fbb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/PGUtils.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/GeneralUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/GeneralUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/KOTHArena.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/KOTHArena.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/Lobby.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/PlaySpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/PlaySpace.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+    <list default="true" id="929405a2-0e4e-49e8-ba79-2a9bc199f69f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +40,7 @@
   </component>
   <component name="ProjectId" id="2aZv0ZPTl5TTy2cpejzwNXrmSTG" />
   <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">

@@ -98,19 +98,8 @@ public class PGCommand implements CommandExecutor {
 					}
 
 					if(args[1].equalsIgnoreCase("portal")){
-						ArrayList<Location> portal = PGSpawn.getPortal();
-						if(portal.size() < 1){
-							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-portal-message", "&cPortal Location's is not set!")));
-							return true;
-						}
-
-						((Player) sender).teleport(new Location(
-								portal.get(0).getWorld(),
-								portal.get(0).getX() + 1,
-								portal.get(0).getY(),
-								portal.get(0).getZ() + 1
-						));
-						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-portal-message", "&aTeleported to Portal Location!")));
+						if(PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal((Player) sender, "join"))
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-portal-message", "&aTeleported to Portal Location!")));
 						return true;
 					}
 					return false;
