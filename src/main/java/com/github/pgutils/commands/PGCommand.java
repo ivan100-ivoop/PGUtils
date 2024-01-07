@@ -1,8 +1,8 @@
 package com.github.pgutils.commands;
 
 import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.PGSpawn;
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
@@ -48,6 +48,7 @@ public class PGCommand implements CommandExecutor {
 								.findFirst()
 								.get()
 								.removePlayer(player);
+						PlayerChestReward.restoreInv(player);
 						return true;
 					}
 				}
@@ -56,6 +57,13 @@ public class PGCommand implements CommandExecutor {
 					if (sender instanceof Player) {
 						player.getInventory().setItem(((Player) sender).getInventory().firstEmpty(), GeneralUtils.getTool());
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&eYour retrieve PGUtils Tool!"));
+						return true;
+					}
+				}
+
+				if (args[0].equalsIgnoreCase("chest")) {
+					if (sender instanceof Player) {
+						((Player) sender).openInventory(PlayerChestReward.getPlayerChest(((Player) sender)));
 						return true;
 					}
 				}
@@ -89,12 +97,13 @@ public class PGCommand implements CommandExecutor {
 
 				if(args[0].equalsIgnoreCase("tp")) {
 					if(args[1].equalsIgnoreCase("lobby")){
-						Location lobby = PGSpawn.getLobby();
-						if(lobby == null){
+						Lobby selectedLobby = Lobby.lobbies.get(Integer.parseInt(args[1]));
+						if(selectedLobby == null){
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby Location is not set!")));
 							return true;
 						}
-						((Player) sender).teleport(lobby);
+
+						((Player) sender).teleport(selectedLobby.getPos());
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-lobby-message", "&aTeleported to Lobby Location!")));
 						return true;
 
@@ -191,6 +200,7 @@ public class PGCommand implements CommandExecutor {
 
 
 					}
+					return true;
 				}
 				if (args[0].equalsIgnoreCase("lobby")) {
 					if (args.length >= 2) {
@@ -211,6 +221,7 @@ public class PGCommand implements CommandExecutor {
 									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
 									return false;
 								} else {
+									PlayerChestReward.saveInv(player);
 									lobby.addPlayer(player);
 								}
 							} else {
@@ -226,7 +237,7 @@ public class PGCommand implements CommandExecutor {
 
 							}
 						}
-						if (args[1].equalsIgnoreCase("add-game-id")) {
+						if (args[1].equalsIgnoreCase("add-game")) {
 							if (args.length >= 4) {
 								int lobbyId = Integer.parseInt(args[2]);
 								int gameId = Integer.parseInt(args[3]);

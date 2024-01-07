@@ -123,4 +123,45 @@ public class PlayerChestReward {
         }
         return false;
     }
+
+    public static boolean restoreInv(Player player){
+        try{
+            File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+            if (invBackup.exists()) {
+                YamlConfiguration invPlayer = new YamlConfiguration();
+                invPlayer.load(invBackup);
+                ArrayList<ItemStack> tempInv = (ArrayList<ItemStack>) invPlayer.getList("inv");
+                for(int i=0; i<tempInv.size(); i++){
+                    player.getInventory().setItem(i, tempInv.get(i));
+                }
+                invBackup.delete();
+                return true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public static boolean saveInv(Player player) {
+        try {
+            ArrayList<ItemStack> tempInv = new ArrayList<ItemStack>();
+            File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+            if (!invBackup.exists()) {
+                invBackup.createNewFile();
+                YamlConfiguration invPlayer = new YamlConfiguration();
+                invPlayer.load(invBackup);
+                player.getInventory().forEach(itemStack -> {
+                    tempInv.add(itemStack);
+                });
+                invPlayer.set("inv", tempInv);
+                invPlayer.save(invBackup);
+                player.getInventory().clear();
+                return true;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

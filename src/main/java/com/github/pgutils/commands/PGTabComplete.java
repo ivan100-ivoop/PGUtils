@@ -1,5 +1,6 @@
 package com.github.pgutils.commands;
 
+import com.github.pgutils.entities.Lobby;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -16,17 +17,29 @@ public class PGTabComplete implements TabCompleter {
 
             if(args.length == 1) {
                 tab.add("reload");
-                tab.add("setlobby");
+                tab.add("lobby");
                 tab.add("setportal");
                 tab.add("tool");
                 tab.add("tp");
                 tab.add("leave");
+                tab.add("select");
+                tab.add("game");
                 tab.add("chest");
             }
 
             if(args.length > 1 && args[0].equalsIgnoreCase("tp")){
                 tab.add("lobby");
                 tab.add("portal");
+            }
+
+            if(args.length > 1 && args[0].equalsIgnoreCase("game")){
+                tab.add("koth");
+            }
+
+            if(args.length > 1 && args[0].equalsIgnoreCase("lobby")){
+                tab.add("create");
+                tab.add("add-game");
+                tab.add("join");
             }
 
 
