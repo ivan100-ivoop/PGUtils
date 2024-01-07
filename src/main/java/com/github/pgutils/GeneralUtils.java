@@ -6,15 +6,19 @@ import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import net.md_5.bungee.api.ChatColor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -103,5 +107,41 @@ public class GeneralUtils {
             return true;
         }
         return false;
+    }
+
+    public static boolean setRespawnPoint(Location loc1){
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
+        try {
+            chestFile.createNewFile();
+            FileConfiguration spawn = YamlConfiguration.loadConfiguration(chestFile);
+            spawn.set("respawn.world", loc1.getWorld().getName());
+            spawn.set("respawn.loc1.x", loc1.getX());
+            spawn.set("respawn.loc1.y", loc1.getY());
+            spawn.set("respawn.loc1.z", loc1.getZ());
+
+            spawn.save(chestFile);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Location getRespawnPoint(){
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
+        try {
+            chestFile.createNewFile();
+            FileConfiguration spawn = YamlConfiguration.loadConfiguration(chestFile);
+            double loc1X = spawn.getDouble("respawn.loc1.x");
+            double loc1Y = spawn.getDouble("respawn.loc1.y");
+            double loc1Z = spawn.getDouble("respawn.loc1.z");
+            String worldName = spawn.getString("respawn.world");
+
+            return new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

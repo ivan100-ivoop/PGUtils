@@ -75,7 +75,7 @@ public class PGLobbyHook implements Listener {
 		Player player = e.getPlayer();
 		if (GeneralUtils.isPlayerInGame(player)) {
 			PlayerChestReward.restoreInv(player);
-			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
+			player.teleport(GeneralUtils.getRespawnPoint());
 		}
 	}
 
