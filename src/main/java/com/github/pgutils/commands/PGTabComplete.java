@@ -12,7 +12,7 @@ public class PGTabComplete implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String command, String[] args){
         ArrayList<String> tab = new ArrayList<String>();
 
-        if(cmd.getName().equalsIgnoreCase("pgutils")) {
+        if(cmd.getName().equalsIgnoreCase("pg")) {
 
             if(args.length == 1) {
                 tab.add("reload");
@@ -20,6 +20,7 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("setportal");
                 tab.add("tool");
                 tab.add("tp");
+                tab.add("leave");
             }
 
             if(args.length > 1 && args[0].equalsIgnoreCase("tp")){

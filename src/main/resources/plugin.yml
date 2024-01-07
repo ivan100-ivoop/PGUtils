@@ -6,10 +6,10 @@ website: https://github.com/ivan100-ivoop/PGUtils
 main: com.github.pgutils.PGUtils
 
 commands:
-  pgutils:
+  pg:
     description: Reload the configuration.
     permission: pgutils.reload
-    usage: "Usage: /pgutils <reload, setlobby, setpotal, tool>"
+    usage: "Usage: /pg <reload, setlobby, setpotal, tool, leave>"
 
 permissions:
   pgutils.reload:

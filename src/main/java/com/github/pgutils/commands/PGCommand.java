@@ -42,16 +42,26 @@ public class PGCommand implements CommandExecutor {
 				}
 				
 				if(args[0].equalsIgnoreCase("setportal")) {
+					Location leaveLocation;
+
 					if(PGLobbyHook.pos1 == null) {
 						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + "&cYour not select &bpos2&e!"));
 						return true;
 					}
+
 					if(PGLobbyHook.pos2 == null) {
 						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + "&cYour  not select selected &bpos2&e!"));
 						return true;
 					}
 
-					if (PGSpawn.setPortal(PGLobbyHook.pos1, PGLobbyHook.pos2)) {
+					if(!((Player) sender).isFlying()) {
+						leaveLocation = ((Player) sender).getLocation();
+					} else {
+						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + "&cYour need to stand on respawn Location!"));
+						return true;
+					}
+
+					if (PGSpawn.setPortal(PGLobbyHook.pos1, PGLobbyHook.pos2, leaveLocation)) {
 						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-portal-message", "&aSuccesval saved Portal Location's!")));
 					}
 					return true;
@@ -68,9 +78,9 @@ public class PGCommand implements CommandExecutor {
 				}
 
 				if(args[0].equalsIgnoreCase("tp")) {
-					if(args[1].equalsIgnoreCase("lobby")){
+					if (args[1].equalsIgnoreCase("lobby")) {
 						Location lobby = PGSpawn.getLobby();
-						if(lobby == null){
+						if (lobby == null) {
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby Location is not set!")));
 							return true;
 						}
@@ -80,24 +90,37 @@ public class PGCommand implements CommandExecutor {
 
 					}
 
-					if(args[1].equalsIgnoreCase("portal")){
+					if (args[1].equalsIgnoreCase("portal")) {
 						ArrayList<Location> portal = PGSpawn.getPortal();
-						if(portal.size() < 1){
+						if (portal.size() < 1) {
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-portal-message", "&cPortal Location's is not set!")));
 							return true;
 						}
 
-						((Player) sender).teleport(new Location(
-								portal.get(0).getWorld(),
-								portal.get(0).getX() + 1,
-								portal.get(0).getY(),
-								portal.get(0).getZ() + 1
-						));
+						((Player) sender).teleport(portal.get(portal.size() - 1));
+
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-portal-message", "&aTeleported to Portal Location!")));
 						return true;
 					}
 					return false;
+				}
 
+				if(args[0].equalsIgnoreCase("leave")) {
+					Player player = (Player) sender;
+					ArrayList<Location> portal = PGSpawn.getPortal();
+
+					if (portal.size() >= 1) {
+						if (PGSpawn.joinPlayer.contains(player)) {
+							PGSpawn.restoreInv(player);
+							PGSpawn.joinPlayer.remove(player);
+							player.teleport(portal.get(portal.size() - 1));
+
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("leave-message", "&eYour leave a game!")));
+						} else {
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("not-join-message", "&eYour are not in game!")));
+						}
+					}
+					return true;
 				}
 
 		}

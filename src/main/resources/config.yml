@@ -7,7 +7,8 @@ missing-lobby-message: "&cLobby Location is not set!"
 missing-portal-message: "&cPortal Location's is not set!"
 tp-portal-message: "&aTeleported to Portal Location!"
 lobby-join-message: "&eYour join to Lobby!"
-lobby-leave-message: "&eYour leave to Lobby!"
+leave-message: "&eYour leave a game!"
+not-join-message: "&eYour are not in game!"
 
 
 rewards:

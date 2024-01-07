@@ -33,8 +33,8 @@ public final class PGUtils extends JavaPlugin {
             saveInv.mkdir();
         }
 
-        getCommand("pgutils").setExecutor(new PGCommand());
-        getCommand("pgutils").setTabCompleter(new PGTabComplete());
+        getCommand("pg").setExecutor(new PGCommand());
+        getCommand("pg").setTabCompleter(new PGTabComplete());
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
 
