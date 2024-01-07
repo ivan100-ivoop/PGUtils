@@ -98,7 +98,7 @@ public class PGCommand implements CommandExecutor {
 
 				if (args[0].equalsIgnoreCase("setleave")) {
 					if(GeneralUtils.setRespawnPoint(player.getLocation())){
-						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("respawn-set-message", "&aSuccesval saved Leave Location!")));
+						player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("respawn-set-message", "&aSuccesval saved Leave Location!")));
 						return true;
 					}
 					return false;

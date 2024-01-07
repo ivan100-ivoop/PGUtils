@@ -51,16 +51,22 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		/**if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
-			if (PGSpawn.addPlayer(player)) {
-				Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
-					player.getInventory().clear();
-					player.teleport(PGSpawn.getLobby());
-					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
+		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
+			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
+				int id = GeneralUtils.findPriorityLobby();
+				Lobby lobby = Lobby.lobbies.stream()
+						.filter(lobby_ -> lobby_.getID() == id)
+						.findFirst()
+						.orElse(null);
+				if (lobby == null) {
+					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+				} else {
 					e.setCancelled(true);
-				});
-			}
-		}*/
+					PlayerChestReward.saveInv(player);
+					lobby.addPlayer(player);
+				}
+			});
+		}
 	}
 
 	@EventHandler

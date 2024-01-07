@@ -119,7 +119,7 @@ public class GeneralUtils {
             spawn.set("respawn.loc1.y", loc1.getY());
             spawn.set("respawn.loc1.z", loc1.getZ());
 
-            spawn.save(chestFile);
+            spawn.save(respawnFile);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,5 +143,9 @@ public class GeneralUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int findPriorityLobby() {
+        return 1;
     }
 }
