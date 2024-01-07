@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="929405a2-0e4e-49e8-ba79-2a9bc199f69f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PlayerChestReward.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
