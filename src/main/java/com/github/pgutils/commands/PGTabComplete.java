@@ -19,7 +19,6 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("reload");
                 tab.add("lobby");
                 tab.add("setportal");
-                tab.add("add-game");
                 tab.add("tool");
                 tab.add("tp");
                 tab.add("leave");
@@ -33,14 +32,19 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("portal");
             }
 
+            if(args.length > 1 && args[0].equalsIgnoreCase("game")){
+                tab.add("koth");
+            }
+
             if(args.length > 1 && args[0].equalsIgnoreCase("lobby")){
                 tab.add("create");
+                tab.add("add-game");
                 tab.add("join");
             }
 
-            if(args.length > 1 && args[0].equalsIgnoreCase("lobby") && args[1].equalsIgnoreCase("join")){
+            if(args.length > 1 && args[1].equalsIgnoreCase("join")){
                 for(int i = 0; i< Lobby.lobbies.size(); i++){
-                    tab.add("" + i);
+                    tab.add("" + i + 1);
                 }
             }
 

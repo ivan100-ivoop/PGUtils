@@ -51,16 +51,16 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
-			/**if (PGSpawn.addPlayer(player)) {
+		/**if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
+			if (PGSpawn.addPlayer(player)) {
 				Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
 					player.getInventory().clear();
 					player.teleport(PGSpawn.getLobby());
 					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
 					e.setCancelled(true);
 				});
-			}*/
-		}
+			}
+		}*/
 	}
 
 	@EventHandler
@@ -75,7 +75,7 @@ public class PGLobbyHook implements Listener {
 		Player player = e.getPlayer();
 		if (GeneralUtils.isPlayerInGame(player)) {
 			PlayerChestReward.restoreInv(player);
-			PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
+			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
 		}
 	}
 

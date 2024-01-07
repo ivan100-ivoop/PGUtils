@@ -139,6 +139,7 @@ public class PGCommand implements CommandExecutor {
 						}
 
 					}
+					return true;
 				}
 				if (args[0].equalsIgnoreCase("lobby")) {
 					if (args.length >= 2) {
@@ -208,6 +209,7 @@ public class PGCommand implements CommandExecutor {
 						}
 
 					}
+					return true;
 
 				}
 

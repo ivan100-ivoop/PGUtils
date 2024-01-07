@@ -156,6 +156,7 @@ public class PlayerChestReward {
                 });
                 invPlayer.set("inv", tempInv);
                 invPlayer.save(invBackup);
+                player.getInventory().clear();
                 return true;
             }
         } catch (Exception e){

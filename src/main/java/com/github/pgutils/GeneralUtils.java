@@ -94,10 +94,12 @@ public class GeneralUtils {
     }
 
     public static boolean isPlayerInGame(Player player) {
-        if(Lobby.lobbies.stream()
+        Lobby _lobby = Lobby.lobbies.stream()
                 .filter(lobby -> lobby.getPlayers().contains(player))
                 .findFirst()
-                .get() != null){
+                .get();
+        if(_lobby != null){
+            _lobby.removePlayer(player);
             return true;
         }
         return false;
