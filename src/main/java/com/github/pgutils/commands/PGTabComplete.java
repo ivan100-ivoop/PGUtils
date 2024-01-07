@@ -21,6 +21,7 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("tool");
                 tab.add("tp");
                 tab.add("leave");
+                tab.add("chest");
             }
 
             if(args.length > 1 && args[0].equalsIgnoreCase("tp")){

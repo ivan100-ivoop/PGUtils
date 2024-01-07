@@ -3,6 +3,7 @@ package com.github.pgutils.commands;
 import com.github.pgutils.GeneralUtils;
 import com.github.pgutils.PGSpawn;
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.PlayerChestReward;
 import com.github.pgutils.hooks.PGLobbyHook;
 
 import java.io.File;
@@ -100,6 +101,16 @@ public class PGCommand implements CommandExecutor {
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("leave-message", "&eYour leave a game!")));
 					} else {
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("not-join-message", "&eYour are not in game!")));
+					}
+					return true;
+				}
+
+				if(args[0].equalsIgnoreCase("chest")) {
+					Player player = (Player) sender;
+					if(PlayerChestReward.isPlayerHaveChest(player)){
+						player.openInventory(PlayerChestReward.getPlayerChest(player));
+					} else {
+						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("not-chest-message", "&eYou do not have a game chest yet.")));
 					}
 					return true;
 				}

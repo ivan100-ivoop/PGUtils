@@ -9,6 +9,7 @@ com\github\pgutils\enums\LobbyStatus.class
 com\github\pgutils\PGUtils.class
 com\github\pgutils\entities\PlaySpace.class
 com\github\pgutils\entities\KOTHPoint.class
+com\github\pgutils\PlayerChestReward.class
 com\github\pgutils\enums\GameStatus.class
 com\github\pgutils\interfaces\EvenIndependent.class
 com\github\pgutils\PortalManager.class

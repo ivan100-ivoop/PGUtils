@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
-    public static File database = null, saveInv = null;
+    public static File database = null, saveInv = null, rewardsChest = null;
     public static PortalManager PM = null;
 
     @Override
@@ -25,14 +25,11 @@ public final class PGUtils extends JavaPlugin {
 
         database = new File(getDataFolder(), "database");
         saveInv = new File(database, "saveInv");
+        rewardsChest = new File(database, "saveInv");
 
-        if (!database.exists()){
-            database.mkdir();
-        }
-
-        if (!saveInv.exists()){
-            saveInv.mkdir();
-        }
+        if (!database.exists()){ database.mkdir(); }
+        if (!saveInv.exists()){ saveInv.mkdir(); }
+        if (!rewardsChest.exists()){ rewardsChest.mkdir(); }
 
         PM = new PortalManager();
 

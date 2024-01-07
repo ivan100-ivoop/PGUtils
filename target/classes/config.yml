@@ -9,6 +9,7 @@ tp-portal-message: "&aTeleported to Portal Location!"
 lobby-join-message: "&eYour join to Lobby!"
 leave-message: "&eYour leave a game!"
 not-join-message: "&eYour are not in game!"
+not-chest-message: "&eYou do not have a game chest yet."
 
 
 rewards:

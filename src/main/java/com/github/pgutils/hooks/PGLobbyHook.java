@@ -1,12 +1,14 @@
 package com.github.pgutils.hooks;
 
 import com.github.pgutils.PGSpawn;
+import com.github.pgutils.PlayerChestReward;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.github.pgutils.GeneralUtils;
@@ -61,6 +63,13 @@ public class PGLobbyHook implements Listener {
 					e.setCancelled(true);
 				});
 			}
+		}
+	}
+
+	@EventHandler
+	public void closeInventory(InventoryCloseEvent e){
+		if (((Player) e.getPlayer()).getOpenInventory().getTitle().equals(PlayerChestReward.ChestTitle)) {
+			PlayerChestReward.updatePlayerCheste(e.getInventory().getContents(), ((Player) e.getPlayer()));
 		}
 	}
 

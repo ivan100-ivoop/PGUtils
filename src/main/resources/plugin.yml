@@ -9,7 +9,7 @@ commands:
   pg:
     description: Reload the configuration.
     permission: pgutils.reload
-    usage: "Usage: /pg <reload, setlobby, setpotal, tool, leave>"
+    usage: "Usage: /pg <reload, setlobby, setpotal, tool, leave, chest>"
 
 permissions:
   pgutils.reload:
