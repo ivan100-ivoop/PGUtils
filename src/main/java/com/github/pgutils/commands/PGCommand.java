@@ -97,6 +97,17 @@ public class PGCommand implements CommandExecutor {
 					if (PGSpawn.joinPlayer.contains(player)) {
 						PGSpawn.restoreInv(player);
 						PGSpawn.joinPlayer.remove(player);
+
+						// test add item
+						if(PlayerChestReward.isPlayerHaveChest(player)){
+
+							if(PlayerChestReward.isPlayerChestFull(player))
+								PlayerChestReward.clearPlayerChest(player);
+
+							ItemStack item = new ItemStack(Material.STICK, 11);
+							PlayerChestReward.addItem(item, player);
+
+						}
 						PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal((Player) sender, "join");
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("leave-message", "&eYour leave a game!")));
 					} else {

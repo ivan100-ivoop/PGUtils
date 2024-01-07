@@ -19,6 +19,10 @@ public class PGSpawn {
     public static ArrayList<Player> joinPlayer = new ArrayList<Player>();
 
     public static boolean addPlayer(Player player){
+        if(!PlayerChestReward.isPlayerHaveChest(player)){
+            PlayerChestReward.createEmptyPlayerChest(player);
+        }
+
         if(!joinPlayer.contains(player)){
             try {
                 if(PGSpawn.saveInv(player)){

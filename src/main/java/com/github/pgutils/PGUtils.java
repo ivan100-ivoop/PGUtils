@@ -25,7 +25,7 @@ public final class PGUtils extends JavaPlugin {
 
         database = new File(getDataFolder(), "database");
         saveInv = new File(database, "saveInv");
-        rewardsChest = new File(database, "saveInv");
+        rewardsChest = new File(database, "PlayerChest");
 
         if (!database.exists()){ database.mkdir(); }
         if (!saveInv.exists()){ saveInv.mkdir(); }
