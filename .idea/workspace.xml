@@ -5,38 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="929405a2-0e4e-49e8-ba79-2a9bc199f69f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_findbugs_jsr305_3_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_10_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_errorprone_error_prone_annotations_2_18_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_failureaccess_1_0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_guava_32_1_2_jre.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_listenablefuture_9999_0_empty_to_avoid_conflict_with_guava.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_j2objc_j2objc_annotations_2_8.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_chat_1_20_R0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_checkerframework_checker_qual_3_33_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_joml_joml_1_10_5.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_spigotmc_spigot_api_1_20_2_R0_1_SNAPSHOT.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_2_2.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PortalManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PGUtils.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PGUtils.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGTabComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGTabComplete.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/GeneralUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/GeneralUtils.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGSpawn.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGSpawn.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGTabComplete.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGTabComplete.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -15,6 +15,7 @@ public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
     public static File database = null, saveInv = null;
+    public static PortalManager PM = null;
 
     @Override
     public void onEnable() {
@@ -32,6 +33,8 @@ public final class PGUtils extends JavaPlugin {
         if (!saveInv.exists()){
             saveInv.mkdir();
         }
+
+        PM = new PortalManager();
 
         getCommand("pg").setExecutor(new PGCommand());
         getCommand("pg").setTabCompleter(new PGTabComplete());

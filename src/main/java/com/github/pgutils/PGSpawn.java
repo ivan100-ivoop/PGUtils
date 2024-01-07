@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+// dumi class for testing!
+
 public class PGSpawn {
     public static ArrayList<Player> joinPlayer = new ArrayList<Player>();
 
@@ -28,33 +30,6 @@ public class PGSpawn {
             }
         }
         return false;
-    }
-
-    public static boolean inPotral(Location location) {
-        ArrayList<Location> portal = PGSpawn.getPortal();
-        if (portal.size() >= 1) {
-            Location loc1 = portal.get(1);
-            Location loc2 = portal.get(0);
-
-            if (!loc1.getWorld().equals(location.getWorld())) {
-                return false;
-            }
-
-            double minX = Math.min(loc1.getX(), loc2.getX());
-            double minY = Math.min(loc1.getBlockY(), loc2.getY());
-            double minZ = Math.min(loc1.getZ(), loc2.getZ());
-
-            double maxX = Math.max(loc1.getX(), loc2.getX());
-            double maxY = Math.max(loc1.getY(), loc2.getY());
-            double maxZ = Math.max(loc1.getZ(), loc2.getZ());
-
-            return ((location.getX() >= minX || location.getX() <= maxX) &&
-                    (location.getY() >= minY || location.getY() <= maxY) &&
-                    (location.getZ() >= minZ || location.getZ() <= maxZ));
-
-        } else {
-            return false;
-        }
     }
 
 
@@ -132,47 +107,5 @@ public class PGSpawn {
         }
         return false;
     }
-
-    public static boolean setPortal(Location pos1, Location pos2, Location leaveLocation) {
-
-        File portalFile = new File(PGUtils.getPlugin(PGUtils.class).database, "lobby.yml");
-        try {
-            if (!portalFile.exists())
-                portalFile.createNewFile();
-
-            YamlConfiguration lobby = new YamlConfiguration();
-            lobby.load(portalFile);
-            ArrayList<Location> locations =  new ArrayList<Location>();
-            locations.add(pos1); // 0
-            locations.add(pos2); // 1
-            locations.add(leaveLocation); // 2
-            lobby.set("portal", locations);
-
-            lobby.save(portalFile);
-
-            return true;
-        } catch (Exception e) {
-            PGUtils.getPlugin(PGUtils.class).logger.log(Level.SEVERE, e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static ArrayList<Location> getPortal() {
-
-        File portalFile = new File(PGUtils.getPlugin(PGUtils.class).database, "lobby.yml");
-        if (portalFile.exists())
-            try {
-                YamlConfiguration portal = new YamlConfiguration();
-                portal.load(portalFile);
-                return ((ArrayList<Location>) portal.getList("portal"));
-
-            } catch (Exception e) {
-                PGUtils.getPlugin(PGUtils.class).logger.log(Level.SEVERE, e.getMessage());
-                e.printStackTrace();
-            }
-        return new ArrayList<Location>();
-    }
-
 
 }

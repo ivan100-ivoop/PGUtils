@@ -51,7 +51,7 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		if (PGSpawn.inPotral(e.getTo())) {
+		if (PGUtils.getPlugin(PGUtils.class).PM.inPortal(e.getTo())) {
 			if (PGSpawn.addPlayer(player)) {
 				player.getInventory().clear();
 				player.teleport(PGSpawn.getLobby());
@@ -64,13 +64,10 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		ArrayList<Location> portal = PGSpawn.getPortal();
-		if (portal.size() >= 1) {
-			if (PGSpawn.joinPlayer.contains(player)) {
-				PGSpawn.restoreInv(player);
-				PGSpawn.joinPlayer.remove(player);
-				player.teleport(portal.get(portal.size() - 1));
-			}
+		if (PGSpawn.joinPlayer.contains(player)) {
+			PGSpawn.restoreInv(player);
+			PGSpawn.joinPlayer.remove(player);
+			PGUtils.getPlugin(PGUtils.class).PM.teleportToPortal(player, "join");
 		}
 	}
 
