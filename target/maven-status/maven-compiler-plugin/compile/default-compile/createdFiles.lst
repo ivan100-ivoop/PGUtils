@@ -9,6 +9,7 @@ com\github\pgutils\LobbyUpdater.class
 com\github\pgutils\entities\KOTHArena.class
 com\github\pgutils\enums\LobbyStatus.class
 com\github\pgutils\PGUtils.class
+com\github\pgutils\entities\KOTHArena$KOTHTeam.class
 com\github\pgutils\entities\PlaySpace.class
 com\github\pgutils\entities\KOTHPoint.class
 com\github\pgutils\enums\GameStatus.class

@@ -4,12 +4,13 @@ import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
@@ -88,4 +89,7 @@ public class GeneralUtils {
 
     }
 
+    public static ChatColor ColorToChatColor(Color cc) {
+        return ChatColor.of("#"+Integer.toHexString(cc.asRGB()));
+    }
 }

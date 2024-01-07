@@ -175,7 +175,7 @@ public class Lobby {
         }
         if (currentPlaySpace != null) {
             if (currentPlaySpace.players.contains(player)) {
-                currentPlaySpace.players.remove(player);
+                currentPlaySpace.removePlayer(player);
             }
         }
         player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID +" !"));

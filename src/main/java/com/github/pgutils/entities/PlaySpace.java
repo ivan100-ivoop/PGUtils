@@ -97,5 +97,6 @@ public abstract class PlaySpace {
         this.players = players;
     }
 
+    public abstract void removePlayer(Player player);
 
 }
