@@ -3,6 +3,9 @@ package com.github.pgutils.commands;
 import com.github.pgutils.GeneralUtils;
 import com.github.pgutils.PGSpawn;
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.entities.KOTHArena;
+import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.hooks.PGLobbyHook;
 
 import java.io.File;

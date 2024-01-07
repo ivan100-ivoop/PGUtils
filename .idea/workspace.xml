@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="929405a2-0e4e-49e8-ba79-2a9bc199f69f" name="Changes" comment="">
+    <list default="true" id="b5701248-d6e7-4953-83ea-6fde41080fbb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
