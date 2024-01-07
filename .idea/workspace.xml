@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="929405a2-0e4e-49e8-ba79-2a9bc199f69f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGSpawn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGSpawn.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGSpawn.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PlayerChestReward.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
