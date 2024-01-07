@@ -42,6 +42,7 @@ public final class PGUtils extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
 
     }
+    public static PortalManager getPortalManager() { return PM; }
 
     @Override
     public void onDisable() {}

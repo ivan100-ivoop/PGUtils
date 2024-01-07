@@ -54,7 +54,7 @@ public class PGCommand implements CommandExecutor {
 						return true;
 					}
 
-					if (PGUtils.getPlugin(PGUtils.class).PM.savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2)) {
+					if (PGUtils.getPlugin(PGUtils.class).getPortalManager().savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2, ((Player) sender).getLocation())) {
 						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-portal-message", "&aSuccesval saved Portal Location's!")));
 					}
 					return true;
@@ -84,7 +84,7 @@ public class PGCommand implements CommandExecutor {
 					}
 
 					if (args[1].equalsIgnoreCase("portal")) {
-						if(PGUtils.getPlugin(PGUtils.class).PM.teleportToPortal((Player) sender, "join"))
+						if(PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal((Player) sender, "join"))
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-portal-message", "&aTeleported to Portal Location!")));
 						return true;
 					}
@@ -96,7 +96,7 @@ public class PGCommand implements CommandExecutor {
 					if (PGSpawn.joinPlayer.contains(player)) {
 						PGSpawn.restoreInv(player);
 						PGSpawn.joinPlayer.remove(player);
-						PGUtils.getPlugin(PGUtils.class).PM.teleportToPortal((Player) sender, "join");
+						PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal((Player) sender, "join");
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("leave-message", "&eYour leave a game!")));
 					} else {
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("not-join-message", "&eYour are not in game!")));

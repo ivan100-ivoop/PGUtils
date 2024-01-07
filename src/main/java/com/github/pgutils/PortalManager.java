@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Panda;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,20 +28,17 @@ public class PortalManager {
             }
         }
     }
-
     public boolean teleportToPortal(Player player, String portalName) {
         List<Location> portalLocations = getPortalLocations(portalName);
-        if (portalLocations != null && portalLocations.size() >= 1) {
-            Location teleportLocation = portalLocations.get(0).add(portalLocations.get(1)).multiply(0.5); // Teleport to the center of the portal
-            player.teleport(teleportLocation);
+        if (portalLocations != null && portalLocations.size() >= 2) {
+            player.teleport(portalLocations.get(2));
             return true;
         } else {
             player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-portal-message", "&cThe portal locations are not properly defined.")));
         }
         return false;
     }
-
-    public boolean savePortalLocations(String portalName, Location loc1, Location loc2) {
+    public boolean savePortalLocations(String portalName, Location loc1, Location loc2, Location loc3) {
         String path = "portals." + portalName;
 
         config.set(path + ".world", loc1.getWorld().getName());
@@ -51,6 +49,9 @@ public class PortalManager {
         config.set(path + ".loc2.x", loc2.getX());
         config.set(path + ".loc2.y", loc2.getY());
         config.set(path + ".loc2.z", loc2.getZ());
+        config.set(path + ".respawn.x", loc3.getX());
+        config.set(path + ".respawn.y", loc3.getY());
+        config.set(path + ".respawn.z", loc3.getZ());
 
         return saveConfig();
     }
@@ -72,8 +73,14 @@ public class PortalManager {
         double loc2Y = config.getDouble(path + ".loc2.y");
         double loc2Z = config.getDouble(path + ".loc2.z");
 
+        double loc3X = config.getDouble(path + ".respawn.x");
+        double loc3Y = config.getDouble(path + ".respawn.y");
+        double loc3Z = config.getDouble(path + ".respawn.z");
+
         portalLocations.add(new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z));
         portalLocations.add(new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc2X, loc2Y, loc2Z));
+        portalLocations.add(new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc3X, loc3Y, loc3Z));
+
 
         return portalLocations;
     }
@@ -91,6 +98,7 @@ public class PortalManager {
     }
 
     private boolean isInRegion(Location location, Location loc1, Location loc2) {
+
         int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
         int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
         int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
@@ -99,9 +107,11 @@ public class PortalManager {
         int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
-        return location.getBlockX() >= minX && location.getBlockX() <= maxX &&
+        boolean inPortal = location.getBlockX() >= minX && location.getBlockX() <= maxX &&
                 location.getBlockY() >= minY && location.getBlockY() <= maxY &&
                 location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+
+        return inPortal;
     }
 
     private boolean saveConfig() {

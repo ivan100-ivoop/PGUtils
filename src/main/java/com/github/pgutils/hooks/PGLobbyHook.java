@@ -1,6 +1,7 @@
 package com.github.pgutils.hooks;
 
 import com.github.pgutils.PGSpawn;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,12 +52,14 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		if (PGUtils.getPlugin(PGUtils.class).PM.inPortal(e.getTo())) {
+		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
 			if (PGSpawn.addPlayer(player)) {
-				player.getInventory().clear();
-				player.teleport(PGSpawn.getLobby());
-				player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
-				e.setCancelled(true);
+				Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
+					player.getInventory().clear();
+					player.teleport(PGSpawn.getLobby());
+					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
+					e.setCancelled(true);
+				});
 			}
 		}
 	}
@@ -67,7 +70,7 @@ public class PGLobbyHook implements Listener {
 		if (PGSpawn.joinPlayer.contains(player)) {
 			PGSpawn.restoreInv(player);
 			PGSpawn.joinPlayer.remove(player);
-			PGUtils.getPlugin(PGUtils.class).PM.teleportToPortal(player, "join");
+			PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
 		}
 	}
 
