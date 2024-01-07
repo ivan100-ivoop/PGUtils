@@ -1,21 +1,73 @@
 package com.github.pgutils;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+// dumi class for testing!
+
 public class PGSpawn {
     public static ArrayList<Player> joinPlayer = new ArrayList<Player>();
 
-    public static boolean AddPlayer(Player player){
-        if(joinPlayer.contains(player)){
-            joinPlayer.add(player);
-            //PGSpawn.saveInv(player);
+    public static boolean addPlayer(Player player){
+        if(!PlayerChestReward.isPlayerHaveChest(player)){
+            PlayerChestReward.createEmptyPlayerChest(player);
+        }
+
+        if(!joinPlayer.contains(player)){
+            try {
+                if(PGSpawn.saveInv(player)){
+                    joinPlayer.add(player);
+                    return true;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
+
+
+    public static boolean restoreInv(Player player){
+        try{
+            File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+            if (invBackup.exists()) {
+                YamlConfiguration invPlayer = new YamlConfiguration();
+                invPlayer.load(invBackup);
+                ArrayList<ItemStack> tempInv = (ArrayList<ItemStack>) invPlayer.getList("inv");
+                for(int i=0; i<tempInv.size(); i++){
+                    player.getInventory().setItem(i, tempInv.get(i));
+                }
+                invBackup.delete();
+                return true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public static boolean saveInv(Player player) throws Exception {
+        ArrayList<ItemStack> tempInv = new ArrayList<ItemStack>();
+        File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+        if (!invBackup.exists()) {
+            invBackup.createNewFile();
+            YamlConfiguration invPlayer = new YamlConfiguration();
+            invPlayer.load(invBackup);
+            player.getInventory().forEach(itemStack -> {
+                tempInv.add(itemStack);
+            });
+            invPlayer.set("inv", tempInv);
+            invPlayer.save(invBackup);
             return true;
         }
         return false;
@@ -59,46 +111,5 @@ public class PGSpawn {
         }
         return false;
     }
-
-    public static boolean setPortal(Location pos1, Location pos2) {
-
-        File portalFile = new File(PGUtils.getPlugin(PGUtils.class).database, "lobby.yml");
-        try {
-            if (!portalFile.exists())
-                portalFile.createNewFile();
-
-            YamlConfiguration lobby = new YamlConfiguration();
-            lobby.load(portalFile);
-            ArrayList<Location> locations =  new ArrayList<Location>();
-            locations.add(pos1);
-            locations.add(pos2);
-            lobby.set("portal", locations);
-
-            lobby.save(portalFile);
-
-            return true;
-        } catch (Exception e) {
-            PGUtils.getPlugin(PGUtils.class).logger.log(Level.SEVERE, e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static ArrayList<Location> getPortal() {
-
-        File portalFile = new File(PGUtils.getPlugin(PGUtils.class).database, "lobby.yml");
-        if (portalFile.exists())
-            try {
-                YamlConfiguration portal = new YamlConfiguration();
-                portal.load(portalFile);
-                return ((ArrayList<Location>) portal.getList("portal"));
-
-            } catch (Exception e) {
-                PGUtils.getPlugin(PGUtils.class).logger.log(Level.SEVERE, e.getMessage());
-                e.printStackTrace();
-            }
-        return new ArrayList<Location>();
-    }
-
 
 }

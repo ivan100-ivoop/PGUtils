@@ -22,7 +22,8 @@ import java.util.logging.Logger;
 public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
-    public static File database = null, saveInv = null;
+    public static File database = null, saveInv = null, rewardsChest = null;
+    public static PortalManager PM = null;
 
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
@@ -36,14 +37,13 @@ public final class PGUtils extends JavaPlugin {
 
         database = new File(getDataFolder(), "database");
         saveInv = new File(database, "saveInv");
+        rewardsChest = new File(database, "PlayerChest");
 
-        if (!database.exists()){
-            database.mkdir();
-        }
+        if (!database.exists()){ database.mkdir(); }
+        if (!saveInv.exists()){ saveInv.mkdir(); }
+        if (!rewardsChest.exists()){ rewardsChest.mkdir(); }
 
-        if (!saveInv.exists()){
-            saveInv.mkdir();
-        }
+        PM = new PortalManager();
 
         getCommand("pg").setExecutor(new PGCommand());
         getCommand("pg").setTabCompleter(new PGTabComplete());
@@ -53,6 +53,7 @@ public final class PGUtils extends JavaPlugin {
         new LobbyUpdater().runTaskTimer(this, 20, 1);
 
     }
+    public static PortalManager getPortalManager() { return PM; }
 
     @Override
     public void onDisable() {}

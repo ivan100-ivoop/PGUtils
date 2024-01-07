@@ -3,9 +3,6 @@ package com.github.pgutils.commands;
 import com.github.pgutils.GeneralUtils;
 import com.github.pgutils.PGSpawn;
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.KOTHArena;
-import com.github.pgutils.entities.Lobby;
-import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.hooks.PGLobbyHook;
 
 import java.io.File;
@@ -70,34 +67,44 @@ public class PGCommand implements CommandExecutor {
 						return true;
 					}
 
-					if (PGSpawn.setPortal(PGLobbyHook.pos1, PGLobbyHook.pos2)) {
-						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-portal-message", "&aSuccesval saved Portal Location's!")));
+
+					if (PGUtils.getPlugin(PGUtils.class).getPortalManager().savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2, ((Player) sender).getLocation())) {
+						sender.sendMessage(GeneralUtils.fixColors( PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-portal-message", "&aSuccesval saved Portal Location's!")));
 					}
 					return true;
-
+					
+				}
+				
+				if(args[0].equalsIgnoreCase("setlobby")) {
+					if(sender instanceof Player) {
+						if (PGSpawn.setLobby(((Player) sender).getLocation())) {
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-lobby-message", "&aSuccesval saved Lobby Location!")));
+						}
+						return true;
+					}
 				}
 
-				if (args[0].equalsIgnoreCase("tp")) {
-					if (args[1].equalsIgnoreCase("lobby")) {
+				if(args[0].equalsIgnoreCase("tp")) {
+					if(args[1].equalsIgnoreCase("lobby")){
 						Location lobby = PGSpawn.getLobby();
-						if (lobby == null) {
+						if(lobby == null){
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby Location is not set!")));
 							return true;
 						}
-						player.teleport(lobby);
+						((Player) sender).teleport(lobby);
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-lobby-message", "&aTeleported to Lobby Location!")));
 						return true;
 
 					}
 
-					if (args[1].equalsIgnoreCase("portal")) {
+					if(args[1].equalsIgnoreCase("portal")){
 						ArrayList<Location> portal = PGSpawn.getPortal();
-						if (portal.size() < 1) {
+						if(portal.size() < 1){
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-portal-message", "&cPortal Location's is not set!")));
 							return true;
 						}
 
-						player.teleport(new Location(
+						((Player) sender).teleport(new Location(
 								portal.get(0).getWorld(),
 								portal.get(0).getX() + 1,
 								portal.get(0).getY(),
@@ -229,7 +236,7 @@ public class PGCommand implements CommandExecutor {
 
 				}
 
-			}
+		}
 		return false;
 	}
 
