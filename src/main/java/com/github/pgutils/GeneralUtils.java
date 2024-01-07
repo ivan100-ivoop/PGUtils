@@ -110,10 +110,10 @@ public class GeneralUtils {
     }
 
     public static boolean setRespawnPoint(Location loc1){
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
+        File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
         try {
-            chestFile.createNewFile();
-            FileConfiguration spawn = YamlConfiguration.loadConfiguration(chestFile);
+            respawnFile.createNewFile();
+            FileConfiguration spawn = YamlConfiguration.loadConfiguration(respawnFile);
             spawn.set("respawn.world", loc1.getWorld().getName());
             spawn.set("respawn.loc1.x", loc1.getX());
             spawn.set("respawn.loc1.y", loc1.getY());
@@ -128,10 +128,10 @@ public class GeneralUtils {
     }
 
     public static Location getRespawnPoint(){
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
+        File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
         try {
-            chestFile.createNewFile();
-            FileConfiguration spawn = YamlConfiguration.loadConfiguration(chestFile);
+            respawnFile.createNewFile();
+            FileConfiguration spawn = YamlConfiguration.loadConfiguration(respawnFile);
             double loc1X = spawn.getDouble("respawn.loc1.x");
             double loc1Y = spawn.getDouble("respawn.loc1.y");
             double loc1Z = spawn.getDouble("respawn.loc1.z");

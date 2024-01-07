@@ -101,6 +101,7 @@ public class PGCommand implements CommandExecutor {
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("respawn-set-message", "&aSuccesval saved Leave Location!")));
 						return true;
 					}
+					return false;
 				}
 
 				if (args[0].equalsIgnoreCase("game")) {
