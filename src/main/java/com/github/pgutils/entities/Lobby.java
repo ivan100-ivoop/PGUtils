@@ -209,6 +209,7 @@ public class Lobby {
     public void setPos(Location pos) {
         this.pos = pos;
     }
+    public Location getPos() { return this.pos; }
 
     public int getID() {
         return ID;

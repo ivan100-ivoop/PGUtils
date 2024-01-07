@@ -1,34 +1,22 @@
 package com.github.pgutils.commands;
 
 import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.PGSpawn;
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.hooks.PGLobbyHook;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.logging.Level;
 
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.A;
 
 public class PGCommand implements CommandExecutor {
 	@Override
@@ -48,6 +36,7 @@ public class PGCommand implements CommandExecutor {
 								.findFirst()
 								.get()
 								.removePlayer(player);
+						PlayerChestReward.restoreInv(player);
 						return true;
 					}
 				}
@@ -77,24 +66,16 @@ public class PGCommand implements CommandExecutor {
 					return true;
 					
 				}
-				
-				if(args[0].equalsIgnoreCase("setlobby")) {
-					if(sender instanceof Player) {
-						if (PGSpawn.setLobby(((Player) sender).getLocation())) {
-							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("save-lobby-message", "&aSuccesval saved Lobby Location!")));
-						}
-						return true;
-					}
-				}
 
 				if(args[0].equalsIgnoreCase("tp")) {
 					if(args[1].equalsIgnoreCase("lobby")){
-						Location lobby = PGSpawn.getLobby();
-						if(lobby == null){
+						Lobby selectedLobby = Lobby.lobbies.get(Integer.parseInt(args[1]));
+						if(selectedLobby == null){
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby Location is not set!")));
 							return true;
 						}
-						((Player) sender).teleport(lobby);
+
+						((Player) sender).teleport(selectedLobby.getPos());
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("tp-lobby-message", "&aTeleported to Lobby Location!")));
 						return true;
 
@@ -178,6 +159,7 @@ public class PGCommand implements CommandExecutor {
 									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
 									return false;
 								} else {
+									PlayerChestReward.saveInv(player);
 									lobby.addPlayer(player);
 								}
 							} else {
@@ -193,6 +175,7 @@ public class PGCommand implements CommandExecutor {
 
 							}
 						}
+
 						if (args[1].equalsIgnoreCase("add-game")) {
 							if (args.length >= 4) {
 								int lobbyId = Integer.parseInt(args[2]);

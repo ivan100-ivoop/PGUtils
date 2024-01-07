@@ -92,4 +92,14 @@ public class GeneralUtils {
     public static ChatColor ColorToChatColor(Color cc) {
         return ChatColor.of("#"+Integer.toHexString(cc.asRGB()));
     }
+
+    public static boolean isPlayerInGame(Player player) {
+        if(Lobby.lobbies.stream()
+                .filter(lobby -> lobby.getPlayers().contains(player))
+                .findFirst()
+                .get() != null){
+            return true;
+        }
+        return false;
+    }
 }
