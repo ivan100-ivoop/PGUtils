@@ -49,6 +49,13 @@ public class PGCommand implements CommandExecutor {
 					}
 				}
 
+				if (args[0].equalsIgnoreCase("chest")) {
+					if (sender instanceof Player) {
+						((Player) sender).openInventory(PlayerChestReward.getPlayerChest(((Player) sender)));
+						return true;
+					}
+				}
+
 				if (args[0].equalsIgnoreCase("setportal")) {
 					if (PGLobbyHook.pos1 == null) {
 						sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cYour not select &bpos2&e!"));

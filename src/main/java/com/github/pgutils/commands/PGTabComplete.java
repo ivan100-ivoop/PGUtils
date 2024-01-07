@@ -42,12 +42,6 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("join");
             }
 
-            if(args.length > 1 && args[1].equalsIgnoreCase("join")){
-                for(int i = 0; i< Lobby.lobbies.size(); i++){
-                    tab.add("" + i + 1);
-                }
-            }
-
 
         }
         return tab;
