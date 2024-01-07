@@ -140,6 +140,23 @@ public class PGCommand implements CommandExecutor {
 									}
 								}
 							}
+							// set koth arena Location
+							if (args[2].equalsIgnoreCase("set")) {
+								Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!arena.isPresent()) {
+									player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
+								} else {
+									if (arena.get().playSpace instanceof KOTHArena) {
+										KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
+										kothArena.setPos(((Player) sender).getLocation());
+										sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("set-arena-message", "&aSuccessful set Arena Location!")));
+									} else {
+										sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+									}
+								}
+							}
 						}
 						if (args[1].equalsIgnoreCase("select")) {
 							if (args.length >= 3) {
@@ -156,6 +173,22 @@ public class PGCommand implements CommandExecutor {
 								}
 							}
 						}
+						if (args[1].equalsIgnoreCase("delete")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								PlaySpace playSpace = PlaySpace.playSpaces.stream()
+										.filter(space -> space.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (playSpace == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlaySpace is not found!")));
+								} else {
+									PlaySpace.playSpaces.remove(playSpace);
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("delete-arena-message", "&aSuccessful deleted " + playSpace.getType() + "!")));
+								}
+							}
+						}
+
 
 					}
 				}
@@ -193,7 +226,7 @@ public class PGCommand implements CommandExecutor {
 
 							}
 						}
-						if (args[1].equalsIgnoreCase("add-game")) {
+						if (args[1].equalsIgnoreCase("add-game-id")) {
 							if (args.length >= 4) {
 								int lobbyId = Integer.parseInt(args[2]);
 								int gameId = Integer.parseInt(args[3]);
@@ -223,6 +256,169 @@ public class PGCommand implements CommandExecutor {
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("add-arena-message", "&aSuccessful added " + playSpace.getType() + " to " + lobby.getID() + "!")));
 							}
 						}
+						if (args[1].equalsIgnoreCase("remove-game-id")) {
+							if (args.length >= 4) {
+								int lobbyId = Integer.parseInt(args[2]);
+								int gameId = Integer.parseInt(args[3]);
+
+								Lobby lobby = Lobby.lobbies.stream()
+										.filter(lobby_ -> lobby_.getID() == lobbyId)
+										.findFirst()
+										.orElse(null);
+
+								PlaySpace playSpace = PlaySpace.playSpaces.stream()
+										.filter(space -> space.getID() == gameId)
+										.findFirst()
+										.orElse(null);
+
+								if (lobby == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+									return false;
+								}
+
+								if (playSpace == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlaySpace is not found!")));
+									return false;
+								}
+
+								lobby.removePlaySpace(playSpace);
+								playSpace.setLobby(null);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("remove-arena-message", "&aSuccessful removed " + playSpace.getType() + " from " + lobby.getID() + "!")));
+							}
+						}
+						if (args[1].equalsIgnoreCase("set-location")) {
+							Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+									.filter(selector -> selector.player.equals(sender))
+									.findFirst();
+							if (!lobbySelector.isPresent()) {
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+								return false;
+							}
+							Lobby lobby = lobbySelector.get().lobby;
+							lobby.setPos(player.getLocation());
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("set-lobby-message", "&aSuccessful set Lobby Location!")));
+						}
+						if (args[1].equalsIgnoreCase("set-min-players")) {
+							if (args.length >= 3) {
+								int minPlayers = Integer.parseInt(args[2]);
+								Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!lobbySelector.isPresent()) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+									return false;
+								}
+								Lobby lobby = lobbySelector.get().lobby;
+								lobby.setMinPlayers(minPlayers);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("set-min-players-message", "&aSuccessful set Min Players to " + minPlayers + "!")));
+							}
+						}
+						if (args[1].equalsIgnoreCase("set-max-players")) {
+							if (args.length >= 3) {
+								int maxPlayers = Integer.parseInt(args[2]);
+								Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!lobbySelector.isPresent()) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+									return false;
+								}
+								Lobby lobby = lobbySelector.get().lobby;
+								lobby.setMaxPlayers(maxPlayers);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("set-max-players-message", "&aSuccessful set Max Players to " + maxPlayers + "!")));
+							}
+						}
+						if (args[1].equalsIgnoreCase("set-auto-start")) {
+							if (args.length >= 3) {
+								boolean autoStart = Boolean.parseBoolean(args[2]);
+								Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!lobbySelector.isPresent()) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+									return false;
+								}
+								Lobby lobby = lobbySelector.get().lobby;
+								lobby.setAutoStart(autoStart);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("set-auto-start-message", "&aSuccessful set Auto Start to " + autoStart + "!")));
+							}
+						}
+						if (args[1].equalsIgnoreCase("add-game")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!lobbySelector.isPresent()) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+									return false;
+								}
+								Lobby lobby = lobbySelector.get().lobby;
+								PlaySpace playSpace = PlaySpace.playSpaces.stream()
+										.filter(space -> space.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (playSpace == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cPlaySpace is not found!"));
+									return false;
+								}
+								lobby.addPlaySpace(playSpace);
+								playSpace.setLobby(lobby);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful added " + playSpace.getType() + " to " + lobby.getID() + "!"));
+							}
+						}
+						if (args[1].equalsIgnoreCase("remove-game")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+										.filter(selector -> selector.player.equals(sender))
+										.findFirst();
+								if (!lobbySelector.isPresent()) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
+									return false;
+								}
+								Lobby lobby = lobbySelector.get().lobby;
+								PlaySpace playSpace = PlaySpace.playSpaces.stream()
+										.filter(space -> space.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (playSpace == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cPlaySpace is not found!"));
+									return false;
+								}
+								lobby.removePlaySpace(playSpace);
+								playSpace.setLobby(null);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed " + playSpace.getType() + " from " + lobby.getID() + "!"));
+							}
+						}
+						if (args[1].equalsIgnoreCase("remove-id")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								Lobby lobby = Lobby.lobbies.stream()
+										.filter(lobby_ -> lobby_.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (lobby == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not found!"));
+									return false;
+								}
+								Lobby.lobbies.remove(lobby);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed Lobby " + lobby.getID() + "!"));
+							}
+						}
+						if (args[1].equalsIgnoreCase("remove")) {
+							Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+									.filter(selector -> selector.player.equals(sender))
+									.findFirst();
+							if (!lobbySelector.isPresent()) {
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not found!"));
+								return false;
+							}
+							Lobby lobby = lobbySelector.get().lobby;
+							Lobby.lobbies.remove(lobby);
+							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed Lobby " + lobby.getID() + "!"));
+						}
+
 
 					}
 

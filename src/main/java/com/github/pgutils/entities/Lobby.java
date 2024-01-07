@@ -70,7 +70,7 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThere are &b" + players.size() + "&e players in the lobby!"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players ( " + players.size() + "/" + maxPlayers + " )"))));
             }
         }
         else if (status == LobbyStatus.STARTING) {

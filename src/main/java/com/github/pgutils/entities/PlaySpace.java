@@ -99,4 +99,8 @@ public abstract class PlaySpace {
 
     public abstract void removePlayer(Player player);
 
+    public abstract boolean passesChecks();
+
+    public abstract void updateView(Player player);
+
 }
