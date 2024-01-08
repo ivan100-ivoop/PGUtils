@@ -1,5 +1,6 @@
-package com.github.pgutils;
+package com.github.pgutils.utils;
 
+import com.github.pgutils.PGUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,13 +18,13 @@ public class PlayerChestReward {
     public static final String ChestTitle = "Reward Chest";
 
     public static boolean isPlayerHaveChest(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
         return chestFile.exists();
     }
 
     public static boolean createEmptyPlayerChest(Player player) {
         if (!isPlayerHaveChest(player)) {
-            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
             try {
                 chestFile.createNewFile();
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -38,7 +39,7 @@ public class PlayerChestReward {
     }
 
     public static boolean isPlayerChestFull(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
 
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -51,7 +52,7 @@ public class PlayerChestReward {
     public static boolean clearPlayerChest(Player player) {
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             try {
-                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
                 chest.set("content", new ArrayList<ItemStack>());
                 chest.save(chestFile);
@@ -63,7 +64,7 @@ public class PlayerChestReward {
     }
 
     public static Inventory getPlayerChest(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
 
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -79,7 +80,7 @@ public class PlayerChestReward {
     public static boolean updatePlayerCheste(ItemStack[] contents, Player player) {
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             try {
-                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
                 List<ItemStack> chestContents = new ArrayList<ItemStack>();
 
@@ -109,7 +110,7 @@ public class PlayerChestReward {
 
     private static boolean putItem(ItemStack item, Player player) {
         try {
-            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).getDataFolder(), player.getName() + ".yml");
+            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
             List<ItemStack> chestContents = (List<ItemStack>) chest.getList("content");
             if (chestContents.size() < 9) {
@@ -119,6 +120,47 @@ public class PlayerChestReward {
                 return true;
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean restoreInv(Player player){
+        try{
+            File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+            if (invBackup.exists()) {
+                YamlConfiguration invPlayer = new YamlConfiguration();
+                invPlayer.load(invBackup);
+                ArrayList<ItemStack> tempInv = (ArrayList<ItemStack>) invPlayer.getList("inv");
+                for(int i=0; i<tempInv.size(); i++){
+                    player.getInventory().setItem(i, tempInv.get(i));
+                }
+                invBackup.delete();
+                return true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public static boolean saveInv(Player player) {
+        try {
+            ArrayList<ItemStack> tempInv = new ArrayList<ItemStack>();
+            File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
+            if (!invBackup.exists()) {
+                invBackup.createNewFile();
+                YamlConfiguration invPlayer = new YamlConfiguration();
+                invPlayer.load(invBackup);
+                player.getInventory().forEach(itemStack -> {
+                    tempInv.add(itemStack);
+                });
+                invPlayer.set("inv", tempInv);
+                invPlayer.save(invBackup);
+                player.getInventory().clear();
+                return true;
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
         return false;

@@ -1,30 +1,23 @@
 package com.github.pgutils.hooks;
 
-import com.github.pgutils.PGSpawn;
-import com.github.pgutils.PlayerChestReward;
+import com.github.pgutils.utils.LobbyMenu;
+import com.github.pgutils.utils.PlayerChestReward;
+import com.github.pgutils.entities.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.commands.PGCommand;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
 
 
 public class PGLobbyHook implements Listener {
@@ -61,14 +54,20 @@ public class PGLobbyHook implements Listener {
 
 		Player player = e.getPlayer();
 		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
-			if (PGSpawn.addPlayer(player)) {
-				Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
-					player.getInventory().clear();
-					player.teleport(PGSpawn.getLobby());
-					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-join-message", "&eYour join to Lobby!")));
+			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
+				int id = GeneralUtils.findPriorityLobby();
+				Lobby lobby = Lobby.lobbies.stream()
+						.filter(lobby_ -> lobby_.getID() == id)
+						.findFirst()
+						.orElse(null);
+				if (lobby == null) {
+					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+				} else {
 					e.setCancelled(true);
-				});
-			}
+					PlayerChestReward.saveInv(player);
+					lobby.addPlayer(player);
+				}
+			});
 		}
 	}
 
@@ -80,12 +79,16 @@ public class PGLobbyHook implements Listener {
 	}
 
 	@EventHandler
+	public void onInvClick(InventoryClickEvent e) {
+		LobbyMenu.JoinLobbyClick(e);
+	}
+
+	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		if (PGSpawn.joinPlayer.contains(player)) {
-			PGSpawn.restoreInv(player);
-			PGSpawn.joinPlayer.remove(player);
-			PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
+		if (GeneralUtils.isPlayerInGame(player)) {
+			PlayerChestReward.restoreInv(player);
+			player.teleport(GeneralUtils.getRespawnPoint());
 		}
 	}
 

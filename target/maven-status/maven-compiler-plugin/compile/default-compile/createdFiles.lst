@@ -1,9 +1,9 @@
-com\github\pgutils\PGSpawn.class
 com\github\pgutils\hooks\PGLobbyHook.class
 com\github\pgutils\entities\Lobby.class
 com\github\pgutils\commands\PGCommand.class
 com\github\pgutils\selections\PlayerPlaySpaceSelector.class
 com\github\pgutils\GeneralUtils.class
+com\github\pgutils\LobbyMenu.class
 com\github\pgutils\interfaces\EvenDependent.class
 com\github\pgutils\LobbyUpdater.class
 com\github\pgutils\entities\KOTHArena.class
@@ -12,7 +12,9 @@ com\github\pgutils\PGUtils.class
 com\github\pgutils\entities\KOTHArena$KOTHTeam.class
 com\github\pgutils\entities\PlaySpace.class
 com\github\pgutils\entities\KOTHPoint.class
+com\github\pgutils\PlayerChestReward.class
 com\github\pgutils\enums\GameStatus.class
 com\github\pgutils\interfaces\EvenIndependent.class
+com\github\pgutils\PortalManager.class
 com\github\pgutils\commands\PGTabComplete.class
 com\github\pgutils\selections\PlayerLobbySelector.class

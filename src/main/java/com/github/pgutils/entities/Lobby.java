@@ -1,6 +1,6 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
 import net.md_5.bungee.api.ChatMessageType;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
 
 import com.github.pgutils.enums.LobbyStatus;
 
@@ -209,6 +208,7 @@ public class Lobby {
     public void setPos(Location pos) {
         this.pos = pos;
     }
+    public Location getPos() { return this.pos; }
 
     public int getID() {
         return ID;
@@ -216,6 +216,10 @@ public class Lobby {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public String getStatus(){
+        return (status == LobbyStatus.STARTING ? "Starting" : (status == LobbyStatus.IN_PROGRESS ? "Started" : (status == LobbyStatus.WAITING_FOR_PLAYERS ? "Waiting for Players" : "Restaring" )));
     }
 
 
