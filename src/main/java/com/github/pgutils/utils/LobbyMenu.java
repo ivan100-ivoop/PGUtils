@@ -95,8 +95,8 @@ public class LobbyMenu {
                     }
                 });
             }
+            e.setCancelled(true);
         }
-        e.setCancelled(true);
     }
 
 }
