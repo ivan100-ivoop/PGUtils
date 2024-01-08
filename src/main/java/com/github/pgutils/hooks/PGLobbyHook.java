@@ -64,7 +64,6 @@ public class PGLobbyHook implements Listener {
 					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
 				} else {
 					e.setCancelled(true);
-					PlayerChestReward.saveInv(player);
 					lobby.addPlayer(player);
 				}
 			});
@@ -86,9 +85,10 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		if (GeneralUtils.isPlayerInGame(player)) {
-			PlayerChestReward.restoreInv(player);
-			player.teleport(GeneralUtils.getRespawnPoint());
+		Lobby lobby = GeneralUtils.isPlayerInGame(player);
+		if (lobby != null) {
+			lobby.removePlayer(player);
+			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
 		}
 	}
 

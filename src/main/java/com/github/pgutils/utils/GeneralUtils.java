@@ -101,16 +101,26 @@ public class GeneralUtils {
         return ChatColor.of("#"+Integer.toHexString(cc.asRGB()));
     }
 
-    public static boolean isPlayerInGame(Player player) {
+    public static Lobby isPlayerInGame(Player player) {
         Lobby _lobby = Lobby.lobbies.stream()
                 .filter(lobby -> lobby.getPlayers().contains(player))
                 .findFirst()
                 .get();
         if(_lobby != null){
             _lobby.removePlayer(player);
-            return true;
+            return _lobby;
         }
-        return false;
+        return null;
+    }
+
+    public static double speedFunc(double a, double b, double c) {
+        if (c == a || c == b) {
+            return 0.0;
+        }
+        double middle = (a + b) / 2.0;
+        double distanceToMiddle = Math.abs(c - middle);
+        double normalizedValue = 1.0 - distanceToMiddle / ((b - a) / 2.0);
+        return Math.max(0.0, Math.min(1.0, normalizedValue));
     }
 
     public static boolean setRespawnPoint(Location loc1){

@@ -52,5 +52,9 @@ public final class PGUtils extends JavaPlugin {
     public static PortalManager getPortalManager() { return PM; }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        Lobby.lobbies.forEach(lobby -> {
+            lobby.kickAll();
+        });
+    }
 }

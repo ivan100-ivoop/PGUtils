@@ -18,7 +18,7 @@ public abstract class PlaySpace {
 
     private Lobby currentLobby = null;
 
-    protected GameStatus status;
+    protected GameStatus status = GameStatus.INACTIVE;
 
     protected int tick = 0;
 
@@ -76,7 +76,6 @@ public abstract class PlaySpace {
         return pos;
     }
 
-
     public int getID() {
         return playSpaceID;
     }
@@ -98,5 +97,13 @@ public abstract class PlaySpace {
     }
 
     public abstract void removePlayer(Player player);
+
+    public abstract boolean passesChecks();
+
+    public abstract void updateView(Player player);
+
+    public GameStatus getStatus() {
+        return status;
+    }
 
 }
