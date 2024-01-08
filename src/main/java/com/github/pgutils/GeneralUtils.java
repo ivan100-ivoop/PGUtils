@@ -104,4 +104,14 @@ public class GeneralUtils {
         }
         return null;
     }
+
+    public static double speedFunc(double a, double b, double c) {
+        if (c == a || c == b) {
+            return 0.0;
+        }
+        double middle = (a + b) / 2.0;
+        double distanceToMiddle = Math.abs(c - middle);
+        double normalizedValue = 1.0 - distanceToMiddle / ((b - a) / 2.0);
+        return Math.max(0.0, Math.min(1.0, normalizedValue));
+    }
 }

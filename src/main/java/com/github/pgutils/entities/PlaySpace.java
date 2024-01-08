@@ -102,4 +102,8 @@ public abstract class PlaySpace {
 
     public abstract void updateView(Player player);
 
+    public GameStatus getStatus() {
+        return status;
+    }
+
 }

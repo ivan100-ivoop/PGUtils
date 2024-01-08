@@ -5,23 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5701248-d6e7-4953-83ea-6fde41080fbb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PGUtils.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PGUtils.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/GeneralUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/GeneralUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/PGUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGTabComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGTabComplete.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/KOTHArena.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/KOTHArena.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/KOTHPoint.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/Lobby.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/PlaySpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/PlaySpace.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/hooks/PGLobbyHook.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/GeneralUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/GeneralUtils.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGTabComplete.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGTabComplete.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/KOTHArena$KOTHTeam.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/KOTHArena$KOTHTeam.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/KOTHArena.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/KOTHArena.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/Lobby.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/Lobby.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/PlaySpace.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/PlaySpace.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>

@@ -73,7 +73,7 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players ( " + players.size() + "/" + minPlayers + " )"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players &b" + players.size() + " / " + minPlayers + " &e!"))));
             }
         }
         else if (status == LobbyStatus.STARTING) {
@@ -90,7 +90,7 @@ public class Lobby {
                 lobbyStartingTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eGame starting failed due to not enough players!"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&4Game starting failed due to not enough players!"))));
             }
         }
         else if (status == LobbyStatus.IN_PROGRESS) {
@@ -105,11 +105,12 @@ public class Lobby {
             if (lobbyResettingTick % 20 == 0)
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe lobby is resetting!"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&6The lobby is resetting!"))));
         }
     }
 
     private int pickRandomGame() {
+        if (playSpaces.size() == 0) return -1;
         if (playSpaces.size() == 1) return 0;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         if (players.size() % 2 != 0) {
@@ -136,7 +137,17 @@ public class Lobby {
     }
 
     private void start() {
-        if (mode == LobbyMode.AUTO) pickedGameID = pickRandomGame();
+        if (mode == LobbyMode.AUTO) {
+            pickedGameID = pickRandomGame();
+            if (pickedGameID == -1) {
+                status = LobbyStatus.WAITING_FOR_PLAYERS;
+                lobbyStartingTick = 0;
+                players.stream()
+                        .forEach(player -> player.spigot()
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eGame starting failed due to no suitable gamemodes!"))));
+                return;
+            }
+        }
         status = LobbyStatus.IN_PROGRESS;
         currentPlaySpace = playSpaces.get(pickedGameID);
         currentPlaySpace.setup(players);
@@ -165,7 +176,7 @@ public class Lobby {
             player.sendMessage(GeneralUtils.fixColors("&cYou are already in the lobby!"));
             return;
         }
-        player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID +" !"));
+        player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID + " !"));
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
         players.add(player);
@@ -181,7 +192,7 @@ public class Lobby {
                 currentPlaySpace.removePlayer(player);
             }
         }
-        player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID +" !"));
+        player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID + " !"));
         PlayerChestReward.restoreInv(player);
         players.remove(player);
     }
@@ -196,6 +207,13 @@ public class Lobby {
 
     public void removePlaySpace(PlaySpace playSpace) {
         playSpaces.remove(playSpace);
+    }
+
+    public void delete() {
+        kickAll();
+        if (getCurrentPlaySpace() != null)
+            getCurrentPlaySpace().end();
+        playSpaces.stream().forEach(playSpace -> playSpace.end());
     }
 
     public void setMaxPlayers(int maxPlayers) {
@@ -248,5 +266,20 @@ public class Lobby {
         }
     }
 
+    public PlaySpace getCurrentPlaySpace() {
+        return currentPlaySpace;
+    }
 
+    public List<PlaySpace> getPlaySpaces() {
+        return playSpaces;
+    }
+
+    public void setCurrentPlaySpace(PlaySpace o) {
+        currentPlaySpace =  o;
+    }
+
+    public void closeDown() {
+        kickAll();
+        getCurrentPlaySpace().end();
+    }
 }

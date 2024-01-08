@@ -6,30 +6,19 @@ import com.github.pgutils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
+import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.enums.LobbyMode;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.Optional;
-import java.util.logging.Level;
 
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.A;
 
 public class PGCommand implements CommandExecutor {
 	@Override
@@ -133,6 +122,58 @@ public class PGCommand implements CommandExecutor {
 												}
 											}
 										}
+										if (args[3].equalsIgnoreCase("point")) {
+											if (args.length == 6) {
+												int radius = Integer.parseInt(args[4]);
+												int points = Integer.parseInt(args[5]);
+												Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
+														.filter(selector -> selector.player.equals(sender))
+														.findFirst();
+												if (!arena.isPresent()) {
+													player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
+												} else {
+													if (arena.get().playSpace instanceof KOTHArena) {
+														KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
+														kothArena.addCapturePoint(player.getLocation(), radius, points);
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-point-message", "&aSuccessful created Point Location!")));
+													} else {
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+													}
+												}
+											}
+											if (args.length == 5) {
+												int radius = Integer.parseInt(args[4]);
+												Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
+														.filter(selector -> selector.player.equals(sender))
+														.findFirst();
+												if (!arena.isPresent()) {
+													player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
+												} else {
+													if (arena.get().playSpace instanceof KOTHArena) {
+														KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
+														kothArena.addCapturePoint(player.getLocation(), radius);
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-point-message", "&aSuccessful created Point Location!")));
+													} else {
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+													}
+												}
+											}
+											Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
+													.filter(selector -> selector.player.equals(sender))
+													.findFirst();
+											if (!arena.isPresent()) {
+												player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
+											} else {
+												if (arena.get().playSpace instanceof KOTHArena) {
+													KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
+													kothArena.addCapturePoint(player.getLocation());
+													sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-point-message", "&aSuccessful created Point Location!")));
+												} else {
+													sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+												}
+											}
+
+										}
 									}
 								}
 							}
@@ -179,7 +220,22 @@ public class PGCommand implements CommandExecutor {
 								if (playSpace == null) {
 									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlaySpace is not found!")));
 								} else {
+									Lobby lobby = Lobby.lobbies.stream()
+											.filter(lobby_ -> lobby_.getPlaySpaces().contains(playSpace))
+											.findFirst()
+											.orElse(null);
+									if (lobby != null) {
+										if (lobby.getCurrentPlaySpace() == playSpace) {
+											lobby.getCurrentPlaySpace().end();
+											lobby.setCurrentPlaySpace(null);
+										}
+										lobby.removePlaySpace(playSpace);
+									}
 									PlaySpace.playSpaces.remove(playSpace);
+									PGUtils.selectedPlaySpace.remove(PGUtils.selectedPlaySpace.stream()
+											.filter(selector -> selector.playSpace.equals(playSpace))
+											.findFirst()
+											.orElse(null));
 									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("delete-arena-message", "&aSuccessful deleted " + playSpace.getType() + "!")));
 								}
 							}
@@ -207,6 +263,7 @@ public class PGCommand implements CommandExecutor {
 							}
 							Lobby lobby = lobbySelector.get().lobby;
 							Lobby.lobbies.remove(lobby);
+							PGUtils.selectedLobby.remove(lobbySelector.get());
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed Lobby " + lobby.getID() + "!"));
 						}
 						if (args[1].equalsIgnoreCase("remove-id")) {
@@ -457,6 +514,30 @@ public class PGCommand implements CommandExecutor {
 							Lobby lobby = lobbySelector.get().lobby;
 							lobby.kickAll();
 							player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful kicked all players from " + lobby.getID() + "!"));
+						}
+						if (args[1].equalsIgnoreCase("force-end-id")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								Lobby lobby = Lobby.lobbies.stream()
+										.filter(lobby_ -> lobby_.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (lobby == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not found!"));
+									return false;
+								}
+								if (lobby.getCurrentPlaySpace() == null){
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not active!"));
+									return false;
+								}
+								if (lobby.getCurrentPlaySpace().getStatus() == GameStatus.INACTIVE){
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not active!"));
+									return false;
+								}
+								lobby.getCurrentPlaySpace().end();
+								player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful force ended " + lobby.getID() + "!"));
+							}
+
 						}
 					}
 
