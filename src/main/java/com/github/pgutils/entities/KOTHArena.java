@@ -2,8 +2,7 @@ package com.github.pgutils.entities;
 
 import java.util.*;
 
-import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.interfaces.EvenDependent;
+import com.github.pgutils.utils.GeneralUtils;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
@@ -12,14 +11,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scoreboard.*;
 
-import java.awt.*;
 import java.util.List;
 
 public class KOTHArena extends PlaySpace implements EvenIndependent {

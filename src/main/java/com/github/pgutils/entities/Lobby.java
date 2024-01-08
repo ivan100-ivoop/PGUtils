@@ -1,7 +1,6 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.enums.GameStatus;
+import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
 import net.md_5.bungee.api.ChatMessageType;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
 
 import com.github.pgutils.enums.LobbyStatus;
 

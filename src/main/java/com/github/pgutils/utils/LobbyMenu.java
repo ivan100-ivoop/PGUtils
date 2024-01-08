@@ -1,10 +1,13 @@
-package com.github.pgutils;
+package com.github.pgutils.utils;
 
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -71,6 +74,29 @@ public class LobbyMenu {
         }
 
         return inv;
+    }
+
+    public static void JoinLobbyClick(InventoryClickEvent e){
+        if(e.getClickedInventory().getViewers().get(0).getOpenInventory().getTitle().equals(LobbyMenu.LobbyGuiTitle)){
+            if(e.getClick().isLeftClick() || e.getClick().isRightClick() ){
+                Player player = ((Player) e.getWhoClicked());
+                Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
+                    int id = e.getCurrentItem().getItemMeta().getCustomModelData();
+                    Lobby lobby = Lobby.lobbies.stream()
+                            .filter(lobby_ -> lobby_.getID() == id)
+                            .findFirst()
+                            .orElse(null);
+                    if (lobby == null) {
+                        player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+                    } else {
+                        e.setCancelled(true);
+                        PlayerChestReward.saveInv(player);
+                        lobby.addPlayer(player);
+                    }
+                });
+            }
+        }
+        e.setCancelled(true);
     }
 
 }

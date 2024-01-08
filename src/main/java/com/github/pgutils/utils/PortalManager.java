@@ -1,11 +1,11 @@
-package com.github.pgutils;
+package com.github.pgutils.utils;
 
+import com.github.pgutils.PGUtils;
+import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Panda;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,5 +1,6 @@
-package com.github.pgutils;
+package com.github.pgutils.utils;
 
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.selections.PlayerLobbySelector;

@@ -1,9 +1,9 @@
 package com.github.pgutils.commands;
 
-import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.LobbyMenu;
+import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.LobbyMenu;
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.PlayerChestReward;
+import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
