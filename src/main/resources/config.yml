@@ -12,6 +12,21 @@ respawn-set-message: "&aSuccesval saved Leave Location!"
 not-join-message: "&eYour are not in game!"
 not-chest-message: "&eYou do not have a game chest yet."
 
+portal-tool:
+  material: STICK
+  name: "&5&lPGUtils &e&lTool"
+  lore:
+    - "&7Left Click on pos1"
+    - "&7Right Click on pos1"
+
+lobby-menu:
+  title: "&bLobby"
+  glow: false
+  material: NETHER_STAR
+  name: "&cLobby &e%id%"
+  lore:
+    - "&7Status: &c%status%"
+    - "&7Online: &a&l%min%&7/&e&l%mac%"
 
 rewards:
   1:

@@ -223,9 +223,9 @@ public class PGCommand implements CommandExecutor {
 							}
 						}
 
+					} else {
 					}
 					return true;
-
 				}
 
 		}
