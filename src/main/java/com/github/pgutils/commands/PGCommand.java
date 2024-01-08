@@ -1,6 +1,7 @@
 package com.github.pgutils.commands;
 
 import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.LobbyMenu;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
@@ -224,6 +225,7 @@ public class PGCommand implements CommandExecutor {
 						}
 
 					} else {
+						player.openInventory(new LobbyMenu().prepareMenu().getLobby());
 					}
 					return true;
 				}

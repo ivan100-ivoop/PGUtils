@@ -1,6 +1,7 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
 import net.md_5.bungee.api.ChatMessageType;
@@ -217,6 +218,10 @@ public class Lobby {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public String getStatus(){
+        return (status == LobbyStatus.STARTING ? "Starting" : (status == LobbyStatus.IN_PROGRESS ? "Started" : (status == LobbyStatus.WAITING_FOR_PLAYERS ? "Waiting for Players" : "Restaring" )));
     }
 
 

@@ -19,7 +19,7 @@ public class LobbyMenu {
     public  LobbyMenu(){}
     private List<ItemStack> items = new ArrayList<>();
     private Material material = Material.getMaterial(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.material", "NETHER_STAR"));
-    private String LobbyGuiTitle = GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.title", "&7Lobby"));
+    public static String LobbyGuiTitle = GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.title", "&7Lobby"));
     private String getName(String lobbyID){
         return GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.name", "&cLobby &e%id%").replace("%id%", lobbyID));
     }
@@ -31,34 +31,33 @@ public class LobbyMenu {
             if(item.contains("%status%")){
                 lore.add(GeneralUtils.fixColors(item.replace("%status%", status)));
             }
-            if(item.contains("%min%")){
-                lore.add(GeneralUtils.fixColors(item.replace("%min%", min)));
-            }
-            if(item.contains("%max%")){
-                lore.add(GeneralUtils.fixColors(item.replace("%max%", max)));
+            if(item.contains("%min%") && item.contains("%max%")){
+                String out = item.replace("%min%", min);
+                out = out.replace("%max%", max);
+                lore.add(GeneralUtils.fixColors(out));
             }
         }
 
         return lore;
     }
 
-    public void prepareMenu(){
+    public LobbyMenu prepareMenu(){
         for (Lobby lobby: Lobby.lobbies) {
             int currentPlayers = lobby.getPlayers().size() - 1;
-
             ItemStack itemStack = new ItemStack(material);
             ItemMeta itemStackMeta = itemStack.getItemMeta();
             itemStackMeta.setDisplayName(this.getName("" + lobby.getID()));
-            itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), "", "" + lobby.getPlayers().size(), "10"));
+            itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), lobby.getStatus(), "" + lobby.getPlayers().size(), "10"));
 
             if(PGUtils.getPlugin(PGUtils.class).getConfig().getBoolean("lobby-menu.glow", false)){
                 itemStackMeta.addEnchant(Enchantment.KNOCKBACK, 1, true);
                 itemStackMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
-
+            itemStackMeta.setCustomModelData(Integer.parseInt(lobby.getID() + ""));
             itemStack.setItemMeta(itemStackMeta);
             items.add(itemStack);
         }
+        return this;
     }
 
     public Inventory getLobby(){
