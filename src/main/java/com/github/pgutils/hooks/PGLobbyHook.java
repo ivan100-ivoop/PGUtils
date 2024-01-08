@@ -73,8 +73,9 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		if (GeneralUtils.isPlayerInGame(player)) {
-			PlayerChestReward.restoreInv(player);
+		Lobby lobby = GeneralUtils.isPlayerInGame(player);
+		if (lobby != null) {
+			lobby.removePlayer(player);
 			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
 		}
 	}

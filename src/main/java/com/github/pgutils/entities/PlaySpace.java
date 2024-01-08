@@ -18,7 +18,7 @@ public abstract class PlaySpace {
 
     private Lobby currentLobby = null;
 
-    protected GameStatus status;
+    protected GameStatus status = GameStatus.INACTIVE;
 
     protected int tick = 0;
 
@@ -75,7 +75,6 @@ public abstract class PlaySpace {
     public Location getPos() {
         return pos;
     }
-
 
     public int getID() {
         return playSpaceID;

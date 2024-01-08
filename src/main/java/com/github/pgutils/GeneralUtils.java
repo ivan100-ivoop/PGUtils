@@ -93,15 +93,15 @@ public class GeneralUtils {
         return ChatColor.of("#"+Integer.toHexString(cc.asRGB()));
     }
 
-    public static boolean isPlayerInGame(Player player) {
+    public static Lobby isPlayerInGame(Player player) {
         Lobby _lobby = Lobby.lobbies.stream()
                 .filter(lobby -> lobby.getPlayers().contains(player))
                 .findFirst()
                 .get();
         if(_lobby != null){
             _lobby.removePlayer(player);
-            return true;
+            return _lobby;
         }
-        return false;
+        return null;
     }
 }

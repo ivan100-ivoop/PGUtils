@@ -81,7 +81,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     @Override
     public void onUpdate() {
-        System.out.printf("Game %d of type %s is in status %s %d\n", getID(), getType(), status.toString(), tick);
         if (status == GameStatus.STARTING) {
             if (tick > 30)
                 startingTick++;
@@ -153,17 +152,18 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     class KOTHTeam {
         List<Player> players = new ArrayList<>();
         Color color;
+        String colorString;
         int points = 0;
         int id;
         Team team;
-
         Score score;
         public KOTHTeam(String color, int id) {
             this.color = Color.fromRGB(Integer.parseInt(color.substring(0), 16));
+            this.colorString = color;
             this.id = id;
             team = board.registerNewTeam("Team_" + id);
             team.setAllowFriendlyFire(false);
-            score = objective.getScore(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Team "+id+":"));
+            score = objective.getScore(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Team "+id+":"));
             score.setScore(0);
         }
         public void addPlayer(Player player) {
@@ -171,41 +171,42 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             giveItems(player);
             team.addEntry(player.getName());
             player.setScoreboard(board);
-            player.sendMessage(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"You have joined team " + id + "!"));
+            System.out.println("Added player "+player.getName()+" to team "+id);
+            player.sendMessage(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"You have joined team " + id + "!"));
         }
 
         public void giveItems(Player player) {
             ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
             LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
             meta.setColor(color);
-            meta.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Party Hat"));
+            meta.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Party Hat"));
             helmet.setItemMeta(meta);
             player.getInventory().setHelmet(helmet);
 
             ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
             LeatherArmorMeta meta2 = (LeatherArmorMeta) chestplate.getItemMeta();
             meta2.setColor(color);
-            meta2.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Party Vest"));
+            meta2.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Party Vest"));
             chestplate.setItemMeta(meta2);
             player.getInventory().setChestplate(chestplate);
 
             ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
             LeatherArmorMeta meta3 = (LeatherArmorMeta) leggings.getItemMeta();
             meta3.setColor(color);
-            meta3.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Party Pants"));
+            meta3.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Party Pants"));
             leggings.setItemMeta(meta3);
             player.getInventory().setLeggings(leggings);
 
             ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
             LeatherArmorMeta meta4 = (LeatherArmorMeta) boots.getItemMeta();
             meta4.setColor(color);
-            meta4.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Party Shoes"));
+            meta4.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Party Shoes"));
             boots.setItemMeta(meta4);
             player.getInventory().setBoots(boots);
 
             ItemStack party_stick = new ItemStack(Material.STICK);
             ItemMeta meta5 = party_stick.getItemMeta();
-            meta5.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(color))+"Party Stick"));
+            meta5.setDisplayName(GeneralUtils.fixColors(KOTHArena.colorGarbage.get(KOTHArena.colors.indexOf(colorString))+"Party Stick"));
             // Enchant the party stick with knockback 3
             meta5.addEnchant(Enchantment.KNOCKBACK, 3, true);
             party_stick.setItemMeta(meta5);

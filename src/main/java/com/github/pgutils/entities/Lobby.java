@@ -1,6 +1,8 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.PlayerChestReward;
+import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
 import net.md_5.bungee.api.ChatMessageType;
@@ -50,8 +52,9 @@ public class Lobby {
 
     private int showPlayersMessageTick = 0;
 
+    private LobbyMode mode = LobbyMode.AUTO;
 
-    private boolean autoStart = true;
+    private boolean isLocked = false;
 
     public Lobby() {
         players = new ArrayList<>();
@@ -62,7 +65,7 @@ public class Lobby {
 
     public void update() {
         if (status == LobbyStatus.WAITING_FOR_PLAYERS) {
-            if (players.size() >= minPlayers && autoStart) {
+            if (players.size() >= minPlayers && mode == LobbyMode.AUTO) {
                 startSequence();
             }
             showPlayersMessageTick++;
@@ -70,7 +73,7 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players ( " + players.size() + "/" + maxPlayers + " )"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players ( " + players.size() + "/" + minPlayers + " )"))));
             }
         }
         else if (status == LobbyStatus.STARTING) {
@@ -133,9 +136,8 @@ public class Lobby {
     }
 
     private void start() {
-        if (autoStart) pickedGameID = pickRandomGame();
+        if (mode == LobbyMode.AUTO) pickedGameID = pickRandomGame();
         status = LobbyStatus.IN_PROGRESS;
-        System.out.println("Starting game " + pickedGameID);
         currentPlaySpace = playSpaces.get(pickedGameID);
         currentPlaySpace.setup(players);
     }
@@ -165,6 +167,7 @@ public class Lobby {
         }
         player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID +" !"));
         player.teleport(pos);
+        PlayerChestReward.saveInv(player);
         players.add(player);
     }
 
@@ -179,11 +182,12 @@ public class Lobby {
             }
         }
         player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID +" !"));
+        PlayerChestReward.restoreInv(player);
         players.remove(player);
     }
 
-    public void setAutoStart(boolean autoStart) {
-        this.autoStart = autoStart;
+    public void setMode(LobbyMode mode) {
+        this.mode = mode;
     }
 
     public void addPlaySpace(PlaySpace playSpace) {
@@ -219,7 +223,30 @@ public class Lobby {
         return players;
     }
 
+    public LobbyMode getMode() {
+        return mode;
+    }
 
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean isLocked) {
+        this.isLocked = isLocked;
+    }
+
+    public void kickPlayer(Player player) {
+        if (players.contains(player)) {
+            player.sendMessage(GeneralUtils.fixColors("&cYou have been kicked from the lobby!"));
+            removePlayer(player);
+        }
+    }
+
+    public void kickAll() {
+        for(int i = players.size() - 1; i >= 0; i--) {
+            kickPlayer(players.get(i));
+        }
+    }
 
 
 }
