@@ -2,6 +2,7 @@ package com.github.pgutils;
 
 import com.github.pgutils.commands.PGCommand;
 import com.github.pgutils.commands.PGTabComplete;
+import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -55,6 +56,7 @@ public final class PGUtils extends JavaPlugin {
     public void onDisable() {
         Lobby.lobbies.forEach(lobby -> {
             lobby.kickAll();
+            lobby.delete();
         });
     }
 }

@@ -46,11 +46,10 @@ public class LobbyMenu {
 
     public LobbyMenu prepareMenu(){
         for (Lobby lobby: Lobby.lobbies) {
-            int currentPlayers = lobby.getPlayers().size() - 1;
             ItemStack itemStack = new ItemStack(material);
             ItemMeta itemStackMeta = itemStack.getItemMeta();
             itemStackMeta.setDisplayName(this.getName("" + lobby.getID()));
-            itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), lobby.getStatus(), "" + lobby.getPlayers().size(), "10"));
+            itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), lobby.getStatus(), "" + lobby.getCurrentPlayersAmount(), ""+lobby.getMaxPlayers()));
 
             if(PGUtils.getPlugin(PGUtils.class).getConfig().getBoolean("lobby-menu.glow", false)){
                 itemStackMeta.addEnchant(Enchantment.KNOCKBACK, 1, true);

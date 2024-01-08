@@ -2,7 +2,7 @@ package com.github.pgutils.entities;
 
 import java.util.*;
 
-import com.github.pgutils.GeneralUtils;
+import com.github.pgutils.utils.GeneralUtils;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;

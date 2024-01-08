@@ -1,7 +1,7 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.GeneralUtils;
-import com.github.pgutils.PlayerChestReward;
+import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
 
 import com.github.pgutils.enums.LobbyStatus;
 
@@ -169,6 +168,10 @@ public class Lobby {
     }
 
     public void addPlayer(Player player) {
+        if (isLocked) {
+            player.sendMessage(GeneralUtils.fixColors("&cLobby is locked!"));
+            return;
+        }
         if (players.size() >= maxPlayers){
             player.sendMessage(GeneralUtils.fixColors("&cLobby is full!"));
             return;
@@ -225,6 +228,18 @@ public class Lobby {
         this.minPlayers = minPlayers;
     }
 
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public int getCurrentPlayersAmount() {
+        return players.size();
+    }
+
     public void setGame(int gameID) {
         pickedGameID = gameID;
     }
@@ -232,6 +247,7 @@ public class Lobby {
     public void setPos(Location pos) {
         this.pos = pos;
     }
+    
     public Location getPos() { return this.pos; }
 
     public int getID() {
