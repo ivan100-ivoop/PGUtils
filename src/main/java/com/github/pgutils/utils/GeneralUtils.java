@@ -51,27 +51,6 @@ public class GeneralUtils {
         return matcher.appendTail(buffer).toString();
     }
 
-    public static ItemStack getTool() {
-        ItemStack tool = new ItemStack(Material.getMaterial(PGUtils.getPlugin(PGUtils.class).getConfig().getString("portal-tool.material", "STICK")));
-        ItemMeta meta = tool.getItemMeta();
-        meta.setCustomModelData(Integer.parseInt("6381260"));
-        meta.setDisplayName(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("portal-tool.name", "&5&lPGUtils &e&lTool")));
-        meta.setLore(getLoreWithFix(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("portal-tool.lore")));
-        meta.addEnchant(Enchantment.KNOCKBACK, 1, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        tool.setItemMeta(meta);
-
-        return tool;
-    }
-
-    private static List<String> getLoreWithFix(List<String> lores) {
-        ArrayList<String> colored = new ArrayList<String>();
-        for(String lore : lores){
-            colored.add(GeneralUtils.fixColors(lore));
-        }
-        return colored;
-    }
-
     public static void runCommand(CommandSender sender, String cmd) {
         Bukkit.getServer().dispatchCommand(sender, cmd);
     }

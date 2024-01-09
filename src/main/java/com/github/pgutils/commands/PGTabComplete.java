@@ -25,10 +25,22 @@ public class PGTabComplete implements TabCompleter {
                 tab.add("select");
                 tab.add("game");
                 tab.add("chest");
+                tab.add("reward");
             } else if (args[0].equalsIgnoreCase("tp")) {
                 if (args.length == 2) {
                     tab.add("lobby");
                     tab.add("portal");
+                }
+            } else if (args[0].equalsIgnoreCase("reward")) {
+                if (args.length == 2) {
+                    tab.add("command");
+                    tab.add("item");
+                    tab.add("remove");
+                }
+            } else if (args[1].equalsIgnoreCase("remove")) {
+                if (args.length == 2) {
+                    tab.add("command");
+                    tab.add("item");
                 }
             } else if (args[0].equalsIgnoreCase("game")) {
                 if (args.length == 2) {

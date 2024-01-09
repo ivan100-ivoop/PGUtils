@@ -11,6 +11,8 @@ leave-message: "&eYour leave a game!"
 respawn-set-message: "&aSuccesval saved Leave Location!"
 not-join-message: "&eYour are not in game!"
 not-chest-message: "&eYou do not have a game chest yet."
+rewards-error-message: "&cYour need to include command or item!"
+rewards-success-message: "&aYour add new Reward!"
 
 portal-tool:
   material: STICK
@@ -28,12 +30,4 @@ lobby-menu:
     - "&7Status: &c%status%"
     - "&7Online: &a&l%min%&7/&e&l%max%"
 
-rewards:
-  1:
-    type: command
-    item: eco give %player% 100
-  2:
-    type: item
-    item:
-      Material: Gold
-      name:
+rewards: {}

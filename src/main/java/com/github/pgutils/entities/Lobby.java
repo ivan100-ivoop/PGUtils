@@ -8,6 +8,7 @@ import com.github.pgutils.interfaces.EvenIndependent;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.entity.Panda;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -198,6 +199,7 @@ public class Lobby {
         }
         player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID + " !"));
         PlayerChestReward.restoreInv(player);
+        player.teleport(GeneralUtils.getRespawnPoint());
         players.remove(player);
     }
 

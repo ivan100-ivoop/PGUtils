@@ -21,6 +21,9 @@ public class LobbyMenu {
 
     public  LobbyMenu(){}
     private List<ItemStack> items = new ArrayList<>();
+    private static int updateTask = -1;
+    private ItemStack itemStack = null;
+    private ItemMeta itemStackMeta = null;
     private Material material = Material.getMaterial(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.material", "NETHER_STAR"));
     public static String LobbyGuiTitle = GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("lobby-menu.title", "&7Lobby"));
     private String getName(String lobbyID){
@@ -45,24 +48,35 @@ public class LobbyMenu {
     }
 
     public LobbyMenu prepareMenu(){
+        items.clear();
+
         for (Lobby lobby: Lobby.lobbies) {
-            ItemStack itemStack = new ItemStack(material);
-            ItemMeta itemStackMeta = itemStack.getItemMeta();
-            itemStackMeta.setDisplayName(this.getName("" + lobby.getID()));
-            itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), lobby.getStatus(), "" + lobby.getCurrentPlayersAmount(), ""+lobby.getMaxPlayers()));
+            if(lobby.isLocked()){
+                itemStack = new ItemStack(Material.BARRIER);
+                itemStackMeta = itemStack.getItemMeta();
+                itemStackMeta.setDisplayName(this.getName("is Locsked"));
+                itemStackMeta.setCustomModelData(Integer.parseInt("0"));
+            } else {
+                itemStack = new ItemStack(material);
+                itemStackMeta = itemStack.getItemMeta();
+                itemStackMeta.setDisplayName(this.getName("" + lobby.getID()));
+                itemStackMeta.setLore(this.fixLore(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("lobby-menu.lore"), lobby.getStatus(), "" + lobby.getCurrentPlayersAmount(), ""+lobby.getMaxPlayers()));
+                itemStackMeta.setCustomModelData(Integer.parseInt(lobby.getID() + ""));
+            }
 
             if(PGUtils.getPlugin(PGUtils.class).getConfig().getBoolean("lobby-menu.glow", false)){
                 itemStackMeta.addEnchant(Enchantment.KNOCKBACK, 1, true);
                 itemStackMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
-            itemStackMeta.setCustomModelData(Integer.parseInt(lobby.getID() + ""));
+
             itemStack.setItemMeta(itemStackMeta);
+
             items.add(itemStack);
         }
         return this;
     }
 
-    public Inventory getLobby(){
+    private Inventory getDisplayMenu(){
         Inventory inv = Bukkit.createInventory(null, InventoryType.PLAYER, this.LobbyGuiTitle);
         ItemStack[] chestContents = this.items.toArray(new ItemStack[0]);
         inv.setContents(chestContents);
@@ -73,6 +87,21 @@ public class LobbyMenu {
         }
 
         return inv;
+    }
+
+    public void getLobby(Player player){
+
+        if(Lobby.lobbies.size() < 1){
+            player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+        } else {
+            updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(PGUtils.getPlugin(PGUtils.class), new Runnable(){
+                @Override
+                public void run() {
+                    prepareMenu();
+                }
+            }, 10l, 20l).getTaskId();
+            player.openInventory(getDisplayMenu());
+        }
     }
 
     public static void JoinLobbyClick(InventoryClickEvent e){
@@ -94,6 +123,12 @@ public class LobbyMenu {
                     }
                 });
             }
+
+            if(updateTask > -1){
+                Bukkit.getScheduler().cancelTask(updateTask);
+                updateTask = -1;
+            }
+
             e.setCancelled(true);
         }
     }

@@ -3,9 +3,14 @@ package com.github.pgutils.utils;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +102,7 @@ public class PortalManager {
         return false;
     }
 
-    private boolean isInRegion(Location location, Location loc1, Location loc2) {
+    private boolean isInRegion(Location target, Location loc1, Location loc2) {
 
         int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
         int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
@@ -107,12 +112,17 @@ public class PortalManager {
         int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
         int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 
-        boolean inPortal = location.getBlockX() >= minX && location.getBlockX() <= maxX &&
-                location.getBlockY() >= minY && location.getBlockY() <= maxY &&
-                location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+        int targetX = target.getBlockX();
+        int targetY = target.getBlockY();
+        int targetZ = target.getBlockZ();
+
+        boolean inPortal = targetX >= minX && targetX <= maxX &&
+                targetY >= minY && targetY <= maxY &&
+                targetZ >= minZ + 1 && targetZ <= maxZ  + 1;
 
         return inPortal;
     }
+
 
     private boolean saveConfig() {
         try {
@@ -122,5 +132,26 @@ public class PortalManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private static List<String> getLoreWithFix(List<String> lores) {
+        ArrayList<String> colored = new ArrayList<String>();
+        for(String lore : lores){
+            colored.add(GeneralUtils.fixColors(lore));
+        }
+        return colored;
+    }
+
+    public static ItemStack getTool() {
+        ItemStack tool = new ItemStack(Material.getMaterial(PGUtils.getPlugin(PGUtils.class).getConfig().getString("portal-tool.material", "STICK")));
+        ItemMeta meta = tool.getItemMeta();
+        meta.setCustomModelData(Integer.parseInt("6381260"));
+        meta.setDisplayName(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).getConfig().getString("portal-tool.name", "&5&lPGUtils &e&lTool")));
+        meta.setLore(getLoreWithFix(PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("portal-tool.lore")));
+        meta.addEnchant(Enchantment.KNOCKBACK, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        tool.setItemMeta(meta);
+
+        return tool;
     }
 }

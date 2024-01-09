@@ -1,9 +1,8 @@
 package com.github.pgutils.commands;
 
-import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.enums.RewardsType;
+import com.github.pgutils.utils.*;
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.utils.LobbyMenu;
-import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
@@ -11,11 +10,7 @@ import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.enums.LobbyMode;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.logging.Level;
 
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -23,14 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.A;
-
 public class PGCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String command, String[] args) {
@@ -55,14 +43,14 @@ public class PGCommand implements CommandExecutor {
 				}
 
 				if (args[0].equalsIgnoreCase("tool")) {
-					player.getInventory().setItem(player.getInventory().firstEmpty(), GeneralUtils.getTool());
+					player.getInventory().setItem(player.getInventory().firstEmpty(), PortalManager.getTool());
 					sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&eYour retrieve PGUtils Tool!"));
 					return true;
 
 				}
 
 				if (args[0].equalsIgnoreCase("chest")) {
-					player.openInventory(PlayerChestReward.getPlayerChest(((Player) sender)));
+					player.openInventory(PlayerChestReward.getPlayerChest(player));
 					return true;
 				}
 
@@ -257,6 +245,40 @@ public class PGCommand implements CommandExecutor {
 					}
 					return true;
 				}
+
+				if (args[0].equalsIgnoreCase("setleave")) {
+					GeneralUtils.setRespawnPoint(player.getLocation());
+					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("respawn-set-message", "&aSuccesval saved Leave Location!")));
+					return true;
+				}
+
+				if(args[0].equalsIgnoreCase("reward")){
+					RewardManager rewardManager = new RewardManager();
+					switch (args[1]){
+						case "command":
+							rewardManager.addCommandReward(args,2);
+							player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("rewards-success-message", "&aYour add new Reward!")));
+							break;
+						case "item":
+							rewardManager.addItemReward(player.getItemInHand());
+							player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("rewards-success-message", "&aYour add new Reward!")));
+							break;
+						case "remove":
+							if(args.length >= 2){
+								rewardManager.removeItem(args[2]);
+							}
+							break;
+						case "get":
+							rewardManager.giveRewards(player);
+							player.sendMessage("ok");
+							break;
+						default:
+							player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("rewards-error-message", "&cYour need to include command or item!")));
+							break;
+					}
+					return true;
+				}
+
 				if (args[0].equalsIgnoreCase("lobby")) {
 					if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("create")) {
@@ -264,6 +286,7 @@ public class PGCommand implements CommandExecutor {
 							lobby.setPos(player.getLocation());
 							GeneralUtils.playerSelectLobby(player, lobby);
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-lobby-message", "&aSuccessful created Lobby Location! " + Lobby.lobbies.size())));
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("remove")) {
 							Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
@@ -277,6 +300,7 @@ public class PGCommand implements CommandExecutor {
 							Lobby.lobbies.remove(lobby);
 							PGUtils.selectedLobby.remove(lobbySelector.get());
 							sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed Lobby " + lobby.getID() + "!"));
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("remove-id")) {
 							if (args.length >= 3) {
@@ -292,6 +316,7 @@ public class PGCommand implements CommandExecutor {
 								Lobby.lobbies.remove(lobby);
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed Lobby " + lobby.getID() + "!"));
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("join")) {
 							if (args.length >= 3) {
@@ -319,6 +344,7 @@ public class PGCommand implements CommandExecutor {
 								lobby.addPlayer(player);
 
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("set")) {
 							if (args.length >= 3) {
@@ -368,7 +394,7 @@ public class PGCommand implements CommandExecutor {
 									if (args.length >= 4) {
 										String mode = args[3];
 										Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-												.filter(selector -> selector.player.equals(sender))
+												.filter(selector -> selector.player.equals(player))
 												.findFirst();
 										if (!lobbySelector.isPresent()) {
 											sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cLobby is not found!")));
@@ -382,7 +408,9 @@ public class PGCommand implements CommandExecutor {
 								}
 
 							}
+							return true;
 						}
+
 						if (args[1].equalsIgnoreCase("add-game")) {
 							if (args.length >= 3) {
 								int id = Integer.parseInt(args[2]);
@@ -406,6 +434,7 @@ public class PGCommand implements CommandExecutor {
 								playSpace.setLobby(lobby);
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful added " + playSpace.getType() + " to " + lobby.getID() + "!"));
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("add-game-id")) {
 							if (args.length >= 4) {
@@ -436,6 +465,7 @@ public class PGCommand implements CommandExecutor {
 								playSpace.setLobby(lobby);
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("add-arena-message", "&aSuccessful added " + playSpace.getType() + " to " + lobby.getID() + "!")));
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("remove-game")) {
 							if (args.length >= 3) {
@@ -460,6 +490,7 @@ public class PGCommand implements CommandExecutor {
 								playSpace.setLobby(null);
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful removed " + playSpace.getType() + " from " + lobby.getID() + "!"));
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("remove-game-id")) {
 							if (args.length >= 4) {
@@ -490,6 +521,7 @@ public class PGCommand implements CommandExecutor {
 								playSpace.setLobby(null);
 								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("remove-arena-message", "&aSuccessful removed " + playSpace.getType() + " from " + lobby.getID() + "!")));
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("kick-player")) {
 							if (args.length >= 3) {
@@ -502,6 +534,7 @@ public class PGCommand implements CommandExecutor {
 								}
 								lobby.kickPlayer(player1);
 							}
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("kick-all")) {
 							if (args.length >= 3) {
@@ -527,6 +560,7 @@ public class PGCommand implements CommandExecutor {
 							Lobby lobby = lobbySelector.get().lobby;
 							lobby.kickAll();
 							player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful kicked all players from " + lobby.getID() + "!"));
+							return true;
 						}
 						if (args[1].equalsIgnoreCase("force-end-id")) {
 							if (args.length >= 3) {
@@ -550,11 +584,11 @@ public class PGCommand implements CommandExecutor {
 								lobby.getCurrentPlaySpace().end();
 								player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful force ended " + lobby.getID() + "!"));
 							}
-
+							return true;
 						}
-					}
-					else {
-						player.openInventory(new LobbyMenu().prepareMenu().getLobby());
+					} else {
+						new LobbyMenu().prepareMenu().getLobby(player);
+						return true;
 					}
 
 				}

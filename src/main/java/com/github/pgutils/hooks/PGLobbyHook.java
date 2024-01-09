@@ -3,6 +3,7 @@ package com.github.pgutils.hooks;
 import com.github.pgutils.utils.LobbyMenu;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.utils.PortalManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,13 +24,14 @@ import org.bukkit.inventory.EquipmentSlot;
 public class PGLobbyHook implements Listener {
 	public static Location pos1 = null;
 	public static Location pos2 = null;
+	private Lobby lobby = null;
 
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockClick(PlayerInteractEvent e) {
 		Player player = e.getPlayer();
-		if (player.getItemInHand().equals(GeneralUtils.getTool())) {
+		if (player.getItemInHand().equals(PortalManager.getTool())) {
 			if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand().equals(EquipmentSlot.HAND)) {
 				pos2 = e.getClickedBlock().getLocation();
 				player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&eYour selected &bpos2&e!"));
@@ -56,7 +58,7 @@ public class PGLobbyHook implements Listener {
 		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
 			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
 				int id = GeneralUtils.findPriorityLobby();
-				Lobby lobby = Lobby.lobbies.stream()
+				lobby = Lobby.lobbies.stream()
 						.filter(lobby_ -> lobby_.getID() == id)
 						.findFirst()
 						.orElse(null);
@@ -85,10 +87,8 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		Lobby lobby = GeneralUtils.isPlayerInGame(player);
-		if (lobby != null) {
+		if ((lobby = GeneralUtils.isPlayerInGame(player)) != null) {
 			lobby.removePlayer(player);
-			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
 		}
 	}
 
