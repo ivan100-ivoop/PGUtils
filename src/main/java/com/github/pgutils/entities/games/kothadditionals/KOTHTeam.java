@@ -2,6 +2,7 @@ package com.github.pgutils.entities.games.kothadditionals;
 
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.Messages;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -45,7 +46,7 @@ public class KOTHTeam {
         team.addEntry(player.getName());
         player.setScoreboard(arena.getBoard());
         System.out.println("Added player "+player.getName()+" to team "+id);
-        player.sendMessage(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"You have joined team " + id + "!"));
+        player.sendMessage(Messages.messageWithPrefix("team-join", colorGarbage.get(colors.indexOf(colorString))+"Joined team %id%!").replace("%id%", id+""));
     }
 
     public void giveItems(Player player) {

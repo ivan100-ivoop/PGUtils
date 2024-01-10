@@ -22,7 +22,6 @@ public final class PGUtils extends JavaPlugin {
     public String prefix;
     public static File database = null, saveInv = null, rewardsChest = null;
     public static PortalManager PM = null;
-
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
 

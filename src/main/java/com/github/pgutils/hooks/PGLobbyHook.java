@@ -1,7 +1,6 @@
 package com.github.pgutils.hooks;
 
-import com.github.pgutils.utils.LobbyMenu;
-import com.github.pgutils.utils.PlayerChestReward;
+import com.github.pgutils.utils.*;
 import com.github.pgutils.entities.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,11 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.PGUtils;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -72,7 +71,7 @@ public class PGLobbyHook implements Listener {
 
 	@EventHandler
 	public void closeInventory(InventoryCloseEvent e){
-		if (((Player) e.getPlayer()).getOpenInventory().getTitle().equals(PlayerChestReward.ChestTitle)) {
+		if (e.getPlayer().getOpenInventory().getTitle().equals(PlayerChestReward.ChestTitle)) {
 			PlayerChestReward.updatePlayerCheste(e.getInventory().getContents(), ((Player) e.getPlayer()));
 		}
 	}
@@ -85,10 +84,7 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		Lobby lobby = GeneralUtils.isPlayerInGame(player);
-		if (lobby != null) {
-			lobby.removePlayer(player);
-		}
+		GeneralUtils.kickPlayerGlobal(player);
 	}
 
 	@EventHandler

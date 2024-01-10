@@ -176,7 +176,7 @@ public class KOTHArenaUtils {
 
             kothPoint.setLocation((Location) bukkitObjectInputStream.readObject());
             kothPoint.setRadius((double) bukkitObjectInputStream.readObject());
-            kothPoint.setCapture_time((int) bukkitObjectInputStream.readObject());
+            kothPoint.setCaptureTime((int) bukkitObjectInputStream.readObject());
             kothPoint.setPointsAwarding((int) bukkitObjectInputStream.readObject());
             kothPoint.setArena(kothArena);
 
@@ -235,7 +235,7 @@ public class KOTHArenaUtils {
 
             bukkitObjectOutputStream.writeObject(kothPoint.getLocation());
             bukkitObjectOutputStream.writeObject(kothPoint.getRadius());
-            bukkitObjectOutputStream.writeObject(kothPoint.getCapture_time());
+            bukkitObjectOutputStream.writeObject(kothPoint.getCaptureTime());
             bukkitObjectOutputStream.writeObject(kothPoint.getPointsAwarding());
 
             bukkitObjectOutputStream.flush();

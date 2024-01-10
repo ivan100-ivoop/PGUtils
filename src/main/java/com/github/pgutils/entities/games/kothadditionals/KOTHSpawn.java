@@ -5,11 +5,13 @@ import org.bukkit.Location;
 
 public class KOTHSpawn{
 
-    Location pos;
+    private int id;
 
-    int team_id;
+    private Location pos;
 
-    KOTHArena arena;
+    private int team_id;
+
+    private KOTHArena arena;
 
     public KOTHSpawn() { }
 
@@ -17,6 +19,7 @@ public class KOTHSpawn{
     public KOTHSpawn(Location pos, int team_id, KOTHArena arena) {
         this.pos = pos;
         this.team_id = team_id;
+        this.id = arena.getSpawns().size();
     }
 
     public Location getPos(){
@@ -46,5 +49,9 @@ public class KOTHSpawn{
 
     public void setArena(KOTHArena kothArena) {
         this.arena = kothArena;
+    }
+
+    public int getID() {
+        return id;
     }
 }

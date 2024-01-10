@@ -1,7 +1,7 @@
 package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.KOTHArena;
+import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.enums.GameStatus;
@@ -69,13 +69,13 @@ public class LobbyCommand extends PGSubCommand {
                             .filter(selector -> selector.player.equals(player))
                             .findFirst();
                     if (!lobbySelector.isPresent()) {
-                        player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                        return false;
+                        player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                        return true;
                     }
                     Lobby lobby = lobbySelector.get().lobby;
                     Lobby.lobbies.remove(lobby);
                     PGUtils.selectedLobby.remove(lobbySelector.get());
-                    player.sendMessage(Messages.messageWithPrefix("looby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
+                    player.sendMessage(Messages.messageWithPrefix("lobby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
                     return true;
                 }
 
@@ -87,8 +87,8 @@ public class LobbyCommand extends PGSubCommand {
                                 .findFirst()
                                 .orElse(null);
                         if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                            return false;
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
                         } else {
                             PlayerChestReward.saveInv(player);
                             lobby.addPlayer(player);
@@ -99,8 +99,8 @@ public class LobbyCommand extends PGSubCommand {
                                 .filter(selector -> selector.player.equals(player))
                                 .findFirst();
                         if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                            return false;
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
                         }
                         Lobby lobby = lobbySelector.get().lobby;
                         lobby.addPlayer(player);
@@ -115,12 +115,12 @@ public class LobbyCommand extends PGSubCommand {
                                 .filter(selector -> selector.player.equals(player))
                                 .findFirst();
                         if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                            return false;
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
                         }
                         Lobby lobby = lobbySelector.get().lobby;
                         lobby.setPos(player.getLocation());
-                        player.sendMessage(Messages.messageWithPrefix("set-lobby-message", "&aSuccessful set Lobby Location!"));
+                        player.sendMessage(Messages.messageWithPrefix("set-lobby-message", "&aSuccessfully set Lobby Location!"));
                         return true;
                     }
 
@@ -131,12 +131,12 @@ public class LobbyCommand extends PGSubCommand {
                                     .filter(selector -> selector.player.equals(player))
                                     .findFirst();
                             if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                                return false;
+                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                                return true;
                             }
                             Lobby lobby = lobbySelector.get().lobby;
                             lobby.setMinPlayers(minPlayers);
-                            player.sendMessage(Messages.messageWithPrefix("set-min-players-message", "&aSuccessful set Min Players to %min%&a!").replace("%min%", "" + minPlayers));
+                            player.sendMessage(Messages.messageWithPrefix("set-min-players-message", "&aSuccessfully set Min Players to %min%&a!").replace("%min%", "" + minPlayers));
                             return true;
                         }
 
@@ -146,12 +146,12 @@ public class LobbyCommand extends PGSubCommand {
                                     .filter(selector -> selector.player.equals(player))
                                     .findFirst();
                             if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                                return false;
+                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                                return true;
                             }
                             Lobby lobby = lobbySelector.get().lobby;
                             lobby.setMaxPlayers(maxPlayers);
-                            player.sendMessage(Messages.messageWithPrefix("set-max-players-message", "&aSuccessful  set Max Players to %max%&a!").replace("%max%", "" + maxPlayers));
+                            player.sendMessage(Messages.messageWithPrefix("set-max-players-message", "&aSuccessfully set Max Players to %max%&a!").replace("%max%", "" + maxPlayers));
                             return true;
                         }
 
@@ -161,17 +161,17 @@ public class LobbyCommand extends PGSubCommand {
                                     .filter(selector -> selector.player.equals(player))
                                     .findFirst();
                             if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                                return false;
+                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                                return true;
                             }
                             Lobby lobby = lobbySelector.get().lobby;
 
                             lobby.setMode(LobbyMode.valueOf(mode));
-                            player.sendMessage(Messages.messageWithPrefix("set-mode-message", "&aSuccessful set Mode to %mode%&a!").replace("%mode%", mode));
+                            player.sendMessage(Messages.messageWithPrefix("set-mode-message", "&aSuccessfully set Mode to %mode%&a!").replace("%mode%", mode));
                             return true;
                         }
                     }
-                    return false;
+                    return true;
                 }
 
 
@@ -182,7 +182,7 @@ public class LobbyCommand extends PGSubCommand {
                                 .filter(selector -> selector.player.equals(player))
                                 .findFirst();
                         if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                             return false;
                         }
                         Lobby lobby = lobbySelector.get().lobby;
@@ -194,6 +194,17 @@ public class LobbyCommand extends PGSubCommand {
                             player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
                             return false;
                         }
+
+                        if (lobby.getPlaySpaces().contains(playSpace)){
+                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
+                            return true;
+                        }
+
+                        if (playSpace.getLobby() != null){
+                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
+                            return true;
+                        }
+
                         lobby.addPlaySpace(playSpace);
                         playSpace.setLobby(lobby);
                         player.sendMessage(Messages.messageWithPrefix("game-add-message", "&aSuccessful added %type% &ato %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
@@ -218,21 +229,33 @@ public class LobbyCommand extends PGSubCommand {
                                 .orElse(null);
 
                         if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                            return false;
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
                         }
 
                         if (playSpace == null) {
                             player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return false;
+                            return true;
                         }
+
+                        if (lobby.getPlaySpaces().contains(playSpace)){
+                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
+                            return true;
+                        }
+
+                        if (playSpace.getLobby() != null){
+                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
+                            return true;
+                        }
+
+
 
                         lobby.addPlaySpace(playSpace);
                         playSpace.setLobby(lobby);
                         player.sendMessage(Messages.messageWithPrefix("game-add-message", "&aSuccessful added %type% &ato %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
                         return true;
                     }
-                    return false;
+                    return true;
                 }
 
                 if (args[0].equalsIgnoreCase("remove-game")) {
@@ -242,8 +265,8 @@ public class LobbyCommand extends PGSubCommand {
                                 .filter(selector -> selector.player.equals(player))
                                 .findFirst();
                         if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
-                            return false;
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
                         }
                         Lobby lobby = lobbySelector.get().lobby;
                         PlaySpace playSpace = PlaySpace.playSpaces.stream()
@@ -252,14 +275,24 @@ public class LobbyCommand extends PGSubCommand {
                                 .orElse(null);
                         if (playSpace == null) {
                             player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return false;
+                            return true;
+                        }
+
+                        if (!lobby.getPlaySpaces().contains(playSpace)){
+                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
+                            return true;
+                        }
+
+                        if (playSpace.getLobby() == null){
+                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
+                            return true;
                         }
                         lobby.removePlaySpace(playSpace);
                         playSpace.setLobby(null);
                         player.sendMessage(Messages.messageWithPrefix("game-remove-message", "&aSuccessful removed %type% &afrom %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
                         return true;
                     }
-                    return false;
+                    return true;
                 }
 
                 if (args[0].equalsIgnoreCase("remove-game-id")) {
@@ -278,13 +311,23 @@ public class LobbyCommand extends PGSubCommand {
                                 .orElse(null);
 
                         if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                             return false;
                         }
 
                         if (playSpace == null) {
                             player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
                             return false;
+                        }
+
+                        if (!lobby.getPlaySpaces().contains(playSpace)){
+                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
+                            return true;
+                        }
+
+                        if (playSpace.getLobby() == null){
+                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
+                            return true;
                         }
 
                         lobby.removePlaySpace(playSpace);
@@ -294,24 +337,39 @@ public class LobbyCommand extends PGSubCommand {
                     }
                     return false;
                 }
-            }
 
-            return false;
+                if (args[0].equalsIgnoreCase("select")) {
+                    if (args.length >= 2) {
+                        int id = Integer.parseInt(args[1]);
+                        Lobby lobby = Lobby.lobbies.stream()
+                                .filter(lobby_ -> lobby_.getID() == id)
+                                .findFirst()
+                                .orElse(null);
+                        if (lobby == null) {
+                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+                            return true;
+                        }
+                        GeneralUtils.playerSelectLobby(player, lobby);
+                        player.sendMessage(Messages.messageWithPrefix("lobby-select-message", "&aSuccessful selected Lobby &6%lobby%&a!").replace("%lobby%", "" + lobby.getID()));
+                    }
+                    return true;
+                }
+            }
         }
 
         if (args[0].equalsIgnoreCase("remove-id")) {
-            if (args.length >= 1) {
+            if (args.length >= 2) {
                 int id = Integer.parseInt(args[1]);
                 Lobby lobby = Lobby.lobbies.stream()
                         .filter(lobby_ -> lobby_.getID() == id)
                         .findFirst()
                         .orElse(null);
                 if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                     return false;
                 }
                 Lobby.lobbies.remove(lobby);
-                sender.sendMessage(Messages.messageWithPrefix("looby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
+                sender.sendMessage(Messages.messageWithPrefix("lobby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
                 return true;
             }
             return false;
@@ -321,13 +379,7 @@ public class LobbyCommand extends PGSubCommand {
             if (args.length >= 2) {
                 String name = args[1];
                 Player player1 = Bukkit.getPlayer(name);
-                Lobby lobby = GeneralUtils.isPlayerInGame(player1);
-                if (lobby == null) {
-                    sender.sendMessage(Messages.getMessage("error-not-lobby-player", "&&cPlayer is not in a lobby!"));
-                    return false;
-                }
-                lobby.kickPlayer(player1);
-                sender.sendMessage(Messages.messageWithPrefix("lobby-kick-player", "&aSuccessful kicked %player% from %lobby%&a!").replace("%lobby%", ""+ lobby.getID()).replace("%player%", ""+ player1.getName()));
+                GeneralUtils.kickPlayerGlobal(player1);
                 return true;
             }
             return false;
@@ -341,7 +393,7 @@ public class LobbyCommand extends PGSubCommand {
                         .findFirst()
                         .orElse(null);
                 if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                     return false;
                 }
                 lobby.kickAll();
@@ -353,7 +405,7 @@ public class LobbyCommand extends PGSubCommand {
                     .filter(selector -> selector.player.equals(sender))
                     .findFirst();
             if (!lobbySelector.isPresent()) {
-                sender.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                 return false;
             }
             Lobby lobby = lobbySelector.get().lobby;
@@ -363,14 +415,14 @@ public class LobbyCommand extends PGSubCommand {
         }
 
         if (args[0].equalsIgnoreCase("force-end-id")) {
-            if (args.length >= 1) {
+            if (args.length >= 2) {
                 int id = Integer.parseInt(args[1]);
                 Lobby lobby = Lobby.lobbies.stream()
                         .filter(lobby_ -> lobby_.getID() == id)
                         .findFirst()
                         .orElse(null);
                 if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("looby-missing-message", "&cLobby is not found!"));
+                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                     return false;
                 }
                 if (lobby.getCurrentPlaySpace() == null){
@@ -398,6 +450,7 @@ public class LobbyCommand extends PGSubCommand {
             return Arrays.asList(
                     "join",
                     "create",
+                    "select",
                     "set",
                     "remove",
                     "remove-id",
@@ -408,6 +461,7 @@ public class LobbyCommand extends PGSubCommand {
                     "kick-player",
                     "kick-all",
                     "force-end-id"
+
             );
         }
         if (args.length == 2 && args[0].equals("kick-player")) {

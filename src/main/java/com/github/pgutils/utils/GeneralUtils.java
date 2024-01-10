@@ -10,6 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,15 +79,23 @@ public class GeneralUtils {
 
 
     public static Lobby isPlayerInGame(Player player) {
-        Lobby _lobby = Lobby.lobbies.stream()
+        Optional<Lobby> _lobby = Lobby.lobbies.stream()
                 .filter(lobby -> lobby.getPlayers().contains(player))
-                .findFirst()
-                .get();
-        if(_lobby != null){
-            _lobby.removePlayer(player);
-            return _lobby;
+                .findFirst();
+        if (!_lobby.isPresent()) {
+           return null;
         }
-        return null;
+        Lobby lobby = _lobby.get();
+        return lobby;
+    }
+
+    public static boolean kickPlayerGlobal(Player player) {
+        Lobby lobby = GeneralUtils.isPlayerInGame(player);
+        if (lobby == null) {
+            return false;
+        }
+        lobby.kickPlayer(player);
+        return true;
     }
 
     public static double speedFunc(double a, double b, double c) {
