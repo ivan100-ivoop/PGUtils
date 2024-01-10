@@ -72,7 +72,8 @@ public class PlayerChestReward {
             Inventory inv = Bukkit.createInventory(null, InventoryType.PLAYER, ChestTitle);
             inv.setContents(chestContents);
             return inv;
-        } else {
+        }
+        else {
             PlayerChestReward.createEmptyPlayerChest(player);
             return getPlayerChest(player);
         }

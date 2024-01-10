@@ -2,6 +2,8 @@ package com.github.pgutils;
 
 import com.github.pgutils.commands.PGUtilsCommand;
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
+import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -49,6 +51,7 @@ public final class PGUtils extends JavaPlugin {
 
         new LobbyUpdater().runTaskTimer(this, 20, 1);
 
+        deserializationBootstrap();
     }
     public static PortalManager getPortalManager() { return PM; }
 
@@ -58,5 +61,20 @@ public final class PGUtils extends JavaPlugin {
             lobby.kickAll();
             lobby.delete();
         });
+
+        serializationBootstrap();
+    }
+
+    public void serializationBootstrap() {
+        LobbyUtils.saveLobbies();
+        KOTHArenaUtils.saveArenas();
+    }
+
+    public void deserializationBootstrap() {
+        LobbyUtils.loadLobbies();
+        LobbyUtils.deleteAllLobbies();
+        KOTHArenaUtils.loadArenas();
+        KOTHArenaUtils.deleteAllArenas();
+
     }
 }

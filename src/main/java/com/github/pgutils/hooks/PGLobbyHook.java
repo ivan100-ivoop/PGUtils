@@ -1,6 +1,7 @@
 package com.github.pgutils.hooks;
 
-import com.github.pgutils.utils.*;
+import com.github.pgutils.utils.LobbyMenu;
+import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.entities.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.PGUtils;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -21,7 +23,6 @@ import org.bukkit.inventory.EquipmentSlot;
 public class PGLobbyHook implements Listener {
 	public static Location pos1 = null;
 	public static Location pos2 = null;
-	private Lobby lobby = null;
 
 
 	@SuppressWarnings("deprecation")
@@ -55,7 +56,7 @@ public class PGLobbyHook implements Listener {
 		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
 			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
 				int id = GeneralUtils.findPriorityLobby();
-				lobby = Lobby.lobbies.stream()
+				Lobby lobby = Lobby.lobbies.stream()
 						.filter(lobby_ -> lobby_.getID() == id)
 						.findFirst()
 						.orElse(null);
@@ -84,8 +85,18 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		if ((lobby = GeneralUtils.isPlayerInGame(player)) != null) {
+		Lobby lobby = GeneralUtils.isPlayerInGame(player);
+		if (lobby != null) {
 			lobby.removePlayer(player);
+		}
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+			if (PlayerPVP.cannotDamage.contains(event.getDamager())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 
