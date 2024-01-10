@@ -4,7 +4,7 @@ import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.interfaces.PGSubCommand;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;

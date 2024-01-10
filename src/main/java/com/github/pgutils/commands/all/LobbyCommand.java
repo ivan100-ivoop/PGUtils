@@ -6,7 +6,7 @@ import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.enums.LobbyMode;
-import com.github.pgutils.interfaces.PGSubCommand;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.LobbyMenu;

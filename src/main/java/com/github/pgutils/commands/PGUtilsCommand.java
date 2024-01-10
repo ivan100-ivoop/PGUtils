@@ -1,7 +1,7 @@
 package com.github.pgutils.commands;
 
 import com.github.pgutils.commands.all.*;
-import com.github.pgutils.interfaces.PGSubCommand;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,8 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 public class PGUtilsCommand implements CommandExecutor, TabCompleter {

@@ -2,8 +2,7 @@ package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.hooks.PGLobbyHook;
-import com.github.pgutils.interfaces.PGSubCommand;
-import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
 import org.bukkit.command.CommandSender;

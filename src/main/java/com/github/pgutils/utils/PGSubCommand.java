@@ -1,4 +1,4 @@
-package com.github.pgutils.interfaces;
+package com.github.pgutils.utils;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
