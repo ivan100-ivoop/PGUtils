@@ -73,8 +73,10 @@ public class PlayerChestReward {
             inv.setContents(chestContents);
             return inv;
         }
-
-        return null;
+        else {
+            PlayerChestReward.createEmptyPlayerChest(player);
+            return getPlayerChest(player);
+        }
     }
 
     public static boolean updatePlayerCheste(ItemStack[] contents, Player player) {

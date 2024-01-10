@@ -97,9 +97,6 @@ public class GeneralUtils {
 
     }
 
-    public static ChatColor ColorToChatColor(Color cc) {
-        return ChatColor.of("#"+Integer.toHexString(cc.asRGB()));
-    }
 
     public static Lobby isPlayerInGame(Player player) {
         Lobby _lobby = Lobby.lobbies.stream()
@@ -162,4 +159,14 @@ public class GeneralUtils {
     public static int findPriorityLobby() {
         return 1;
     }
+
+    public static String generateUniqueID() {
+        String id = "";
+        for (int i = 0; i < 10; i++) {
+            id += (int) (Math.random() * 10);
+        }
+        return id;
+    }
+
+
 }

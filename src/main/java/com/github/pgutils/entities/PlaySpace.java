@@ -1,6 +1,7 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.enums.GameStatus;
+import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -8,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlaySpace {
-    private int playSpaceID;
+    private int ID;
+
+    private String UID;
 
     public static List<PlaySpace> playSpaces = new ArrayList<>();
 
@@ -26,7 +29,8 @@ public abstract class PlaySpace {
 
     public PlaySpace() {
         playSpaces.add(this);
-        playSpaceID = playSpaces.size();
+        ID = playSpaces.size();
+        UID = GeneralUtils.generateUniqueID();
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -77,7 +81,7 @@ public abstract class PlaySpace {
     }
 
     public int getID() {
-        return playSpaceID;
+        return ID;
     }
 
     public String getType() {
@@ -106,4 +110,19 @@ public abstract class PlaySpace {
         return status;
     }
 
+    public Location getLocation() {
+        return pos;
+    }
+
+    public void setLocation(Location location) {
+        this.pos = location;
+    }
+
+    public void setUID(String readObject) {
+        UID = readObject;
+    }
+
+    public String getUID() {
+        return UID;
+    }
 }

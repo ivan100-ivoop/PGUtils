@@ -3,12 +3,14 @@ package com.github.pgutils.hooks;
 import com.github.pgutils.utils.LobbyMenu;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.utils.PlayerPVP;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -19,10 +21,14 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class PGLobbyHook implements Listener {
 	public static Location pos1 = null;
 	public static Location pos2 = null;
+
 
 
 	@SuppressWarnings("deprecation")
@@ -88,7 +94,15 @@ public class PGLobbyHook implements Listener {
 		Lobby lobby = GeneralUtils.isPlayerInGame(player);
 		if (lobby != null) {
 			lobby.removePlayer(player);
-			//PGUtils.getPlugin(PGUtils.class).getPortalManager().teleportToPortal(player, "join");
+		}
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+			if (PlayerPVP.cannotDamage.contains(event.getDamager())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 

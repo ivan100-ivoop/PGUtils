@@ -4,18 +4,14 @@ import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.utils.LobbyMenu;
 import com.github.pgutils.utils.PlayerChestReward;
-import com.github.pgutils.entities.KOTHArena;
+import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.enums.LobbyMode;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.logging.Level;
 
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -23,13 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.A;
 
 public class PGCommand implements CommandExecutor {
 	@Override
@@ -62,8 +52,16 @@ public class PGCommand implements CommandExecutor {
 				}
 
 				if (args[0].equalsIgnoreCase("chest")) {
-					player.openInventory(PlayerChestReward.getPlayerChest(((Player) sender)));
+					player.openInventory(PlayerChestReward.getPlayerChest(player));
 					return true;
+				}
+
+				if (args[0].equalsIgnoreCase("setleave")) {
+					if(GeneralUtils.setRespawnPoint(player.getLocation())){
+						player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("respawn-set-message", "&aSuccesval saved Leave Location!")));
+						return true;
+					}
+					return false;
 				}
 
 				if (args[0].equalsIgnoreCase("setportal")) {
@@ -110,27 +108,30 @@ public class PGCommand implements CommandExecutor {
 					if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("koth")) {
 							if (args.length >= 3) {
+
 								if (args[2].equalsIgnoreCase("create")) {
 									if (args.length >= 4) {
-										if (args[3].equalsIgnoreCase("arena")) {
-											KOTHArena arena = new KOTHArena();
-											arena.setPos(player.getLocation());
-											sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-arena-message", "&aSuccessful created Arena! N" + arena.getID())));
-											GeneralUtils.playerSelectPlaySpace(player, arena);
+										if (PGUtils.selectedPlaySpace.stream().filter(player_ -> player_.player.equals(sender)).findFirst().orElse(null) == null) {
+											sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cYou need to select a KOTH arena!"));
+											return false;
 										}
 										if (args[3].equalsIgnoreCase("spawn")) {
-											Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-													.filter(selector -> selector.player.equals(sender))
-													.findFirst();
-											if (!arena.isPresent()) {
-												player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
-											} else {
-												if (arena.get().playSpace instanceof KOTHArena) {
-													KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-													kothArena.addSpawnLocation(player.getLocation());
-													sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-spawn-message", "&aSuccessful created Spawn Location!")));
+											if (args.length >= 5) {
+												int team = Integer.parseInt(args[4]);
+
+												Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
+														.filter(selector -> selector.player.equals(sender))
+														.findFirst();
+												if (!arena.isPresent()) {
+													player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cPlayspace is not selected!")));
 												} else {
-													sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+													if (arena.get().playSpace instanceof KOTHArena) {
+														KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
+														kothArena.addSpawnLocation(player.getLocation(), team);
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-spawn-message", "&aSuccessful created Spawn Location!")));
+													} else {
+														sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-arena-message", "&cYou need to select a KOTH arena!")));
+													}
 												}
 											}
 										}
@@ -153,7 +154,7 @@ public class PGCommand implements CommandExecutor {
 													}
 												}
 											}
-											if (args.length == 5) {
+											else if (args.length == 5) {
 												int radius = Integer.parseInt(args[4]);
 												Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
 														.filter(selector -> selector.player.equals(sender))
@@ -186,6 +187,12 @@ public class PGCommand implements CommandExecutor {
 											}
 
 										}
+									}
+									else {
+										KOTHArena arena = new KOTHArena();
+										arena.setPos(player.getLocation());
+										sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("create-arena-message", "&aSuccessful created Arena! N" + arena.getID())));
+										GeneralUtils.playerSelectPlaySpace(player, arena);
 									}
 								}
 							}
@@ -551,6 +558,21 @@ public class PGCommand implements CommandExecutor {
 								player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful force ended " + lobby.getID() + "!"));
 							}
 
+						}
+						if (args[1].equalsIgnoreCase("select")) {
+							if (args.length >= 3) {
+								int id = Integer.parseInt(args[2]);
+								Lobby lobby = Lobby.lobbies.stream()
+										.filter(lobby_ -> lobby_.getID() == id)
+										.findFirst()
+										.orElse(null);
+								if (lobby == null) {
+									sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&cLobby is not found!"));
+									return false;
+								}
+								GeneralUtils.playerSelectLobby(player, lobby);
+								sender.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&aSuccessful selected " + lobby.getID() + "!"));
+							}
 						}
 					}
 					else {

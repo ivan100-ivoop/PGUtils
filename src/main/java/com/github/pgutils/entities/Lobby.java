@@ -1,10 +1,12 @@
 package com.github.pgutils.entities;
 
+import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
+import com.github.pgutils.utils.PlayerPVP;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
@@ -12,8 +14,11 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.github.pgutils.enums.LobbyStatus;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Lobby {
 
@@ -21,6 +26,9 @@ public class Lobby {
 
     private int ID;
 
+    private String uniqueID;
+
+    // Saved
     private Location pos;
 
     List<Player> players;
@@ -35,8 +43,10 @@ public class Lobby {
 
     private int pickedGameID = 0;
 
+    // Saved
     private int maxPlayers = 32;
 
+    // Saved
     private int minPlayers = 2;
 
     private int lobbyStartingTime = 60;
@@ -51,15 +61,19 @@ public class Lobby {
 
     private int showPlayersMessageTick = 0;
 
+    // Saved
     private LobbyMode mode = LobbyMode.AUTO;
 
+    // Saved
     private boolean isLocked = false;
 
     public Lobby() {
         players = new ArrayList<>();
         status = LobbyStatus.WAITING_FOR_PLAYERS;
         lobbies.add(this);
+        // Generate a unique ID
         ID = lobbies.size();
+        uniqueID = GeneralUtils.generateUniqueID();
     }
 
     public void update() {
@@ -159,11 +173,14 @@ public class Lobby {
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
         players.stream()
-                .forEach(player -> player.spigot()
+                .forEach(player -> {
+                    player.spigot()
                         .sendMessage(ChatMessageType.ACTION_BAR,
-                                new TextComponent(GeneralUtils.fixColors("&eThe game has been ended!"))));
-        players.stream()
-                .forEach(player -> player.teleport(pos));
+                                new TextComponent(GeneralUtils.fixColors("&eThe game has been ended!")));
+                    player.teleport(pos);
+                    PlayerPVP.disablePVP(player);
+                });
+
 
     }
 
@@ -183,6 +200,9 @@ public class Lobby {
         player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID + " !"));
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
+        PlayerPVP.disablePVP(player);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 1, true, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 5, true, false));
         players.add(player);
     }
 
@@ -198,6 +218,11 @@ public class Lobby {
         }
         player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID + " !"));
         PlayerChestReward.restoreInv(player);
+        player.teleport(GeneralUtils.getRespawnPoint());
+        player.removePotionEffect(PotionEffectType.SATURATION);
+        player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+        PlayerPVP.enablePVP(player);
+
         players.remove(player);
     }
 
@@ -302,5 +327,21 @@ public class Lobby {
     public void closeDown() {
         kickAll();
         getCurrentPlaySpace().end();
+    }
+
+    public Location getLocation() {
+        return pos;
+    }
+
+    public void setLocation(Location pos) {
+        this.pos = pos;
+    }
+
+    public String getUID() {
+        return uniqueID;
+    }
+
+    public void setUID(String uid) {
+        uniqueID = uid;
     }
 }
