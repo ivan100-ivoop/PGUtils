@@ -1,7 +1,6 @@
 package com.github.pgutils;
 
-import com.github.pgutils.commands.PGCommand;
-import com.github.pgutils.commands.PGTabComplete;
+import com.github.pgutils.commands.PGUtilsCommand;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
@@ -42,8 +41,9 @@ public final class PGUtils extends JavaPlugin {
 
         PM = new PortalManager();
 
-        getCommand("pg").setExecutor(new PGCommand());
-        getCommand("pg").setTabCompleter(new PGTabComplete());
+        getCommand("pg").setExecutor(new PGUtilsCommand());
+        getCommand("pg").setTabCompleter(new PGUtilsCommand());
+
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
 

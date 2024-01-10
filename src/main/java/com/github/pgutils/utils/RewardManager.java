@@ -1,6 +1,7 @@
 package com.github.pgutils.utils;
 
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.enums.RewardsType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -8,13 +9,19 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RewardManager {
     private List<ConfigurationSection> rewards = new ArrayList<>();
+
     private FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
     public boolean isHaveRewards() {
         return (this.rewards.size() >= 1);
@@ -53,16 +60,18 @@ public class RewardManager {
         saveRewards();
     }
 
-    public void removeItem(String Id){
-        for (int i = 0; i<rewards.size(); i++){
-            ConfigurationSection item = rewards.get(i);
-            if(item.isConfigurationSection(Id)){
-                rewards.remove(i);
-                saveRewards();
-                return;
+    public void removeItem(String id){
+
+        for(Rewards rewardItem : this.getRewards()){
+            if(rewardItem.getID().equalsIgnoreCase(id) && rewardItem.getListId() != -1){
+                System.out.println("Remove: " + id);
+                rewards.remove(rewardItem.getListId());
             }
         }
+        this.saveRewards();
     }
+
+
     public void addItemReward(ItemStack item) {
         if (!this.isHaveRewards()) {
             this.loadRewards();
@@ -96,10 +105,14 @@ public class RewardManager {
         List<Rewards> allRewards = new ArrayList<>();
 
         if (rewards != null) {
-            for (ConfigurationSection rewardSection : rewards) {
+            for (int i = 0; i<rewards.size(); i++) {
+                ConfigurationSection rewardSection = rewards.get(i);
                 String type = rewardSection.getString("type", "command");
 
-                Rewards reward = new Rewards().setType(type.equals("command") ? RewardsType.COMMAND : RewardsType.ITEM);
+                Rewards reward = new Rewards()
+                        .setType(type.equals("command") ? RewardsType.COMMAND : RewardsType.ITEM)
+                        .setID("" + (i + 1))
+                        .setListId(i);
 
                 switch (type) {
                     case "command":
@@ -132,22 +145,41 @@ public class RewardManager {
             for (Rewards reward : _rewards) {
                 if (reward.getType() == RewardsType.COMMAND) {
                     reward.setPlayer(player);
-                    for (String cmd : reward.getCommands()) {
-                        GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(cmd));
-                    }
+                    GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommands()));
                 } else if (reward.getType() == RewardsType.ITEM) {
-                    for (ItemStack item : reward.getItems()) {
-                        PlayerChestReward.addItem(item, player);
-                    }
+                    PlayerChestReward.addItem(reward.getItems(), player);
                 }
             }
         }
     }
 
+    public void getList(Player player){
+        String type = "", reward = "", rewardItemMessage = "&eID: &c&l%id%&e - Type: &b&l%type%&e - Reward: &a&l%reward%&e.";
+        player.sendMessage(GeneralUtils.fixColors("&aRewards: "));
+
+        for(Rewards rewardItem : this.getRewards()) {
+            if(rewardItem.getType() == RewardsType.COMMAND){
+                type = "Command";
+                reward = rewardItem.getCommands();
+            } else {
+                type = "Item";
+                reward = rewardItem.getItems().getAmount() + "x" + rewardItem.getItems().getType().toString();
+            }
+
+            player.sendMessage(GeneralUtils.fixColors(
+                    rewardItemMessage
+                            .replace("%id%", rewardItem.getID())
+                            .replace("%type%", type)
+                            .replace("%reward%", reward)));
+        }
+    }
+
     public class Rewards {
         private RewardsType type = null;
-        private List<String> commands = new ArrayList<>();
-        private List<ItemStack> items = new ArrayList<>();
+        private String commands = null;
+        private String ID = "";
+        private int listId = -1;
+        private ItemStack items = null;
 
         public Rewards setType(RewardsType type) {
             this.type = type;
@@ -158,36 +190,45 @@ public class RewardManager {
             return this.type;
         }
 
-        public List<String> getCommands() {
+        public String getCommands() {
             return this.commands;
         }
 
-        public List<ItemStack> getItems() {
+        public ItemStack getItems() {
             return this.items;
         }
 
         public Rewards addItem(ItemStack item) {
             if (this.type == RewardsType.ITEM) {
-                this.items.add(item);
+                this.items = item;
             }
             return this;
         }
         public Rewards addCommand(String cmd){
             if(this.type == RewardsType.COMMAND) {
-                this.commands.add((String) cmd);
+                this.commands = cmd;
             }
             return this;
         }
+        public String getID(){
+            return this.ID;
+        }
+        public Rewards setID(String id){
+            this.ID = id;
+            return this;
+        }
 
+        public int getListId(){
+            return this.listId;
+        }
+        public Rewards setListId(int listId){
+            this.listId = listId;
+            return this;
+        }
         public Rewards setPlayer(Player player) {
             if (this.type == RewardsType.COMMAND) {
-                List<String> tmpCommands = new ArrayList<>();
-                for (String command : this.commands) {
-                    tmpCommands.add(GeneralUtils.fixColors(command.replace("%player%", player.getName())));
+                this.commands = GeneralUtils.fixColors(this.commands.replace("%player%", player.getName()));
                 }
-                this.commands.clear();
-                this.commands.addAll(tmpCommands);
-            }
             return this;
         }
     }
