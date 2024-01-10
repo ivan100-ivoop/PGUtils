@@ -1,7 +1,6 @@
 package com.github.pgutils;
 
-import com.github.pgutils.commands.PGCommand;
-import com.github.pgutils.commands.PGTabComplete;
+import com.github.pgutils.commands.PGUtilsCommand;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
@@ -23,7 +22,6 @@ public final class PGUtils extends JavaPlugin {
     public String prefix;
     public static File database = null, saveInv = null, rewardsChest = null;
     public static PortalManager PM = null;
-
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
 
@@ -44,8 +42,9 @@ public final class PGUtils extends JavaPlugin {
 
         PM = new PortalManager();
 
-        getCommand("pg").setExecutor(new PGCommand());
-        getCommand("pg").setTabCompleter(new PGTabComplete());
+        getCommand("pg").setExecutor(new PGUtilsCommand());
+        getCommand("pg").setTabCompleter(new PGUtilsCommand());
+
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
 

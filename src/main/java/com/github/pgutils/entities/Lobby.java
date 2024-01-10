@@ -2,6 +2,7 @@ package com.github.pgutils.entities;
 
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.interfaces.EvenDependent;
@@ -31,7 +32,7 @@ public class Lobby {
     // Saved
     private Location pos;
 
-    List<Player> players;
+    private List<Player> players;
 
     private LobbyStatus status;
 
@@ -86,7 +87,7 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players &b" + players.size() + " / " + minPlayers + " &e!"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eWaiting for players &b%players%/%min_players% &e!").replace("%players%", String.valueOf(players.size())).replace("%min_players%", String.valueOf(minPlayers)))));
             }
         }
         else if (status == LobbyStatus.STARTING) {
@@ -97,7 +98,7 @@ public class Lobby {
             if (lobbyStartingTick % 20 == 0)
                 players.stream()
                     .forEach(player -> player.spigot()
-                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe game will start in &b" + (lobbyStartingTime / 20 - lobbyStartingTick / 20) + "&e seconds!"))));
+                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eThe game will start in &b%time%&e seconds!").replace("%time%", String.valueOf((lobbyStartingTime - lobbyStartingTick) / 20)))));
             if (players.size() < minPlayers) {
                 status = LobbyStatus.WAITING_FOR_PLAYERS;
                 lobbyStartingTick = 0;
@@ -186,18 +187,19 @@ public class Lobby {
 
     public void addPlayer(Player player) {
         if (isLocked) {
-            player.sendMessage(GeneralUtils.fixColors("&cLobby is locked!"));
+            player.sendMessage(Messages.messageWithPrefix("error-lobby-locked", "&cLobby is locked!"));
             return;
         }
         if (players.size() >= maxPlayers){
-            player.sendMessage(GeneralUtils.fixColors("&cLobby is full!"));
+            player.sendMessage(Messages.messageWithPrefix("error-lobby-full", "&cLobby is full!"));
             return;
         }
         if (players.contains(player)) {
-            player.sendMessage(GeneralUtils.fixColors("&cYou are already in the lobby!"));
+            player.sendMessage(Messages.messageWithPrefix("error-already-in-lobby", "&cYou are already in the lobby!"));
             return;
         }
-        player.sendMessage(GeneralUtils.fixColors("&aYou have joined lobby " + ID + " !"));
+        GeneralUtils.kickPlayerGlobal(player);
+        player.sendMessage(Messages.messageWithPrefix("success-joined-lobby", "&aYou have joined lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
         PlayerPVP.disablePVP(player);
@@ -208,7 +210,7 @@ public class Lobby {
 
     public void removePlayer(Player player) {
         if (!players.contains(player)) {
-            player.sendMessage(GeneralUtils.fixColors("&cYou are not in the lobby!"));
+            player.sendMessage(Messages.messageWithPrefix("error-not-in-lobby", "&cYou are not in the lobby!"));
             return;
         }
         if (currentPlaySpace != null) {
@@ -216,7 +218,7 @@ public class Lobby {
                 currentPlaySpace.removePlayer(player);
             }
         }
-        player.sendMessage(GeneralUtils.fixColors("&aYou have left lobby " + ID + " !"));
+        player.sendMessage(Messages.messageWithPrefix("success-left-lobby", "&aYou have left lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
         PlayerChestReward.restoreInv(player);
         player.teleport(GeneralUtils.getRespawnPoint());
         player.removePotionEffect(PotionEffectType.SATURATION);
@@ -301,8 +303,8 @@ public class Lobby {
 
     public void kickPlayer(Player player) {
         if (players.contains(player)) {
-            player.sendMessage(GeneralUtils.fixColors("&cYou have been kicked from the lobby!"));
             removePlayer(player);
+            player.sendMessage(Messages.messageWithPrefix("success-kicked-from-lobby", "&4You have been kicked from lobby &6%id% &4!").replace("%id%", String.valueOf(ID)));
         }
     }
 

@@ -54,13 +54,13 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private Objective objective;
 
     // Saved
-    private int matchTime = 2500;
+    private int matchTime = 100;
 
     private Score scoreTime;
 
     private boolean overtime = false;
 
-    private int overtimeMAX = 1000;
+    private int overtimeMAX = 100;
 
     // Saved
     private int initial_points_active = 2;
@@ -148,12 +148,15 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             if (tick - 30 >= matchTime) {
                 checkEnd();
             }
-            if (tick - 30 == matchTime) {
+            if (tick - 28 == matchTime) {
                 players.forEach(player -> {
                     player.sendTitle("§4OVERTIME!", "", 0, 40, 0);
                     overtime = true;
                     player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 });
+            }
+            if (overtime && tick - 30 >= matchTime + overtimeMAX) {
+                end();
             }
             points.stream().forEach(point -> point.update());
         } else if (status == GameStatus.IS_ENDING) {
@@ -224,9 +227,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         });
     }
 
-    public int addSpawnLocation(Location location, int team_id) {
+    public KOTHSpawn addSpawnLocation(Location location, int team_id) {
         spawns.add(new KOTHSpawn(location, team_id, this));
-        return spawns.size() - 1;
+        return spawns.get(spawns.size() - 1);
     }
 
     public int removeSpawnLocation(int id) {
@@ -238,22 +241,34 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         points.add(point);
     }
 
-    public void addCapturePoint(Location location) {
-        points.add(new KOTHPoint(this, location, 2.5));
+    public KOTHPoint addCapturePoint(Location location) {
+        KOTHPoint kothPoint =  new KOTHPoint(this, location, 2.5);
+        points.add(kothPoint);
+        return kothPoint;
     }
 
-    public void addCapturePoint(Location location, int radius) {
-        points.add(new KOTHPoint(this, location, radius));
+    public KOTHPoint addCapturePoint(Location location, int radius) {
+        KOTHPoint kothPoint = new KOTHPoint(this, location, radius);
+        points.add(kothPoint);
+        return kothPoint;
+
     }
 
-    public void addCapturePoint(Location location, int radius, int pointsAwarding) {
-        points.add(new KOTHPoint(this, location, radius, pointsAwarding));
+    public KOTHPoint addCapturePoint(Location location, int radius, int pointsAwarding) {
+        KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding);
+        points.add(kothPoint);
+        return kothPoint;
+    }
+
+    public KOTHPoint addCapturePoint(Location location, int radius, int pointsAwarding, int timeToCapture) {
+        KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding, timeToCapture);
+        points.add(kothPoint);
+        return kothPoint;
     }
 
     public void activateRandomPoint() {
         points.stream().forEach(point -> point.tickDown());
         List<KOTHPoint> availablePoints = points.stream().filter(point -> point.isActivitable()).collect(Collectors.toList());
-        System.out.println("Available points: "+availablePoints.size());
         if (availablePoints.size() == 0) return;
         KOTHPoint point = availablePoints.get((int) (Math.random() * availablePoints.size()));
         point.startActivatingPoint();

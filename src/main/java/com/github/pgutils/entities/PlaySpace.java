@@ -15,7 +15,7 @@ public abstract class PlaySpace {
 
     public static List<PlaySpace> playSpaces = new ArrayList<>();
 
-    public Location pos;
+    private Location pos;
 
     protected List<Player> players = new ArrayList<>();
 

@@ -2,7 +2,6 @@ package com.github.pgutils.entities.games.kothadditionals;
 
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.particles.EnhancedParticle;
-import com.github.pgutils.particles.variants.FullCircleParticle;
 import com.github.pgutils.particles.variants.HollowCircleParticle;
 import com.github.pgutils.particles.variants.RandomisedDirCylinderParticle;
 import com.github.pgutils.particles.variants.SwirlingParticle;
@@ -37,7 +36,7 @@ public class KOTHPoint {
     private Map<KOTHTeam,Integer> team_capture_time = new HashMap<>();
 
     // Saved
-    private int capture_time = 100;
+    private int captureTime = 100;
 
     private KOTHPointStatus status = KOTHPointStatus.INACTIVE;
 
@@ -93,12 +92,12 @@ public class KOTHPoint {
         activateParticles();
     }
 
-    public KOTHPoint(KOTHArena arena, Location pos, int radius, int pointsAwarding, int capture_time) {
+    public KOTHPoint(KOTHArena arena, Location pos, int radius, int pointsAwarding, int capturetime) {
         this.arena = arena;
         this.pos = pos;
         this.radius = radius;
         this.pointsAwarding = pointsAwarding;
-        this.capture_time = capture_time;
+        this.captureTime = capturetime;
         id = arena.getPoints().size();
         activateParticles();
     }
@@ -131,7 +130,6 @@ public class KOTHPoint {
             public void onUpdate() {
                 if(getTick() > (double) activatingTime * 0.20) {
                     setY_offset(getY_offset() + ((getInitial_y_offset() - 10) - getY_offset()) * 0.1);
-                    System.out.println(getY_offset() + " " + getInitial_y_offset());
                     if(getTick() > (double) activatingTime * 0.80)
                         setRadius(getRadius() + ((getInitialRadius() * 3) - getRadius()) * 0.1);
                 }
@@ -200,7 +198,6 @@ public class KOTHPoint {
             }
             else {
                 Location loc = bannerStand.getLocation().add(0, (bannerStand.getLocation().getY() - pos.getY() ) * 0.1, 0);
-                System.out.println(bannerStand.getLocation().getY() + " " + loc.getY());
                 bannerStand.teleport(loc);
             }
 
@@ -218,9 +215,9 @@ public class KOTHPoint {
                     KOTHTeam playerTeam = getPlayerTeam(player);
                     team_capture_time.put(playerTeam, team_capture_time.getOrDefault(playerTeam, 0) + 1);
                     status = KOTHPointStatus.CAPTURING;
-                    int percentage = (int) ((double)team_capture_time.get(playerTeam) / (double) capture_time * 100.0);
+                    int percentage = (int) ((double)team_capture_time.get(playerTeam) / (double) captureTime * 100.0);
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eCapturing point [" + generateLoadingBar(percentage) + "&e]")));
-                    if (team_capture_time.get(playerTeam) >= capture_time) {
+                    if (team_capture_time.get(playerTeam) >= captureTime) {
                         capturePoint(playerTeam);
                         break;
                     }
@@ -387,12 +384,12 @@ public class KOTHPoint {
         this.pointsAwarding = pointsAwarding;
     }
 
-    public int getCapture_time() {
-        return capture_time;
+    public int getCaptureTime() {
+        return captureTime;
     }
 
-    public void setCapture_time(int capture_time) {
-        this.capture_time = capture_time;
+    public void setCaptureTime(int captureTime) {
+        this.captureTime = captureTime;
     }
 
     public void setArena(KOTHArena arena) {
@@ -405,5 +402,9 @@ public class KOTHPoint {
 
     public void setLocation(Location readObject) {
         pos = readObject;
+    }
+
+    public int getID() {
+        return id;
     }
 }
