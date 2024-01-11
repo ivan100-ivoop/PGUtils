@@ -37,35 +37,33 @@ public class RewardManager {
         if(!rewards.isEmpty()){
             rewards.clear();
         }
-
         FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
 
-        ConfigurationSection rewardsSection = config.getConfigurationSection("rewards");
-
-        if (rewardsSection != null) {
-            for (String key : rewardsSection.getKeys(false)) {
-                ConfigurationSection rewardSection = rewardsSection.getConfigurationSection(key);
-                RewardsType type = rewardSection.getString("type", "command").equalsIgnoreCase("command") ? RewardsType.COMMAND : RewardsType.ITEM;
+            for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
+                ConfigurationSection rewardSection = config.getConfigurationSection("rewards." + key);
+                RewardsType type = (rewardSection.getString("type", "command" ).equals("command") ? RewardsType.COMMAND : RewardsType.ITEM);
 
                 if (type == RewardsType.COMMAND) {
-                    rewards.add(new Rewards()
-                            .setType(RewardsType.COMMAND)
-                            .setItemID(rewards.size())
+                    this.rewards.add(new Rewards()
+                            .setType(type)
+                            .setItemID(rewards.size() + 1)
                             .addCommand(rewardSection.getString("reward"))
                             .setLobbyId(rewardSection.getInt("lobby")));
                 } else {
-                    ItemStack is = new ItemStack(Material.getMaterial(rewardSection.getString("material", "STONE")), rewardSection.getInt("amount"));
-                    rewards.add(new Rewards()
-                            .setType(RewardsType.ITEM)
-                            .addItem(is)
-                            .setItemID(rewards.size())
+                    Material material = Material.getMaterial(rewardSection.getString("reward.material", "STONE"));
+                    int amount = rewardSection.getInt("reward.amount", 1);
+
+                    this.rewards.add(new Rewards()
+                            .setType(type)
+                            .setItemID(rewards.size() + 1)
+                            .addItem(new ItemStack(material, amount))
                             .setLobbyId(rewardSection.getInt("lobby")));
                 }
             }
         }
-    }
 
-    public FileConfiguration getClear(){
+
+        public FileConfiguration getClear(){
         FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
         config.set("rewards", null);
         PGUtils.getPlugin(PGUtils.class).saveConfig();
