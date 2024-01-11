@@ -1,17 +1,13 @@
 package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
+import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.enums.LobbyMode;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.selections.PlayerLobbySelector;
-import com.github.pgutils.utils.GeneralUtils;
-import com.github.pgutils.utils.LobbyMenu;
-import com.github.pgutils.utils.Messages;
-import com.github.pgutils.utils.PlayerChestReward;
+import com.github.pgutils.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,11 +38,11 @@ public class LobbyCommand extends PGSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
 
-        for (String arg : args){
+        for (String arg : args) {
             System.out.println(arg);
         }
 
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
 
             if (args.length == 0) {
@@ -54,7 +50,7 @@ public class LobbyCommand extends PGSubCommand {
                 return true;
             }
 
-            if(player.hasPermission("pgutils.lobby.admin")) {
+            if (player.hasPermission("pgutils.lobby.admin")) {
 
                 if (args[0].equalsIgnoreCase("create")) {
                     Lobby lobby = new Lobby();
@@ -156,7 +152,7 @@ public class LobbyCommand extends PGSubCommand {
                         }
 
                         if (args[1].equalsIgnoreCase("mode")) {
-                            String mode = args[2];
+                            String mode = args[2].toUpperCase();
                             Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
                                     .filter(selector -> selector.player.equals(player))
                                     .findFirst();
@@ -195,12 +191,12 @@ public class LobbyCommand extends PGSubCommand {
                             return false;
                         }
 
-                        if (lobby.getPlaySpaces().contains(playSpace)){
+                        if (lobby.getPlaySpaces().contains(playSpace)) {
                             player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
                             return true;
                         }
 
-                        if (playSpace.getLobby() != null){
+                        if (playSpace.getLobby() != null) {
                             player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
                             return true;
                         }
@@ -238,16 +234,15 @@ public class LobbyCommand extends PGSubCommand {
                             return true;
                         }
 
-                        if (lobby.getPlaySpaces().contains(playSpace)){
+                        if (lobby.getPlaySpaces().contains(playSpace)) {
                             player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
                             return true;
                         }
 
-                        if (playSpace.getLobby() != null){
+                        if (playSpace.getLobby() != null) {
                             player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
                             return true;
                         }
-
 
 
                         lobby.addPlaySpace(playSpace);
@@ -278,12 +273,12 @@ public class LobbyCommand extends PGSubCommand {
                             return true;
                         }
 
-                        if (!lobby.getPlaySpaces().contains(playSpace)){
+                        if (!lobby.getPlaySpaces().contains(playSpace)) {
                             player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
                             return true;
                         }
 
-                        if (playSpace.getLobby() == null){
+                        if (playSpace.getLobby() == null) {
                             player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
                             return true;
                         }
@@ -320,12 +315,12 @@ public class LobbyCommand extends PGSubCommand {
                             return false;
                         }
 
-                        if (!lobby.getPlaySpaces().contains(playSpace)){
+                        if (!lobby.getPlaySpaces().contains(playSpace)) {
                             player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
                             return true;
                         }
 
-                        if (playSpace.getLobby() == null){
+                        if (playSpace.getLobby() == null) {
                             player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
                             return true;
                         }
@@ -397,7 +392,7 @@ public class LobbyCommand extends PGSubCommand {
                     return false;
                 }
                 lobby.kickAll();
-                sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", ""+ lobby.getID()));
+                sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
                 return true;
             }
 
@@ -410,7 +405,7 @@ public class LobbyCommand extends PGSubCommand {
             }
             Lobby lobby = lobbySelector.get().lobby;
             lobby.kickAll();
-            sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", ""+ lobby.getID()));
+            sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
             return true;
         }
 
@@ -425,11 +420,11 @@ public class LobbyCommand extends PGSubCommand {
                     sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
                     return false;
                 }
-                if (lobby.getCurrentPlaySpace() == null){
+                if (lobby.getCurrentPlaySpace() == null) {
                     sender.sendMessage(Messages.messageWithPrefix("lobby-not-active", "&cLobby is not active!"));
                     return false;
                 }
-                if (lobby.getCurrentPlaySpace().getStatus() == GameStatus.INACTIVE){
+                if (lobby.getCurrentPlaySpace().getStatus() == GameStatus.INACTIVE) {
                     sender.sendMessage(Messages.messageWithPrefix("lobby-not-active", "&cLobby is not active!"));
                     return false;
                 }
@@ -440,7 +435,7 @@ public class LobbyCommand extends PGSubCommand {
             return false;
         }
 
-        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command"));
+        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command", true));
         return false;
     }
 
@@ -466,7 +461,7 @@ public class LobbyCommand extends PGSubCommand {
         }
         if (args.length == 2 && args[0].equals("kick-player")) {
             List<String> all = new ArrayList<>();
-            for(Player player : Bukkit.getOnlinePlayers()){
+            for (Player player : Bukkit.getOnlinePlayers()) {
                 all.add(player.getName());
             }
             return all;
@@ -474,7 +469,7 @@ public class LobbyCommand extends PGSubCommand {
 
         if (args.length == 2 && args[0].equals("add-game")) {
             List<String> all = new ArrayList<>();
-            for(Lobby lobby : Lobby.lobbies){
+            for (Lobby lobby : Lobby.lobbies) {
                 all.add("" + lobby.getID());
             }
             return all;
@@ -482,7 +477,7 @@ public class LobbyCommand extends PGSubCommand {
 
         if (args.length == 2 && args[0].equals("remove-game")) {
             List<String> all = new ArrayList<>();
-            for(PlaySpace game: KOTHArena.playSpaces){
+            for (PlaySpace game : KOTHArena.playSpaces) {
                 all.add("" + game.getID());
             }
             return all;
@@ -490,7 +485,7 @@ public class LobbyCommand extends PGSubCommand {
 
         if (args.length == 3 && args[0].equals("add-game")) {
             List<String> all = new ArrayList<>();
-            for(PlaySpace game: KOTHArena.playSpaces){
+            for (PlaySpace game : KOTHArena.playSpaces) {
                 all.add("" + game.getID());
             }
             return all;
@@ -498,26 +493,26 @@ public class LobbyCommand extends PGSubCommand {
 
         if (args.length == 2 && args[0].equals("force-end-id")) {
             List<String> all = new ArrayList<>();
-            for(Lobby lobby : Lobby.lobbies){
+            for (Lobby lobby : Lobby.lobbies) {
                 all.add("" + lobby.getID());
             }
             return all;
         }
 
-        if (args.length == 2 && args[0].equals("set")){
+        if (args.length == 2 && args[0].equals("set")) {
             return Arrays.asList("location", "min-players", "max-players", "mode");
         }
 
-        if (args.length == 2 && args[0].equals("join")){
+        if (args.length == 2 && args[0].equals("join")) {
             List<String> all = new ArrayList<>();
-            for(Lobby lobby : Lobby.lobbies){
+            for (Lobby lobby : Lobby.lobbies) {
                 all.add("" + lobby.getID());
             }
             return all;
         }
 
-        if (args.length == 3 && args[0].equals("set") && args[1].equals("mode")){
-            return Collections.singletonList("AUTO");
+        if (args.length == 3 && args[0].equals("set") && args[1].equals("mode")) {
+            return Arrays.asList("auto", "manual", "choose");
         }
 
         return Collections.emptyList();

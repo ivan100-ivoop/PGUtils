@@ -1,9 +1,9 @@
 package com.github.pgutils.commands.all;
 
 import com.github.pgutils.entities.Lobby;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,10 +34,10 @@ public class LeaveCommand extends PGSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
 
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
-            if(args.length >= 1 && args[0].equals("set")){
-                if(player.hasPermission("pgutils.leave.set")){
+            if (args.length >= 1 && args[0].equals("set")) {
+                if (player.hasPermission("pgutils.leave.set")) {
                     GeneralUtils.setRespawnPoint(player.getLocation());
                     player.sendMessage(Messages.messageWithPrefix("respawn-set-message", "&aSuccessfully saved Respawn Location."));
 
@@ -56,7 +56,7 @@ public class LeaveCommand extends PGSubCommand {
             return true;
         }
 
-        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command"));
+        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command", true));
         return false;
     }
 

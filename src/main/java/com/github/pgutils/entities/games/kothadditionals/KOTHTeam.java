@@ -37,7 +37,7 @@ public class KOTHTeam {
         this.arena = arena;
         team = arena.getBoard().registerNewTeam("Team_" + id);
         team.setAllowFriendlyFire(false);
-        score = arena.getObjective().getScore(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Team "+id+":"));
+        score = arena.getObjective().getScore(Messages.getMessage("game-join-team-sb", "%color%Team %id%!", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))).replace("%id%", id + ""));
         score.setScore(0);
     }
     public void addPlayer(Player player) {
@@ -46,41 +46,41 @@ public class KOTHTeam {
         team.addEntry(player.getName());
         player.setScoreboard(arena.getBoard());
         System.out.println("Added player "+player.getName()+" to team "+id);
-        player.sendMessage(Messages.messageWithPrefix("team-join", colorGarbage.get(colors.indexOf(colorString))+"Joined team %id%!").replace("%id%", id+""));
+        player.sendMessage(Messages.messageWithPrefix("game-join-team", "%color%Joined team %id%!").replace("%color%", colorGarbage.get(colors.indexOf(colorString))).replace("%id%", id+""));
     }
 
     public void giveItems(Player player) {
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
         meta.setColor(color);
-        meta.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Hat"));
+        meta.setDisplayName(Messages.getMessage("game-tools-helmet", "%color%Party Hat", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))));
         helmet.setItemMeta(meta);
         player.getInventory().setHelmet(helmet);
 
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta meta2 = (LeatherArmorMeta) chestplate.getItemMeta();
         meta2.setColor(color);
-        meta2.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Vest"));
+        meta2.setDisplayName(Messages.getMessage("game-tools-chest-plate", "%color%Party Vest", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))));
         chestplate.setItemMeta(meta2);
         player.getInventory().setChestplate(chestplate);
 
         ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
         LeatherArmorMeta meta3 = (LeatherArmorMeta) leggings.getItemMeta();
         meta3.setColor(color);
-        meta3.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Pants"));
+        meta3.setDisplayName(Messages.getMessage("game-tools-leggings", "%color%Party Pants", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))));
         leggings.setItemMeta(meta3);
         player.getInventory().setLeggings(leggings);
 
         ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
         LeatherArmorMeta meta4 = (LeatherArmorMeta) boots.getItemMeta();
         meta4.setColor(color);
-        meta4.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Shoes"));
+        meta4.setDisplayName(Messages.getMessage("game-tools-boots", "%color%Party Shoes", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))));
         boots.setItemMeta(meta4);
         player.getInventory().setBoots(boots);
 
         ItemStack party_stick = new ItemStack(Material.STICK);
         ItemMeta meta5 = party_stick.getItemMeta();
-        meta5.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Stick"));
+        meta5.setDisplayName(Messages.getMessage("game-tools-stick", "%color%Party Stick", false).replace("%color%", colorGarbage.get(colors.indexOf(colorString))));
         // Enchant the party stick with knockback 3
         meta5.addEnchant(Enchantment.KNOCKBACK, 3, true);
         party_stick.setItemMeta(meta5);

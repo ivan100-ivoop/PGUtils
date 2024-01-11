@@ -11,6 +11,7 @@ import com.github.pgutils.utils.GeneralUtils;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
+import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerPVP;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -78,11 +79,11 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
-        objective = board.registerNewObjective("kothScore"+getID(), "dummy", "Team Scores : ");
+        objective = board.registerNewObjective("kothScore"+getID(), "dummy", Messages.getMessage("game-scores", "Team Scores : ", false));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
 
-        scoreTime = objective.getScore(GeneralUtils.fixColors("&fTime Left : "));
+        scoreTime = objective.getScore(Messages.getMessage("game-time-left", "&fTime Left : ", false));
         scoreTime.setScore(matchTime / 20 / 60);
 
         Collections.shuffle(players);
@@ -140,7 +141,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                 testMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eGame is in progress!"))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("game-progress", "&eGame is in progress!", false))));
             }
             if (matchTime % 20 == 0 && (matchTime / 20 - tick / 20) >= 0) {
                 scoreTime.setScore(matchTime / 20 - tick / 20);
@@ -150,7 +151,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             }
             if (tick - 28 == matchTime) {
                 players.forEach(player -> {
-                    player.sendTitle("§4OVERTIME!", "", 0, 40, 0);
+                    player.sendTitle(Messages.getMessage("game-overtime", "§4OVERTIME!", false), "", 0, 40, 0);
                     overtime = true;
                     player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 });

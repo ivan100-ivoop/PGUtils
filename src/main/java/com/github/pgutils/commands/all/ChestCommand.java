@@ -1,7 +1,7 @@
 package com.github.pgutils.commands.all;
 
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.PlayerChestReward;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,12 +32,12 @@ public class ChestCommand extends PGSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
             player.openInventory(PlayerChestReward.getPlayerChest(player));
             return true;
         }
-        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command"));
+        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command", true));
         return false;
     }
 

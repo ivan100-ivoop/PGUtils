@@ -1,7 +1,6 @@
 package com.github.pgutils.utils;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.enums.RewardsType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,180 +8,205 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class RewardManager {
-    private List<ConfigurationSection> rewards = new ArrayList<>();
 
-    private FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
-    public boolean isHaveRewards() {
-        return (this.rewards.size() >= 1);
+    private List<Rewards> rewards = new ArrayList<>();
+
+    public RewardManager() {
+        if (rewards.isEmpty()) {
+            loadRewards();
+        }
     }
 
-    public RewardManager(){ this.loadRewards(); }
+    public List<Rewards> getRewards() {
+        if (rewards.isEmpty()) {
+            loadRewards();
+        }
+        return rewards;
+    }
+
     public void loadRewards() {
+
+        if(!rewards.isEmpty()){
+            rewards.clear();
+        }
+
         FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
 
-        rewards = new ArrayList<>();
+        ConfigurationSection rewardsSection = config.getConfigurationSection("rewards");
 
-        for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
-            ConfigurationSection rewardSection = config.getConfigurationSection("rewards." + key);
-            rewards.add(rewardSection);
-        }
-    }
+        if (rewardsSection != null) {
+            for (String key : rewardsSection.getKeys(false)) {
+                ConfigurationSection rewardSection = rewardsSection.getConfigurationSection(key);
+                RewardsType type = rewardSection.getString("type", "command").equalsIgnoreCase("command") ? RewardsType.COMMAND : RewardsType.ITEM;
 
-    private String parseCommand(String[] args, int from) {
-        StringBuilder content = new StringBuilder();
-        for (int i = args.length - 1; i >= from; i--) {
-            content.append(args[i]).append(" ");
-        }
-        return content.toString().trim();
-    }
-
-    public void addCommandReward(String[] content, int from) {
-        if (!this.isHaveRewards()) {
-            this.loadRewards();
-        }
-
-        ConfigurationSection newRewardSection = new YamlConfiguration();
-        newRewardSection.set("type", "command");
-        newRewardSection.set("reward", this.parseCommand(content, from));
-
-        rewards.add(newRewardSection);
-        saveRewards();
-    }
-
-    public void removeItem(String id){
-
-        for(Rewards rewardItem : this.getRewards()){
-            if(rewardItem.getID().equalsIgnoreCase(id) && rewardItem.getListId() != -1){
-                System.out.println("Remove: " + id);
-                rewards.remove(rewardItem.getListId());
+                if (type == RewardsType.COMMAND) {
+                    rewards.add(new Rewards()
+                            .setType(RewardsType.COMMAND)
+                            .setItemID(rewards.size())
+                            .addCommand(rewardSection.getString("reward"))
+                            .setLobbyId(rewardSection.getInt("lobby")));
+                } else {
+                    ItemStack is = new ItemStack(Material.getMaterial(rewardSection.getString("material", "STONE")), rewardSection.getInt("amount"));
+                    rewards.add(new Rewards()
+                            .setType(RewardsType.ITEM)
+                            .addItem(is)
+                            .setItemID(rewards.size())
+                            .setLobbyId(rewardSection.getInt("lobby")));
+                }
             }
         }
-        this.saveRewards();
     }
 
-
-    public void addItemReward(ItemStack item) {
-        if (!this.isHaveRewards()) {
-            this.loadRewards();
-        }
-
-        ConfigurationSection newRewardSection = new YamlConfiguration();
-        newRewardSection.set("type", "item");
-
-        ConfigurationSection itemStack = new YamlConfiguration();
-        itemStack.set("material", item.getType().toString());
-        itemStack.set("amount", item.getAmount());
-
-        newRewardSection.set("reward", itemStack);
-
-        rewards.add(newRewardSection);
-        saveRewards();
+    public FileConfiguration getClear(){
+        FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
+        config.set("rewards", null);
+        PGUtils.getPlugin(PGUtils.class).saveConfig();
+        return PGUtils.getPlugin(PGUtils.class).getConfig();
     }
 
     private void saveRewards() {
-        FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
 
-        if (rewards != null) {
+        if (!rewards.isEmpty()) {
+            FileConfiguration config = getClear();
+
+            ConfigurationSection newRewards = config.getConfigurationSection("rewards");
             for (int i = 0; i < rewards.size(); i++) {
-                config.set("rewards." + (i + 1), rewards.get(i));
-            }
-        }
+                Rewards reward = rewards.get(i);
+                ConfigurationSection update = newRewards.createSection((i + 1) + "");
+                update.set("type", (reward.getType() == RewardsType.COMMAND ? "command" : "item"));
 
-        PGUtils.getPlugin(PGUtils.class).saveConfig();
-    }
-    public List<Rewards> getRewards() {
-        List<Rewards> allRewards = new ArrayList<>();
-
-        if (rewards != null) {
-            for (int i = 0; i<rewards.size(); i++) {
-                ConfigurationSection rewardSection = rewards.get(i);
-                String type = rewardSection.getString("type", "command");
-
-                Rewards reward = new Rewards()
-                        .setType(type.equals("command") ? RewardsType.COMMAND : RewardsType.ITEM)
-                        .setID("" + (i + 1))
-                        .setListId(i);
-
-                switch (type) {
-                    case "command":
-                        reward.addCommand(rewardSection.getString("reward", ""));
-                        break;
-                    case "item":
-                        ConfigurationSection item = rewardSection.getConfigurationSection("reward");
-                        reward.addItem(new ItemStack(Material.getMaterial(item.getString("material", "STONE")), item.getInt("amount", 1)));
-                        break;
-
-                    default:
-                        break;
-                }
-
-                allRewards.add(reward);
-            }
-        }
-
-        return allRewards;
-    }
-
-    public void giveRewards(Player player) {
-        if (!this.isHaveRewards()) {
-            this.loadRewards();
-        }
-
-        List<Rewards> _rewards = this.getRewards();
-
-        if (_rewards != null) {
-            for (Rewards reward : _rewards) {
                 if (reward.getType() == RewardsType.COMMAND) {
+                    update.set("reward", reward.getCommand());
+                } else {
+                    ConfigurationSection updateItem = update.createSection("reward");
+                    updateItem.set("material", reward.getItem().getType().toString());
+                    updateItem.set("amount", reward.getItem().getAmount());
+                }
+
+                update.set("lobby", reward.getLobbyID());
+            }
+            PGUtils.getPlugin(PGUtils.class).saveConfig();
+        }
+    }
+
+    public boolean addCommandReward(int lobbyID, String command) {
+        if (rewards.add(new Rewards()
+                .setType(RewardsType.COMMAND)
+                .addCommand(command)
+                .setItemID(rewards.size())
+                .setLobbyId(lobbyID))) {
+            saveRewards();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addItemReward(int lobbyID, ItemStack item) {
+        if (rewards.add(new Rewards()
+                .setType(RewardsType.ITEM)
+                .addItem(item)
+                .setItemID(rewards.size())
+                .setLobbyId(lobbyID))) {
+            saveRewards();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeItem(int lobbyID, int itemID) {
+        if (rewards.isEmpty())
+            this.loadRewards();
+
+        Iterator<Rewards> iterator = rewards.iterator();
+
+        while (iterator.hasNext()) {
+            Rewards reward = iterator.next();
+
+            if (reward.getLobbyID() == lobbyID && reward.getItemID() == itemID) {
+                iterator.remove();
+                this.saveRewards();
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void giveRewards(int lobbyID, Player player) {
+        for(Rewards reward : rewards){
+            if(reward.getLobbyID() == lobbyID){
+                if(reward.getType() == RewardsType.COMMAND){
                     reward.setPlayer(player);
-                    GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommands()));
-                } else if (reward.getType() == RewardsType.ITEM) {
-                    PlayerChestReward.addItem(reward.getItems(), player);
+                    GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommand()));
+                } else if(reward.getType() == RewardsType.ITEM){
+                    PlayerChestReward.addItem(reward.getItem(), player);
                 }
             }
         }
     }
 
-    public void getList(Player player){
-        String type = "", reward = "", rewardItemMessage = "&eID: &c&l%id%&e - Type: &b&l%type%&e - Reward: &a&l%reward%&e.";
-        player.sendMessage(GeneralUtils.fixColors("&aRewards: "));
-
-        for(Rewards rewardItem : this.getRewards()) {
-            if(rewardItem.getType() == RewardsType.COMMAND){
-                type = "Command";
-                reward = rewardItem.getCommands();
-            } else {
-                type = "Item";
-                reward = rewardItem.getItems().getAmount() + "x" + rewardItem.getItems().getType().toString();
-            }
-
-            player.sendMessage(GeneralUtils.fixColors(
-                    rewardItemMessage
-                            .replace("%id%", rewardItem.getID())
-                            .replace("%type%", type)
-                            .replace("%reward%", reward)));
+    public StringBuilder getList(int lobbyID) {
+        if (rewards.isEmpty()) {
+            loadRewards();
         }
+
+        StringBuilder outputList = new StringBuilder();
+        outputList.append(Messages.getMessage("items-listing-lobby", "&bRewards in Lobby: &6&l%lobby%\n", false).replace("%lobby%", lobbyID + ""));
+        outputList.append("------------------------\n");
+
+        for (Rewards reward : rewards) {
+            if (reward.getLobbyID() == lobbyID) {
+                outputList.append(Messages.getMessage("items-listing-id", "&eID: &c%id%\n", false).replace("%id%", reward.getItemID() + ""));
+                outputList.append(Messages.getMessage("items-listing-type", "&eType: &c%type%\n", false).replace("%type%", ((reward.getType() == RewardsType.COMMAND) ? "command" : "item")));
+
+                if (reward.getType() == RewardsType.COMMAND) {
+                    outputList.append(Messages.getMessage("items-listing-command", "&eCommand: &c%command%\n", false).replace("%command%", reward.getCommand()));
+                } else {
+                    outputList.append(Messages.getMessage("items-listing-material", "&eMaterial: &c%material%\n", false).replace("%material%", reward.getItem().getType().toString()));
+                    outputList.append(Messages.getMessage("items-listing-amount", "&eAmount: &c%amount%\n", false).replace("%amount%", String.valueOf(reward.getItem().getAmount())));
+                }
+                outputList.append("------------------------\n");
+            }
+        }
+
+        return outputList;
     }
 
     public class Rewards {
         private RewardsType type = null;
-        private String commands = null;
-        private String ID = "";
-        private int listId = -1;
-        private ItemStack items = null;
+        private int itemID = -1;
+        private int lobbyId = -1;
+        private String command = null;
+        private ItemStack item = null;
 
         public Rewards setType(RewardsType type) {
             this.type = type;
+            return this;
+        }
+
+        public int getLobbyID() {
+            return this.lobbyId;
+        }
+
+        public int getItemID() {
+            return this.itemID;
+        }
+
+        public Rewards setItemID(int ID) {
+            this.itemID = ID;
+            return this;
+        }
+
+        public Rewards setLobbyId(int lobbyID) {
+            this.lobbyId = lobbyID;
             return this;
         }
 
@@ -190,45 +214,32 @@ public class RewardManager {
             return this.type;
         }
 
-        public String getCommands() {
-            return this.commands;
+        public String getCommand() {
+            return this.command;
         }
 
-        public ItemStack getItems() {
-            return this.items;
+        public ItemStack getItem() {
+            return this.item;
         }
 
         public Rewards addItem(ItemStack item) {
             if (this.type == RewardsType.ITEM) {
-                this.items = item;
+                this.item = item;
             }
-            return this;
-        }
-        public Rewards addCommand(String cmd){
-            if(this.type == RewardsType.COMMAND) {
-                this.commands = cmd;
-            }
-            return this;
-        }
-        public String getID(){
-            return this.ID;
-        }
-        public Rewards setID(String id){
-            this.ID = id;
             return this;
         }
 
-        public int getListId(){
-            return this.listId;
-        }
-        public Rewards setListId(int listId){
-            this.listId = listId;
+        public Rewards addCommand(String cmd) {
+            if (this.type == RewardsType.COMMAND) {
+                this.command = cmd;
+            }
             return this;
         }
+
         public Rewards setPlayer(Player player) {
             if (this.type == RewardsType.COMMAND) {
-                this.commands = GeneralUtils.fixColors(this.commands.replace("%player%", player.getName()));
-                }
+                this.command = GeneralUtils.fixColors(this.command.replace("%player%", player.getName()));
+            }
             return this;
         }
     }

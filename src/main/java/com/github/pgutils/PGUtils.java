@@ -7,7 +7,9 @@ import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
+import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
+import com.github.pgutils.utils.RewardManager;
 import org.bukkit.Bukkit;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +22,8 @@ import java.util.logging.Logger;
 public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
-    public static File database = null, saveInv = null, rewardsChest = null;
+    public static RewardManager rewardManager = null;
+    public static File database = null, saveInv = null, rewardsChest = null, lang = null;
     public static PortalManager PM = null;
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
@@ -30,17 +33,21 @@ public final class PGUtils extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        prefix = getConfig().getString("prefix", "&7[&e&lPGUtils&7] ");
-
+        lang = new File(getDataFolder(), "lang");
         database = new File(getDataFolder(), "database");
         saveInv = new File(database, "saveInv");
         rewardsChest = new File(database, "PlayerChest");
 
+        if (!lang.exists()){ lang.mkdir(); }
         if (!database.exists()){ database.mkdir(); }
         if (!saveInv.exists()){ saveInv.mkdir(); }
         if (!rewardsChest.exists()){ rewardsChest.mkdir(); }
+        if(!new File(lang, "en.yml").exists()){ lang.mkdir(); saveResource("lang/en.yml", false); }
+
+        prefix = Messages.getMessage("prefix", "&7[&e&lPGUtils&7] ", false);
 
         PM = new PortalManager();
+        rewardManager = new RewardManager();
 
         getCommand("pg").setExecutor(new PGUtilsCommand());
         getCommand("pg").setTabCompleter(new PGUtilsCommand());

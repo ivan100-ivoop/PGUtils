@@ -1,7 +1,6 @@
 package com.github.pgutils.utils;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,6 +32,7 @@ public class PortalManager {
             }
         }
     }
+
     public boolean teleportToPortal(Player player, String portalName) {
         List<Location> portalLocations = getPortalLocations(portalName);
         if (portalLocations != null && portalLocations.size() >= 2) {
@@ -43,6 +43,7 @@ public class PortalManager {
         }
         return false;
     }
+
     public boolean savePortalLocations(String portalName, Location loc1, Location loc2, Location loc3) {
         String path = "portals." + portalName;
 
@@ -91,7 +92,7 @@ public class PortalManager {
     }
 
     public boolean inPortal(Location location) {
-        if(config.isConfigurationSection("portals")) {
+        if (config.isConfigurationSection("portals")) {
             for (String portalName : config.getConfigurationSection("portals").getKeys(false)) {
                 List<Location> portalLocations = getPortalLocations(portalName);
                 if (portalLocations != null && isInRegion(location, portalLocations.get(0), portalLocations.get(1))) {
@@ -118,7 +119,7 @@ public class PortalManager {
 
         boolean inPortal = targetX >= minX && targetX <= maxX &&
                 targetY >= minY && targetY <= maxY &&
-                targetZ >= minZ + 1 && targetZ <= maxZ  + 1;
+                targetZ >= minZ + 1 && targetZ <= maxZ + 1;
 
         return inPortal;
     }
@@ -136,7 +137,7 @@ public class PortalManager {
 
     private static List<String> getLoreWithFix(List<String> lores) {
         ArrayList<String> colored = new ArrayList<String>();
-        for(String lore : lores){
+        for (String lore : lores) {
             colored.add(GeneralUtils.fixColors(lore));
         }
         return colored;

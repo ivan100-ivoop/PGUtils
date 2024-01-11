@@ -6,27 +6,17 @@ import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class GeneralUtils {
     public static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
@@ -44,7 +34,7 @@ public class GeneralUtils {
         Matcher matcher = GeneralUtils.HEX_PATTERN.matcher(message);
         StringBuffer buffer = new StringBuffer(message.length() + 32);
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             String group = matcher.group(1);
             matcher.appendReplacement(buffer, "§x§" + group.charAt(0) + '§' + group.charAt(1) + '§' + group.charAt(2) + '§' + group.charAt(3) + '§' + group.charAt(4) + '§' + group.charAt(5));
         }
@@ -83,7 +73,7 @@ public class GeneralUtils {
                 .filter(lobby -> lobby.getPlayers().contains(player))
                 .findFirst();
         if (!_lobby.isPresent()) {
-           return null;
+            return null;
         }
         Lobby lobby = _lobby.get();
         return lobby;
@@ -108,7 +98,7 @@ public class GeneralUtils {
         return Math.max(0.0, Math.min(1.0, normalizedValue));
     }
 
-    public static boolean setRespawnPoint(Location loc1){
+    public static boolean setRespawnPoint(Location loc1) {
         File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
         try {
             respawnFile.createNewFile();
@@ -126,7 +116,7 @@ public class GeneralUtils {
         return false;
     }
 
-    public static Location getRespawnPoint(){
+    public static Location getRespawnPoint() {
         File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
         try {
             respawnFile.createNewFile();

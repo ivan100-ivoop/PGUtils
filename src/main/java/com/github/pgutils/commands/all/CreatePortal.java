@@ -2,8 +2,8 @@ package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.hooks.PGLobbyHook;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.PortalManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class CreatePortal extends PGSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
 
             if (PGLobbyHook.pos1 == null) {
@@ -42,13 +42,13 @@ public class CreatePortal extends PGSubCommand {
                 return true;
             }
             if (PGLobbyHook.pos2 == null) {
-                player.sendMessage(Messages.messageWithPrefix("portal-missing-pos2", "&cYou have not selected &bposition1&e!"));
+                player.sendMessage(Messages.messageWithPrefix("portal-missing-pos2", "&cYou have not selected &bposition2&e!"));
                 return true;
             }
 
             if (PGUtils.getPlugin(PGUtils.class).getPortalManager().savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2, player.getLocation())) {
 
-                if (player.getInventory().contains(PortalManager.getTool())){
+                if (player.getInventory().contains(PortalManager.getTool())) {
                     player.getInventory().remove(PortalManager.getTool());
                 }
 
@@ -57,7 +57,7 @@ public class CreatePortal extends PGSubCommand {
             return true;
         }
 
-        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command"));
+        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command", true));
         return false;
     }
 

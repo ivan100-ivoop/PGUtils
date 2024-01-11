@@ -1,8 +1,8 @@
 package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,11 +33,11 @@ public class ReloadCommand extends PGSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         PGUtils.getPlugin(PGUtils.class).reloadConfig();
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
             player.sendMessage(Messages.messageWithPrefix("reload-message", "&aSuccessful reload!"));
         } else {
-            sender.sendMessage(Messages.getMessage("reload-message", "&aSuccessful reload!"));
+            sender.sendMessage(Messages.getMessage("reload-message", "&aSuccessful reload!", true));
         }
         return true;
     }

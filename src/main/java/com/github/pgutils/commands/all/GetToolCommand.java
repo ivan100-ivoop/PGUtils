@@ -1,7 +1,7 @@
 package com.github.pgutils.commands.all;
 
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.PortalManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ public class GetToolCommand extends PGSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
             player.getInventory().setItem(player.getInventory().firstEmpty(), PortalManager.getTool());
             sender.sendMessage(Messages.messageWithPrefix("tool-message", "&eYour retrieve PGUtils Tool!"));

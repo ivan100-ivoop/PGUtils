@@ -1,8 +1,8 @@
 package com.github.pgutils.commands;
 
 import com.github.pgutils.commands.all.*;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -43,7 +43,7 @@ public class PGUtilsCommand implements CommandExecutor, TabCompleter {
 
             if (subCommand.getPermission() == null || sender.hasPermission(subCommand.getPermission())) {
                 command.setDescription(subCommand.getDescription());
-                if(!subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length))){
+                if (!subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length))) {
                     sender.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
 
                     if (sender instanceof Player) {
@@ -51,14 +51,14 @@ public class PGUtilsCommand implements CommandExecutor, TabCompleter {
 
                         TextComponent main = new TextComponent("Usage: " + subCommand.getUsage() + "");
                         main.setColor(ChatColor.YELLOW);
-                        main.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(subCommand. getUsage()).create()));
+                        main.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(subCommand.getUsage()).create()));
                         main.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/pg " + subCommand.getName() + " "));
 
                         player.spigot().sendMessage(main);
                     }
                 }
             } else {
-                sender.sendMessage(Messages.messageWithPrefix("command-noperms-message", "&4You do not have the necessary permissions to execute this command."));
+                sender.sendMessage(Messages.messageWithPrefix("command-no-perms-message", "&4You do not have the necessary permissions to execute this command."));
             }
         } else {
             sender.sendMessage(Messages.messageWithPrefix("invalid-command-message", "&4Invalid command."));

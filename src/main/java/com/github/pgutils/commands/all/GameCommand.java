@@ -1,15 +1,15 @@
 package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
+import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
-import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
+import com.github.pgutils.utils.PGSubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -110,7 +110,7 @@ public class GameCommand extends PGSubCommand {
                                     } else {
                                         if (arena.get().playSpace instanceof KOTHArena) {
                                             KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHPoint kothPoint =  kothArena.addCapturePoint(player.getLocation(), radius, points);
+                                            KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation(), radius, points);
                                             player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
                                                     .replace("%id%", kothPoint.getID() + "")
                                                     .replace("%radius%", radius + "")
@@ -119,8 +119,7 @@ public class GameCommand extends PGSubCommand {
                                             player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
                                         }
                                     }
-                                }
-                                else if (args.length == 4) {
+                                } else if (args.length == 4) {
                                     int radius = Integer.parseInt(args[3]);
                                     Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
                                             .filter(selector -> selector.player.equals(player))
@@ -130,7 +129,7 @@ public class GameCommand extends PGSubCommand {
                                     } else {
                                         if (arena.get().playSpace instanceof KOTHArena) {
                                             KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHPoint kothPoint =  kothArena.addCapturePoint(player.getLocation(), radius);
+                                            KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation(), radius);
                                             player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
                                                     .replace("%id%", kothPoint.getID() + "")
                                                     .replace("%radius%", radius + ""));
@@ -148,7 +147,7 @@ public class GameCommand extends PGSubCommand {
                                     if (arena.get().playSpace instanceof KOTHArena) {
                                         KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
                                         kothArena.addCapturePoint(player.getLocation());
-                                        KOTHPoint kothPoint =  kothArena.addCapturePoint(player.getLocation());
+                                        KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation());
                                         player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
                                                 .replace("%id%", kothPoint.getID() + ""));
                                     } else {
@@ -157,8 +156,7 @@ public class GameCommand extends PGSubCommand {
                                 }
 
                             }
-                        }
-                        else {
+                        } else {
                             KOTHArena arena = new KOTHArena();
                             arena.setPos(player.getLocation());
                             player.sendMessage(Messages.messageWithPrefix("create-arena-message", "&aSuccessful created KOTH Arena!"));
@@ -263,17 +261,17 @@ public class GameCommand extends PGSubCommand {
             return Arrays.asList("koth", "set", "select", "delete");
         }
 
-        if (args.length == 2 && args[0].equals("koth")){
+        if (args.length == 2 && args[0].equals("koth")) {
             return Arrays.asList("create", "set");
         }
 
-        if (args.length >= 3 && args[1].equals("create")){
+        if (args.length >= 3 && args[1].equals("create")) {
             return Arrays.asList("spawn", "point");
         }
 
-        if (args.length == 2 && (args[0].equals("delete") || args[0].equals("select"))){
+        if (args.length == 2 && (args[0].equals("delete") || args[0].equals("select"))) {
             List<String> all = new ArrayList<>();
-            for(Lobby lobby : Lobby.lobbies){
+            for (Lobby lobby : Lobby.lobbies) {
                 all.add("" + lobby.getID());
             }
             return all;

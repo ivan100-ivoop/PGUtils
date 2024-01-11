@@ -31,12 +31,12 @@ public class PGLobbyHook implements Listener {
 		if (player.getItemInHand().equals(PortalManager.getTool())) {
 			if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand().equals(EquipmentSlot.HAND)) {
 				pos2 = e.getClickedBlock().getLocation();
-				player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&eYour selected &bpos2&e!"));
+				player.sendMessage(Messages.messageWithPrefix("portal-selected-pos2", "&cYour selected &bposition2&e!"));
 			}
 
 			if (e.getAction() == Action.LEFT_CLICK_BLOCK && e.getHand().equals(EquipmentSlot.HAND)){
 				pos1 = e.getClickedBlock().getLocation();
-				player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + "&eYour selected &bpos1&e!"));
+				player.sendMessage(Messages.messageWithPrefix("portal-selected-pos1", "&eYour selected &bposition1&e!"));
 			}
 
 			e.setCancelled(true);

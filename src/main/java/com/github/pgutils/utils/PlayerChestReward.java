@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PlayerChestReward {
     private static final int maxSlot = 9;
-    public static final String ChestTitle = "Reward Chest";
+    public static final String ChestTitle = Messages.getMessage("reward-title", "&8Reward Chest", false);
 
     public static boolean isPlayerHaveChest(Player player) {
         File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
@@ -72,8 +72,7 @@ public class PlayerChestReward {
             Inventory inv = Bukkit.createInventory(null, InventoryType.PLAYER, ChestTitle);
             inv.setContents(chestContents);
             return inv;
-        }
-        else {
+        } else {
             PlayerChestReward.createEmptyPlayerChest(player);
             return getPlayerChest(player);
         }
@@ -127,14 +126,14 @@ public class PlayerChestReward {
         return false;
     }
 
-    public static boolean restoreInv(Player player){
-        try{
+    public static boolean restoreInv(Player player) {
+        try {
             File invBackup = new File(PGUtils.getPlugin(PGUtils.class).saveInv, player.getName() + ".yml");
             if (invBackup.exists()) {
                 YamlConfiguration invPlayer = new YamlConfiguration();
                 invPlayer.load(invBackup);
                 ArrayList<ItemStack> tempInv = (ArrayList<ItemStack>) invPlayer.getList("inv");
-                for(int i=0; i<tempInv.size(); i++){
+                for (int i = 0; i < tempInv.size(); i++) {
                     player.getInventory().setItem(i, tempInv.get(i));
                 }
                 invBackup.delete();
@@ -162,7 +161,7 @@ public class PlayerChestReward {
                 player.getInventory().clear();
                 return true;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
