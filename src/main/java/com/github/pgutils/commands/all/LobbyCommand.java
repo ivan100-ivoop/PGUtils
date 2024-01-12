@@ -38,404 +38,71 @@ public class LobbyCommand extends PGSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
 
-        for (String arg : args) {
-            System.out.println(arg);
+        if (args.length == 0) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                new LobbyMenu().prepareMenu().getLobby(player);
+                return true;
+            }
         }
+
+        switch (args[0].toLowerCase()) {
+            case "add-game-id":
+                return UltimateUtilsX.addGameToLobbyID(sender, args);
+
+            case "remove-game-id":
+                return UltimateUtilsX.removeGameFromLobbyID(sender, args);
+
+            case "remove-id":
+                return UltimateUtilsX.removeLobbyID(sender, args);
+
+            case "kick-player":
+                return UltimateUtilsX.kickPlayerFromLobby(sender, args);
+
+            case "kick-all":
+                return UltimateUtilsX.kickAllFromLobbyID(sender,args);
+
+            case "force-end-id":
+                return UltimateUtilsX.forceEndCurrentLobbyGameID(sender,args);
+
+            case "force-pull-player":
+                return UltimateUtilsX.forcePullPlayerToLobby(sender,args);
+        }
+
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (args.length == 0) {
-                new LobbyMenu().prepareMenu().getLobby(player);
-                return true;
-            }
-
             if (player.hasPermission("pgutils.lobby.admin")) {
 
-                if (args[0].equalsIgnoreCase("create")) {
-                    Lobby lobby = new Lobby();
-                    lobby.setPos(player.getLocation());
-                    GeneralUtils.playerSelectLobby(player, lobby);
-                    player.sendMessage(Messages.messageWithPrefix("create-lobby-message", "&aSuccessful created Lobby Location %size%&a!").replace("%size%", "" + Lobby.lobbies.size()));
-                    return true;
-                }
+                switch (args[0].toLowerCase()) {
+                    case "create":
+                        return UltimateUtilsX.createLobby(player);
 
-                if (args[0].equalsIgnoreCase("remove")) {
-                    Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                            .filter(selector -> selector.player.equals(player))
-                            .findFirst();
-                    if (!lobbySelector.isPresent()) {
-                        player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                        return true;
-                    }
-                    Lobby lobby = lobbySelector.get().lobby;
-                    Lobby.lobbies.remove(lobby);
-                    PGUtils.selectedLobby.remove(lobbySelector.get());
-                    player.sendMessage(Messages.messageWithPrefix("lobby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
-                    return true;
-                }
+                    case "remove":
+                        return UltimateUtilsX.removeLobby(player);
 
-                if (args[0].equalsIgnoreCase("join")) {
-                    if (args.length >= 1) {
-                        int id = Integer.parseInt(args[1]);
-                        Lobby lobby = Lobby.lobbies.stream()
-                                .filter(lobby_ -> lobby_.getID() == id)
-                                .findFirst()
-                                .orElse(null);
-                        if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        } else {
-                            PlayerChestReward.saveInv(player);
-                            lobby.addPlayer(player);
-                            return true;
-                        }
-                    } else {
-                        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                .filter(selector -> selector.player.equals(player))
-                                .findFirst();
-                        if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        }
-                        Lobby lobby = lobbySelector.get().lobby;
-                        lobby.addPlayer(player);
-                        return true;
-                    }
-                }
+                    case "join":
+                        return UltimateUtilsX.joinLobby(player, args);
 
-                if (args[0].equalsIgnoreCase("set")) {
+                    case "set":
+                        return UltimateUtilsX.setLobby(player, args);
 
-                    if (args[1].equalsIgnoreCase("location")) {
-                        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                .filter(selector -> selector.player.equals(player))
-                                .findFirst();
-                        if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        }
-                        Lobby lobby = lobbySelector.get().lobby;
-                        lobby.setPos(player.getLocation());
-                        player.sendMessage(Messages.messageWithPrefix("set-lobby-message", "&aSuccessfully set Lobby Location!"));
-                        return true;
-                    }
+                    case "add-game":
+                        return UltimateUtilsX.addGameToLobby(player, args);
 
-                    if (args.length >= 2) {
-                        if (args[1].equalsIgnoreCase("min-players")) {
-                            int minPlayers = Integer.parseInt(args[2]);
-                            Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                    .filter(selector -> selector.player.equals(player))
-                                    .findFirst();
-                            if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                                return true;
-                            }
-                            Lobby lobby = lobbySelector.get().lobby;
-                            lobby.setMinPlayers(minPlayers);
-                            player.sendMessage(Messages.messageWithPrefix("set-min-players-message", "&aSuccessfully set Min Players to %min%&a!").replace("%min%", "" + minPlayers));
-                            return true;
-                        }
+                    case "remove-game":
+                        return UltimateUtilsX.removeGameFromLobby(player, args);
 
-                        if (args[1].equalsIgnoreCase("max-players")) {
-                            int maxPlayers = Integer.parseInt(args[2]);
-                            Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                    .filter(selector -> selector.player.equals(player))
-                                    .findFirst();
-                            if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                                return true;
-                            }
-                            Lobby lobby = lobbySelector.get().lobby;
-                            lobby.setMaxPlayers(maxPlayers);
-                            player.sendMessage(Messages.messageWithPrefix("set-max-players-message", "&aSuccessfully set Max Players to %max%&a!").replace("%max%", "" + maxPlayers));
-                            return true;
-                        }
+                    case "select":
+                        return UltimateUtilsX.selectLobby(player, args);
 
-                        if (args[1].equalsIgnoreCase("mode")) {
-                            String mode = args[2].toUpperCase();
-                            Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                    .filter(selector -> selector.player.equals(player))
-                                    .findFirst();
-                            if (!lobbySelector.isPresent()) {
-                                player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                                return true;
-                            }
-                            Lobby lobby = lobbySelector.get().lobby;
-
-                            lobby.setMode(LobbyMode.valueOf(mode));
-                            player.sendMessage(Messages.messageWithPrefix("set-mode-message", "&aSuccessfully set Mode to %mode%&a!").replace("%mode%", mode));
-                            return true;
-                        }
-                    }
-                    return true;
-                }
-
-
-                if (args[0].equalsIgnoreCase("add-game")) {
-                    if (args.length >= 1) {
-                        int id = Integer.parseInt(args[1]);
-                        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                .filter(selector -> selector.player.equals(player))
-                                .findFirst();
-                        if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return false;
-                        }
-                        Lobby lobby = lobbySelector.get().lobby;
-                        PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                                .filter(space -> space.getID() == id)
-                                .findFirst()
-                                .orElse(null);
-                        if (playSpace == null) {
-                            player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return false;
-                        }
-
-                        if (lobby.getPlaySpaces().contains(playSpace)) {
-                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
-                            return true;
-                        }
-
-                        if (playSpace.getLobby() != null) {
-                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
-                            return true;
-                        }
-
-                        lobby.addPlaySpace(playSpace);
-                        playSpace.setLobby(lobby);
-                        player.sendMessage(Messages.messageWithPrefix("game-add-message", "&aSuccessful added %type% &ato %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
-                        return true;
-                    }
-                    return false;
-                }
-
-                if (args[1].equalsIgnoreCase("add-game-id")) {
-                    if (args.length >= 2) {
-                        int lobbyId = Integer.parseInt(args[1]);
-                        int gameId = Integer.parseInt(args[2]);
-
-                        Lobby lobby = Lobby.lobbies.stream()
-                                .filter(lobby_ -> lobby_.getID() == lobbyId)
-                                .findFirst()
-                                .orElse(null);
-
-                        PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                                .filter(space -> space.getID() == gameId)
-                                .findFirst()
-                                .orElse(null);
-
-                        if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        }
-
-                        if (playSpace == null) {
-                            player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return true;
-                        }
-
-                        if (lobby.getPlaySpaces().contains(playSpace)) {
-                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
-                            return true;
-                        }
-
-                        if (playSpace.getLobby() != null) {
-                            player.sendMessage(Messages.messageWithPrefix("game-already-added-message", "&cPlaySpace is already added!"));
-                            return true;
-                        }
-
-
-                        lobby.addPlaySpace(playSpace);
-                        playSpace.setLobby(lobby);
-                        player.sendMessage(Messages.messageWithPrefix("game-add-message", "&aSuccessful added %type% &ato %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
-                        return true;
-                    }
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("remove-game")) {
-                    if (args.length >= 1) {
-                        int id = Integer.parseInt(args[1]);
-                        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                                .filter(selector -> selector.player.equals(player))
-                                .findFirst();
-                        if (!lobbySelector.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        }
-                        Lobby lobby = lobbySelector.get().lobby;
-                        PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                                .filter(space -> space.getID() == id)
-                                .findFirst()
-                                .orElse(null);
-                        if (playSpace == null) {
-                            player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return true;
-                        }
-
-                        if (!lobby.getPlaySpaces().contains(playSpace)) {
-                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
-                            return true;
-                        }
-
-                        if (playSpace.getLobby() == null) {
-                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
-                            return true;
-                        }
-                        lobby.removePlaySpace(playSpace);
-                        playSpace.setLobby(null);
-                        player.sendMessage(Messages.messageWithPrefix("game-remove-message", "&aSuccessful removed %type% &afrom %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
-                        return true;
-                    }
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("remove-game-id")) {
-                    if (args.length >= 2) {
-                        int lobbyId = Integer.parseInt(args[1]);
-                        int gameId = Integer.parseInt(args[2]);
-
-                        Lobby lobby = Lobby.lobbies.stream()
-                                .filter(lobby_ -> lobby_.getID() == lobbyId)
-                                .findFirst()
-                                .orElse(null);
-
-                        PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                                .filter(space -> space.getID() == gameId)
-                                .findFirst()
-                                .orElse(null);
-
-                        if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return false;
-                        }
-
-                        if (playSpace == null) {
-                            player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
-                            return false;
-                        }
-
-                        if (!lobby.getPlaySpaces().contains(playSpace)) {
-                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
-                            return true;
-                        }
-
-                        if (playSpace.getLobby() == null) {
-                            player.sendMessage(Messages.messageWithPrefix("game-not-added-message", "&cPlaySpace is not present in lobby!"));
-                            return true;
-                        }
-
-                        lobby.removePlaySpace(playSpace);
-                        playSpace.setLobby(null);
-                        player.sendMessage(Messages.messageWithPrefix("game-remove-message", "&aSuccessful removed %type% &afrom %id% &a!").replace("%type%", "" + playSpace.getType()).replace("%id%", "" + lobby.getID()));
-                        return true;
-                    }
-                    return false;
-                }
-
-                if (args[0].equalsIgnoreCase("select")) {
-                    if (args.length >= 2) {
-                        int id = Integer.parseInt(args[1]);
-                        Lobby lobby = Lobby.lobbies.stream()
-                                .filter(lobby_ -> lobby_.getID() == id)
-                                .findFirst()
-                                .orElse(null);
-                        if (lobby == null) {
-                            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                            return true;
-                        }
-                        GeneralUtils.playerSelectLobby(player, lobby);
-                        player.sendMessage(Messages.messageWithPrefix("lobby-select-message", "&aSuccessful selected Lobby &6%lobby%&a!").replace("%lobby%", "" + lobby.getID()));
-                    }
-                    return true;
+                    case "force-pull-world-id":
+                        return UltimateUtilsX.forcePullAllInWorldToLobbyID(player,args);
                 }
             }
         }
 
-        if (args[0].equalsIgnoreCase("remove-id")) {
-            if (args.length >= 2) {
-                int id = Integer.parseInt(args[1]);
-                Lobby lobby = Lobby.lobbies.stream()
-                        .filter(lobby_ -> lobby_.getID() == id)
-                        .findFirst()
-                        .orElse(null);
-                if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                    return false;
-                }
-                Lobby.lobbies.remove(lobby);
-                sender.sendMessage(Messages.messageWithPrefix("lobby-removed-message", "&aSuccessful removed Lobby %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
-                return true;
-            }
-            return false;
-        }
-
-        if (args[0].equalsIgnoreCase("kick-player")) {
-            if (args.length >= 2) {
-                String name = args[1];
-                Player player1 = Bukkit.getPlayer(name);
-                GeneralUtils.kickPlayerGlobal(player1);
-                return true;
-            }
-            return false;
-        }
-
-        if (args[0].equalsIgnoreCase("kick-all")) {
-            if (args.length >= 2) {
-                int id = Integer.parseInt(args[1]);
-                Lobby lobby = Lobby.lobbies.stream()
-                        .filter(lobby_ -> lobby_.getID() == id)
-                        .findFirst()
-                        .orElse(null);
-                if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                    return false;
-                }
-                lobby.kickAll();
-                sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
-                return true;
-            }
-
-            Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
-                    .filter(selector -> selector.player.equals(sender))
-                    .findFirst();
-            if (!lobbySelector.isPresent()) {
-                sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                return false;
-            }
-            Lobby lobby = lobbySelector.get().lobby;
-            lobby.kickAll();
-            sender.sendMessage(Messages.messageWithPrefix("lobby-kick-all", "&aSuccessful kicked all players from %lobby%&a!").replace("%lobby%", "" + lobby.getID()));
-            return true;
-        }
-
-        if (args[0].equalsIgnoreCase("force-end-id")) {
-            if (args.length >= 2) {
-                int id = Integer.parseInt(args[1]);
-                Lobby lobby = Lobby.lobbies.stream()
-                        .filter(lobby_ -> lobby_.getID() == id)
-                        .findFirst()
-                        .orElse(null);
-                if (lobby == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
-                    return false;
-                }
-                if (lobby.getCurrentPlaySpace() == null) {
-                    sender.sendMessage(Messages.messageWithPrefix("lobby-not-active", "&cLobby is not active!"));
-                    return false;
-                }
-                if (lobby.getCurrentPlaySpace().getStatus() == GameStatus.INACTIVE) {
-                    sender.sendMessage(Messages.messageWithPrefix("lobby-not-active", "&cLobby is not active!"));
-                    return false;
-                }
-                lobby.getCurrentPlaySpace().end();
-                sender.sendMessage(Messages.messageWithPrefix("lobby-force-end", "&aSuccessful force ended %id%&a!").replace("%id%", "" + lobby.getID()));
-                return true;
-            }
-            return false;
-        }
-
-        sender.sendMessage(Messages.getMessage("error-not-player", "&cYou must be a player to execute this command", true));
         return false;
     }
 
@@ -455,7 +122,9 @@ public class LobbyCommand extends PGSubCommand {
                     "remove-game-id",
                     "kick-player",
                     "kick-all",
-                    "force-end-id"
+                    "force-end-id",
+                    "force-pull-player",
+                    "force-pull-world-id"
 
             );
         }
@@ -518,3 +187,5 @@ public class LobbyCommand extends PGSubCommand {
         return Collections.emptyList();
     }
 }
+
+

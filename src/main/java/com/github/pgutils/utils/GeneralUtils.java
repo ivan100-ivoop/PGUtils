@@ -42,6 +42,17 @@ public class GeneralUtils {
         return matcher.appendTail(buffer).toString();
     }
 
+    public static String hexToMinecraftColor(String hexColor) {
+        if (hexColor.startsWith("#") && hexColor.length() == 7) {
+            StringBuilder converted = new StringBuilder("§x");
+            for (char c : hexColor.substring(1).toCharArray()) {
+                converted.append("§").append(c);
+            }
+            return converted.toString();
+        }
+        return hexColor;
+    }
+
     public static void runCommand(CommandSender sender, String cmd) {
         Bukkit.getServer().dispatchCommand(sender, cmd);
     }
@@ -156,6 +167,17 @@ public class GeneralUtils {
             }
         }
         return bar;
+    }
+
+    public static Lobby getLobbyByID(int id) {
+        Optional<Lobby> _lobby = Lobby.lobbies.stream()
+                .filter(lobby -> lobby.getID() == id)
+                .findFirst();
+        if (!_lobby.isPresent()) {
+            return null;
+        }
+        Lobby lobby = _lobby.get();
+        return lobby;
     }
 
 }

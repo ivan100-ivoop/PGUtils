@@ -55,4 +55,13 @@ public abstract class CustomEffect {
         customEffects.remove(effect);
     }
 
+    public static boolean hasEffect(Player player, Class<? extends CustomEffect> effectClass) {
+        for (CustomEffect effect : customEffects) {
+            if (effect.getEffectedPlayer().equals(player) && effect.getClass().equals(effectClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

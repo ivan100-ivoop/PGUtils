@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class PartyEffectCooldown extends CustomEffect {
 
-    int maxTicks = 300;
+    int maxTicks = 30;
 
     public PartyEffectCooldown(Player effectedPlayer) {
         super(effectedPlayer);
@@ -23,20 +23,23 @@ public class PartyEffectCooldown extends CustomEffect {
         ItemStack item = getEffectedPlayer().getInventory().getItemInMainHand();
         if (getTicks() > maxTicks){
             CustomEffect.removeEffect(this);
+            getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&aParty Cooldown Ready!")));
+            getEffectedPlayer().playSound(getEffectedPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+            return;
         }
         if (item == null)
             return;
         if (item.getItemMeta() == null)
             return;
+        if (item.getItemMeta().getPersistentDataContainer() == null)
+            return;
 
-        if (item.getItemMeta().getPersistentDataContainer().get(Keys.partyStick, PersistentDataType.BOOLEAN)) {
+
+
+        if (item.getItemMeta().getPersistentDataContainer().has(Keys.partyStick, PersistentDataType.BOOLEAN)) {
             int percentage = (int) ((double) getTicks() / (double) maxTicks * 100);
             getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&cParty Cooldown %cooldownbar%")
                     .replace("%cooldownbar%", GeneralUtils.generateLoadingBar(percentage, "§e", "§7"))));
-            if (percentage == 100) {
-                getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&aParty Cooldown Ready!")));
-                getEffectedPlayer().playSound(getEffectedPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
-            }
         }
 
     }

@@ -295,7 +295,7 @@ public class KOTHPoint {
         meta.setPower(1);
 
         FireworkEffect effect = FireworkEffect.builder()
-                .withFade(team.color)
+                .withFade(team.getColor())
                 .withColor(Color.WHITE)
                 .with(FireworkEffect.Type.BALL_LARGE)
                 .build();
@@ -369,7 +369,7 @@ public class KOTHPoint {
 
     private KOTHTeam getPlayerTeam(Player player) {
         for (KOTHTeam team : arena.getTeams()) {
-            if (team.players.contains(player)) return team;
+            if (team.getPlayers().contains(player)) return team;
         }
         return null;
     }

@@ -1,6 +1,5 @@
 package com.github.pgutils.customitems;
 
-import com.github.pgutils.PGUtils;
 import com.github.pgutils.customitems.effects.PartyEffect;
 import com.github.pgutils.customitems.effects.PartyEffectCooldown;
 import com.github.pgutils.utils.Keys;
@@ -46,14 +45,22 @@ public class CustomItemLibrary implements Listener {
 
         if (container.has(Keys.partyStick, PersistentDataType.BOOLEAN)) {
             // Find if the player has the cooldown effect
-            if(CustomEffect.customEffects.stream().anyMatch(customEffect -> customEffect instanceof PartyEffectCooldown && customEffect.getEffectedPlayer().equals(player))) {
-            } else {
+            if(!CustomEffect.hasEffect(player, PartyEffectCooldown.class)) {
                 new PartyEffect(player);
-                Vector direction = player.getLocation().getDirection();
-                direction.multiply(1.5);
-                player.setVelocity(player.getVelocity().add(direction));
+
+                // Get the direction the player is looking at
+                Vector direction = player.getLocation().getDirection().clone();
+                direction.normalize(); // Normalize the direction vector
+                direction.multiply(1.5); // Set the desired speed (magnitude of the velocity)
+
+                // Set the player's velocity to the calculated direction
+                player.setVelocity(direction);
+
+                // Add cooldown effect
                 new PartyEffectCooldown(player);
-                player.getLocation().getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 15, 0.01, 0, 0.01);
+
+                // Spawn particles
+                player.getLocation().getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 50, 0.5, 0.2, 0.5, 0.01);
             }
         }
     }

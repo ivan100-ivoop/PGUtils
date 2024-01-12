@@ -1,5 +1,6 @@
 package com.github.pgutils.utils;
 
+import com.github.pgutils.entities.Lobby;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ public class PlayerManager {
     public static List<Player> cannotDamage = new ArrayList<>();
 
     public static List<Player> cannotMove = new ArrayList<>();
+
+    public static List<Player> isInvulnerable = new ArrayList<>();
 
     public static void disablePVP(Player player) {
         if (!cannotDamage.contains(player))
@@ -30,4 +33,15 @@ public class PlayerManager {
         if (cannotMove.contains(player))
             cannotMove.remove(player);
     }
+
+    public static void disableDamage(Player player) {
+        if (!isInvulnerable.contains(player))
+            isInvulnerable.add(player);
+    }
+
+    public static void enableDamage(Player player) {
+        if (isInvulnerable.contains(player))
+            isInvulnerable.remove(player);
+    }
+
 }

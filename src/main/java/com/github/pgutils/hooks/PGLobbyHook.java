@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -105,6 +106,16 @@ public class PGLobbyHook implements Listener {
 				event.setCancelled(true);
 			}
 		}
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.getEntity() instanceof Player) {
+			if (PlayerManager.isInvulnerable.contains(event.getEntity())) {
+				event.setCancelled(true);
+			}
+		}
+
 	}
 
 }
