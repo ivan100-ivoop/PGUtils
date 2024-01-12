@@ -10,9 +10,12 @@ portal-tool:
 
 game-sb:
   title: "TestScore"
-  timer: "Time: %time%"
   teams: "%team_color%Team %team_id%: %team_point%"
-
+  lines:
+    - "====================="
+    - "Time: %time%"
+    - "%teams%"
+    - "====================="
 
 lobby-menu:
   title: "&bLobby"
@@ -23,8 +26,15 @@ lobby-menu:
     - "&7Status: &c%status%"
     - "&7Online: &a&l%min%&7/&e&l%max%"
 
+
 rewards:
   '1':
     type: command
-    reward: 'say Hello %player%!'
+    reward: give %player% diamond_block 1
+    lobby: 1
+  '2':
+    type: item
+    reward:
+      material: CHISELED_STONE_BRICKS
+      amount: 64
     lobby: 1

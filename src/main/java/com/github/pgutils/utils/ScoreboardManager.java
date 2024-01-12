@@ -6,8 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ScoreboardManager {
     private final Map<Player, Scoreboard> playerScoreboards;
@@ -50,7 +49,7 @@ public class ScoreboardManager {
         }
         return teamsPoint.get(teamID);
     }
-    public void clearAll(int gameID) {
+    public void removeGameScore(int gameID) {
         teamsPoint.clear();
         teamsColor.clear();
 
@@ -69,11 +68,29 @@ public class ScoreboardManager {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         int index = 0;
-        for (Map.Entry<Integer, String> entry : teamsColor.entrySet()) {
-            objective.getScore(getTeamString(entry.getKey(), entry.getValue(), getPoint(entry.getKey()))).setScore(index);
-            index++;
-        };
-        objective.getScore(getTimerString()).setScore(index);
+        if (!sbConfig.isString("lines")){
+            List<String> lines = sbConfig.getStringList("lines");
+            index = lines.size();
+            for (int i=0; i<lines.size(); i++){
+                String line = lines.get(i);
+
+                if(line.contains("%teams%")) {
+                    for(Map.Entry<Integer, String> teams : teamsColor.entrySet()){
+                        objective.getScore(GeneralUtils.fixColors(getTeamString(teams.getKey(), teams.getValue(), getPoint(teams.getKey())))).setScore(index);
+                        index--;
+                    }
+                } else {
+                    if(line.contains("%time%")) {
+                        line = line.replace("%time%", String.valueOf(time));
+                    }
+
+                    objective.getScore(GeneralUtils.fixColors(line)).setScore(index);
+                    index--;
+                }
+            }
+        } else {
+            objective.getScore(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines")))).setScore(index);
+        }
 
         player.setScoreboard(scoreboard);
         playerScoreboards.put(player, scoreboard);
@@ -87,23 +104,53 @@ public class ScoreboardManager {
                     scoreboard.resetScores(entry);
                 }
                 int index = 0;
-                for (Map.Entry<Integer, String> entry : teamsColor.entrySet()) {
-                    objective.getScore(getTeamString(entry.getKey(), entry.getValue(), getPoint(entry.getKey()))).setScore(index);
-                    index++;
-                };
-                objective.getScore(getTimerString()).setScore(index);
+                if (!sbConfig.isString("lines")){
+                    List<String> lines = sbConfig.getStringList("lines");
+                    index = lines.size();
+                    for (int i=0; i<lines.size(); i++){
+                        String line = lines.get(i);
 
+                        if(line.contains("%teams%")) {
+                            for(Map.Entry<Integer, String> teams : teamsColor.entrySet()){
+                                objective.getScore(GeneralUtils.fixColors(getTeamString(teams.getKey(), teams.getValue(), getPoint(teams.getKey())))).setScore(index);
+                                index--;
+                            }
+                        } else {
+                            if(line.contains("%time%")) {
+                                line = line.replace("%time%", String.valueOf(time));
+                            }
 
+                            objective.getScore(GeneralUtils.fixColors(line)).setScore(index);
+                            index--;
+                        }
+                    }
+                } else {
+                    objective.getScore(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines")))).setScore(index);
+                }
             }
         }
     }
-    private String getTimerString() {
-        return GeneralUtils.fixColors(sbConfig.getString("timer", "Time: %time%").replace("%time%", String.valueOf(time)));
+
+    private String fixPlaceHolders(String line) {
+
+        if(line.contains("%time%")) {
+            line = line.replace("%time%", String.valueOf(time));
+        }
+
+        if(line.contains("%teams%")) {
+            StringBuilder teams = new StringBuilder();
+            teamsColor.forEach((key, value)->{
+                teams.append(getTeamString(key, value, getPoint(key)));
+            });
+            line = line.replace("%teams%", teams.toString());
+        }
+
+        return line;
     }
     private String getTeamString(int teamID, String color, int points){
-        return GeneralUtils.fixColors(sbConfig.getString("teams", "%team_color%Team %team_id%: %team_point%")
+        return sbConfig.getString("teams", "%team_color%Team %team_id%: %team_point%")
                 .replace("%team_color%", color)
                 .replace("%team_id%", String.valueOf(teamID))
-                .replace("%team_point%", String.valueOf(points)));
+                .replace("%team_point%", String.valueOf(points));
     }
 }

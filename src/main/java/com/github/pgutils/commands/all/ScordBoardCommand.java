@@ -54,9 +54,9 @@ public class ScordBoardCommand extends PGSubCommand {
                     sb.setTime(time, 1);
                     sb.addTeamPoint(1, 1);
                     sb.addTeamPoint(2, 1);
-                    if(time > 20){
+                    if(time > 40){
                         time = 0;
-                        sb.clearAll(1);
+                        sb.removeGameScore(1);
                     }
                 }
             }, 0, 20);
