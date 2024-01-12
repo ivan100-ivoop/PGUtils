@@ -1,5 +1,7 @@
 package com.github.pgutils.entities.games.kothadditionals;
 
+import com.github.pgutils.PGUtils;
+import com.github.pgutils.customitems.CustomItemRepo;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
@@ -7,9 +9,11 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
 
@@ -54,13 +58,22 @@ public class KOTHTeam {
         LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
         meta.setColor(color);
         meta.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Hat"));
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         helmet.setItemMeta(meta);
+       
+        
         player.getInventory().setHelmet(helmet);
 
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta meta2 = (LeatherArmorMeta) chestplate.getItemMeta();
         meta2.setColor(color);
         meta2.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Vest"));
+        meta2.setUnbreakable(true);
+        meta2.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta2.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
         chestplate.setItemMeta(meta2);
         player.getInventory().setChestplate(chestplate);
 
@@ -68,6 +81,9 @@ public class KOTHTeam {
         LeatherArmorMeta meta3 = (LeatherArmorMeta) leggings.getItemMeta();
         meta3.setColor(color);
         meta3.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Pants"));
+        meta3.setUnbreakable(true);
+        meta3.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta3.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         leggings.setItemMeta(meta3);
         player.getInventory().setLeggings(leggings);
 
@@ -75,19 +91,19 @@ public class KOTHTeam {
         LeatherArmorMeta meta4 = (LeatherArmorMeta) boots.getItemMeta();
         meta4.setColor(color);
         meta4.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Shoes"));
+        meta4.setUnbreakable(true);
+        meta4.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta4.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         boots.setItemMeta(meta4);
         player.getInventory().setBoots(boots);
 
-        ItemStack party_stick = new ItemStack(Material.STICK);
-        ItemMeta meta5 = party_stick.getItemMeta();
-        meta5.setDisplayName(GeneralUtils.fixColors(colorGarbage.get(colors.indexOf(colorString))+"Party Stick"));
-        // Enchant the party stick with knockback 3
-        meta5.addEnchant(Enchantment.KNOCKBACK, 3, true);
-        party_stick.setItemMeta(meta5);
-        player.getInventory().setItem(player.getInventory().firstEmpty(), party_stick);
+        player.getInventory().setItem(player.getInventory().firstEmpty(), CustomItemRepo.createPartyStick());
 
         System.out.println("Added player "+player.getName()+" to team "+id);
     }
+
+
+
     public void removePlayer(Player player) {
         players.remove(player);
         team.removeEntry(player.getName());

@@ -156,5 +156,16 @@ public class GeneralUtils {
         return id;
     }
 
+    public static String generateLoadingBar(int percentage, String barColor, String backgroundColor) {
+        String bar = "";
+        for (int i = 1; i < 11; i++) {
+            if (percentage >= i * 10) {
+                bar += barColor + "█";
+            } else {
+                bar += backgroundColor + "█";
+            }
+        }
+        return bar;
+    }
 
 }

@@ -1,0 +1,68 @@
+
+prefix: "&7[&e&lPGUtils&7] "
+reload-message: "&aSuccessfully reloaded."
+tool-message: "&eYou retrieved the PGUtils Tool!"
+command-error-message: "&c&lOops &cthere is an error with the command"
+command-noperms-message: "&4You do not have the necessary permissions to execute this command."
+invalid-command-message: "&4Invalid command."
+error-not-player: "&cYou must be a player to execute this command"
+portal-missing-pos1: "&cYou have not selected &bposition1&e!"
+portal-missing-pos2: "&cYou have not selected &bposition2&e!"
+save-portal-message: "&aSuccessfully saved Portal Locations."
+error-leave-message: "&eYou currently not in game or lobby!"
+tp-lobby-message: "&aTeleported to Lobby Location!"
+tp-portal-message: "&aTeleported to Portal Location!"
+missing-lobby-message: "&cLobby is not found!"
+rewards-error-message: "&cYou need to include a command or item for the reward!"
+rewards-success-add-message: "&aSuccessfully added a new reward!"
+rewards-success-remove-message: "&aSuccessfully removed reward!"
+respawn-set-message: "&aSuccessfully saved Respawn Location."
+create-arena-message: "&aSuccessful created Arena! N%arena%"
+missing-arena-playspace-message: "&cPlayspace is not selected!"
+missing-playspace-message: "&cPlaySpace is not found!"
+create-spawn-message: "&aSuccessful created Spawn Location!"
+missing-arena-message: "&cYou need to select a KOTH arena!"
+create-point-message: "&aSuccessful created Point Location!"
+set-arena-message: "&aSuccessful set Arena Location!"
+select-arena-message: "&aSuccessful selected %arena%&a!"
+delete-arena-message: "&aSuccessful deleted %arena%&a!"
+create-lobby-message: "&aSuccessful created Lobby Location %size%&a!"
+looby-missing-message: "&cLobby is not found!"
+looby-removed-message: "&aSuccessful removed Lobby %lobby%&a!"
+lobby-set-message: "&aSuccessful set Lobby Location!"
+set-min-players-message: "&aSuccessful set Min Players to %min%&a!"
+set-max-players-message: "&aSuccessful  set Max Players to %max%&a!"
+set-mode-message: "&aSuccessful set Mode to %mode%&a!"
+game-add-message: "&aSuccessful added %type% &ato %id% &a!"
+game-remove-message: "&aSuccessful removed %type% &afrom %id% &a!"
+error-not-lobby-player: "&cPlayer is not in a lobby!"
+lobby-kick-all: "&aSuccessful kicked all players from %lobby%&a!"
+lobby-kick-player: "&aSuccessful kicked %player% from %lobby%&a!"
+lobby-not-active: "&cLobby is not active!"
+lobby-force-end: "&aSuccessful force ended %id%&a!"
+
+save-lobby-message: "&aSuccessfully saved Lobby Location."
+missing-portal-message: "&cPortal locations are not properly defined."
+lobby-join-message: "&eYou joined the Lobby!"
+not-join-message: "&eYou are not in a game!"
+not-chest-message: "&eYou do not have a game chest yet."
+
+
+
+portal-tool:
+  material: STICK
+  name: "&5&lPGUtils &e&lTool"
+  lore:
+    - "&7Left Click on pos1"
+    - "&7Right Click on pos1"
+
+lobby-menu:
+  title: "&bLobby"
+  glow: false
+  material: NETHER_STAR
+  name: "&cLobby &e%id%"
+  lore:
+    - "&7Status: &c%status%"
+    - "&7Online: &a&l%min%&7/&e&l%max%"
+
+rewards: {}
