@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -39,8 +38,6 @@ public class CustomItemLibrary implements Listener {
         if (item != null && item.getItemMeta() != null && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             checkIfCustomItemInMainHandUsedLeft(player, item);
         }
-
-
     }
 
     public static void checkIfCustomItemInMainHandUsedRight(Player player, ItemStack item) {
@@ -59,8 +56,6 @@ public class CustomItemLibrary implements Listener {
                 player.getLocation().getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 15, 0.01, 0, 0.01);
             }
         }
-
-
     }
 
     public static void checkIfCustomItemInMainHandUsedLeft(Player player, ItemStack item) {
