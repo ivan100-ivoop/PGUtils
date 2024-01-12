@@ -7,9 +7,7 @@ import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
-import com.github.pgutils.utils.RewardManager;
 import org.bukkit.Bukkit;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +18,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public final class PGUtils extends JavaPlugin {
+
+    public static PGUtils instance;
+
     public Logger logger = Bukkit.getLogger();
     public String prefix;
     public static RewardManager rewardManager = null;
@@ -32,6 +33,10 @@ public final class PGUtils extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        instance = this;
+
+        prefix = getConfig().getString("prefix", "&7[&e&lPGUtils&7] ");
 
         lang = new File(getDataFolder(), "lang");
         database = new File(getDataFolder(), "database");
@@ -54,8 +59,10 @@ public final class PGUtils extends JavaPlugin {
 
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItemLibrary(), this);
 
         new LobbyUpdater().runTaskTimer(this, 20, 1);
+        new CustomEffectUpdater().runTaskTimer(this, 20, 1);
 
         deserializationBootstrap();
     }

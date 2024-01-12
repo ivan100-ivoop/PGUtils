@@ -11,7 +11,6 @@ import com.github.pgutils.utils.GeneralUtils;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerPVP;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,13 +54,13 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private Objective objective;
 
     // Saved
-    private int matchTime = 100;
+    private int matchTime = 3000;
 
     private Score scoreTime;
 
     private boolean overtime = false;
 
-    private int overtimeMAX = 100;
+    private int overtimeMAX = 1000;
 
     // Saved
     private int initial_points_active = 2;
@@ -96,8 +95,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         }
 
         for (int i = 0; i < players.size(); i++) {
-            players.get(i).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 100, true, true));
-            players.get(i).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 100, 100, true, true));
+            PlayerManager.disableMove(players.get(i));
             teams.get(i % teamsAmount).addPlayer(players.get(i));
         }
 
@@ -127,10 +125,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                 status = GameStatus.IN_PROGRESS;
                 players.forEach(player -> {
                     player.sendTitle("GO!", "", 0, 20, 0);
-                    player.removePotionEffect(PotionEffectType.SLOW);
-                    player.removePotionEffect(PotionEffectType.JUMP);
                     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-                    PlayerPVP.enablePVP(player);
+                    PlayerManager.enablePVP(player);
+                    PlayerManager.enableMove(player);
                 });
             }
             startingTick++;
@@ -149,7 +146,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             if (tick - 30 >= matchTime) {
                 checkEnd();
             }
-            if (tick - 28 == matchTime) {
+            if (tick - 30 == matchTime + 1) {
                 players.forEach(player -> {
                     player.sendTitle(Messages.getMessage("game-overtime", "§4OVERTIME!", false), "", 0, 40, 0);
                     overtime = true;
@@ -171,7 +168,10 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     @Override
     public void endProcedure() {
         teams.stream().forEach(team -> team.deleteTeam());
-        points.stream().forEach(point -> point.deactivatePoint());
+        points.stream().forEach(point -> {
+            point.deactivatePointFull();
+            point.resetDownTime();
+        });
         teams.clear();
         startingTick = 0;
         testMessageTick = 0;
@@ -224,7 +224,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         players.forEach(player -> {
             player.sendTitle(GeneralUtils.fixColors(KOTHTeam.colorGarbage.get(KOTHTeam.colors.indexOf(winner.getColorString()))+"Team " + winner.getID() + " won!"), "", 0, endingTime, 0);
             player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
-            PlayerPVP.disablePVP(player);
+            PlayerManager.disablePVP(player);
         });
     }
 

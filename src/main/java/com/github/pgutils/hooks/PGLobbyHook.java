@@ -4,6 +4,7 @@ import com.github.pgutils.utils.*;
 import com.github.pgutils.entities.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -67,6 +68,10 @@ public class PGLobbyHook implements Listener {
 				}
 			});
 		}
+
+		if (PlayerManager.cannotMove.contains(player)) {
+			e.setCancelled(true);
+		}
 	}
 
 	@EventHandler
@@ -90,7 +95,13 @@ public class PGLobbyHook implements Listener {
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-			if (PlayerPVP.cannotDamage.contains(event.getDamager())) {
+			if (PlayerManager.cannotDamage.contains(event.getDamager())) {
+				event.setCancelled(true);
+			}
+		}
+		if (event.getDamager() instanceof Firework) {
+			Firework fw = (Firework) event.getDamager();
+			if (fw.hasMetadata("nodamage")) {
 				event.setCancelled(true);
 			}
 		}
