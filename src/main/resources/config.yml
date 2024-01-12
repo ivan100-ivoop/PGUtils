@@ -8,6 +8,12 @@ portal-tool:
     - "&7Left Click on pos1"
     - "&7Right Click on pos1"
 
+game-sb:
+  title: "TestScore"
+  timer: "Time: %time%"
+  teams: "%team_color%Team %team_id%: %team_point%"
+
+
 lobby-menu:
   title: "&bLobby"
   glow: false
