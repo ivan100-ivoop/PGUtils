@@ -8,15 +8,6 @@ portal-tool:
     - "&7Left Click on pos1"
     - "&7Right Click on pos1"
 
-game-sb:
-  title: "TestScore"
-  teams: "%team_color%Team %team_id%: %team_point%"
-  lines:
-    - "====================="
-    - "Time: %time%"
-    - "%teams%"
-    - "====================="
-
 lobby-menu:
   title: "&bLobby"
   glow: false
@@ -26,6 +17,14 @@ lobby-menu:
     - "&7Status: &c%status%"
     - "&7Online: &a&l%min%&7/&e&l%max%"
 
+game-sb:
+  title: "TestScore"
+  teams: "%team_color%Team %team_id%: %team_point%"
+  lines:
+    - "&c====================="
+    - "Time: %time%"
+    - "%teams%"
+    - "&f====================="
 
 rewards:
   '1':

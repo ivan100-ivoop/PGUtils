@@ -1,6 +1,8 @@
 package com.github.pgutils;
 
 import com.github.pgutils.commands.PGUtilsCommand;
+import com.github.pgutils.customitems.CustomEffectUpdater;
+import com.github.pgutils.customitems.CustomItemLibrary;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
@@ -20,6 +22,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public final class PGUtils extends JavaPlugin {
+
+    public static PGUtils instance;
+
     public Logger logger = Bukkit.getLogger();
     public String prefix;
     public static RewardManager rewardManager = null;
@@ -32,6 +37,10 @@ public final class PGUtils extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        instance = this;
+
+        prefix = getConfig().getString("prefix", "&7[&e&lPGUtils&7] ");
 
         lang = new File(getDataFolder(), "lang");
         database = new File(getDataFolder(), "database");
@@ -54,8 +63,10 @@ public final class PGUtils extends JavaPlugin {
 
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItemLibrary(), this);
 
         new LobbyUpdater().runTaskTimer(this, 20, 1);
+        new CustomEffectUpdater().runTaskTimer(this, 20, 1);
 
         deserializationBootstrap();
     }

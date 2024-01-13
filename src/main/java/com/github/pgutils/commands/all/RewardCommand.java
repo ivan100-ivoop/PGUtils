@@ -99,7 +99,7 @@ public class RewardCommand extends PGSubCommand {
                 player.sendMessage(Messages.messageWithPrefix("rewards-success-add-message", "&aSuccessfully added a new reward!"));
                 break;
             case "item":
-                if(!rewards.addItemReward(lobbyID, player.getItemInUse())){
+                if(!rewards.addItemReward(lobbyID, player.getItemInHand())){
                     return false;
                 }
                 player.sendMessage(Messages.messageWithPrefix("rewards-success-add-message", "&aSuccessfully added a new reward!"));

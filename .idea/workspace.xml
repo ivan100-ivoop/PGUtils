@@ -5,17 +5,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5701248-d6e7-4953-83ea-6fde41080fbb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGUtilsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/PGUtilsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ChestCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ChestCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/CreatePortal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/CreatePortal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/GameCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/GameCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/GetToolCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/GetToolCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/LeaveCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/LeaveCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/LobbyCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/LobbyCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ReloadCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ReloadCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/RewardCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/RewardCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/TeleportCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/TeleportCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/interfaces/PGSubCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/utils/PGSubCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ScordBoardCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/commands/all/ScordBoardCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/games/KOTHArena.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/games/KOTHArena.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/games/kothadditionals/KOTHTeam.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/entities/games/kothadditionals/KOTHTeam.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/utils/GeneralUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/pgutils/utils/GeneralUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/pgutils/utils/ScoreboardManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/PGUtils-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/PGUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGUtilsCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/PGUtilsCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/ChestCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/ChestCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/CreatePortal.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/CreatePortal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/GameCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/GameCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/LeaveCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/LeaveCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/LobbyCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/LobbyCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/ReloadCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/ReloadCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/RewardCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/RewardCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/TeleportCommand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/commands/all/TeleportCommand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/CustomEffect.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/CustomEffect.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/CustomItemLibrary.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/CustomItemLibrary.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/effects/PartyEffect.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/effects/PartyEffect.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/effects/PartyEffectCooldown.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/customitems/effects/PartyEffectCooldown.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/Lobby.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/Lobby.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/KOTHArena.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/KOTHArena.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/kothadditionals/KOTHPoint.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/kothadditionals/KOTHPoint.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/kothadditionals/KOTHTeam.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/entities/games/kothadditionals/KOTHTeam.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/hooks/PGLobbyHook.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/GeneralUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/GeneralUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/LobbyMenu$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/LobbyMenu$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/LobbyMenu.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/LobbyMenu.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/Messages.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/Messages.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PlayerChestReward.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PlayerChestReward.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PlayerManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PlayerManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PortalManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/PortalManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/RewardManager$Rewards.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/RewardManager$Rewards.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/RewardManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/github/pgutils/utils/RewardManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,10 +99,13 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;inlay.hints&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.github.pgutils.utils" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\ivan\eclipse-workspace\PGUtils-Angel\src\main\resources" />
     </key>

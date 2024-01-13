@@ -1,5 +1,6 @@
 package com.github.pgutils.entities.games.kothadditionals;
 
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.particles.EnhancedParticle;
 import com.github.pgutils.particles.variants.HollowCircleParticle;
@@ -8,15 +9,16 @@ import com.github.pgutils.particles.variants.SwirlingParticle;
 import com.github.pgutils.utils.GeneralUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,7 +138,7 @@ public class KOTHPoint {
             }
         });
 
-        capturingParticles.add(new SwirlingParticle(pos, radius, 0.1, 2, 0.15, Particle.FLAME, 0.1) {
+        capturingParticles.add(new SwirlingParticle(pos, radius, 0.1, 2, 0.08, Particle.FLAME, 0.1) {
             @Override
             public void onUpdate() {}
         });
@@ -216,7 +218,7 @@ public class KOTHPoint {
                     team_capture_time.put(playerTeam, team_capture_time.getOrDefault(playerTeam, 0) + 1);
                     status = KOTHPointStatus.CAPTURING;
                     int percentage = (int) ((double)team_capture_time.get(playerTeam) / (double) captureTime * 100.0);
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eCapturing point [" + generateLoadingBar(percentage) + "&e]")));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eCapturing point [" + GeneralUtils.generateLoadingBar(percentage, "§a", "§7") + "&e]")));
                     if (team_capture_time.get(playerTeam) >= captureTime) {
                         capturePoint(playerTeam);
                         break;
@@ -278,7 +280,7 @@ public class KOTHPoint {
     }
 
     public void tickDown() {
-        if (status == KOTHPointStatus.INACTIVE) {
+        if (status == KOTHPointStatus.INACTIVE || status == KOTHPointStatus.CAPTURED) {
             if (inactiveTick > 0)
                 inactiveTick--;
         }
@@ -287,11 +289,32 @@ public class KOTHPoint {
     public void capturePoint(KOTHTeam team) {
         team.addPoint(pointsAwarding);
         team.getPlayers().stream().forEach(player -> player.playSound(player,Sound.ENTITY_PLAYER_LEVELUP, 1, 0));
+        Firework firework = getPosition().getWorld().spawn(getPosition(), Firework.class);
+
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.setPower(1);
+
+        FireworkEffect effect = FireworkEffect.builder()
+                .withFade(team.getColor())
+                .withColor(Color.WHITE)
+                .with(FireworkEffect.Type.BALL_LARGE)
+                .build();
+
+        meta.addEffect(effect);
+        firework.setFireworkMeta(meta);
+        firework.setMetadata("nodamage", new FixedMetadataValue(PGUtils.instance, true));
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                firework.detonate();
+            }
+        }.runTaskLater(PGUtils.instance, 1L);
         status = KOTHPointStatus.CAPTURED;
         team_capture_time.clear();
         capturedBy = team;
         capturedTick = 0;
         arena.activateRandomPoint();
+        inactiveTick = inactiveTime;
     }
 
     public boolean startActivatingPoint() {
@@ -324,8 +347,11 @@ public class KOTHPoint {
         activatingTick = 0;
         hoverTick = 0;
         hoverDir = true;
-        inactiveTick = inactiveTime;
+    }
 
+    public void deactivatePointFull() {
+        deactivatePoint();
+        inactiveTick = inactiveTime;
     }
 
     private void spawnBanner() {
@@ -343,22 +369,12 @@ public class KOTHPoint {
 
     private KOTHTeam getPlayerTeam(Player player) {
         for (KOTHTeam team : arena.getTeams()) {
-            if (team.players.contains(player)) return team;
+            if (team.getPlayers().contains(player)) return team;
         }
         return null;
     }
 
-    private String generateLoadingBar(int percentage) {
-        String bar = "";
-        for (int i = 1; i < 11; i++) {
-            if (percentage >= i * 10) {
-                bar += "§a█";
-            } else {
-                bar += "§c█";
-            }
-        }
-        return bar;
-    }
+
 
     public Location getPosition() {
         return pos;
@@ -406,5 +422,9 @@ public class KOTHPoint {
 
     public int getID() {
         return id;
+    }
+
+    public void resetDownTime () {
+        inactiveTick = 0;
     }
 }

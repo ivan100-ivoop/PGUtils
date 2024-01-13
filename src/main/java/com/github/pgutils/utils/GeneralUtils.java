@@ -30,7 +30,7 @@ public class GeneralUtils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    private static final String translateHexColorCodes(String message) {
+    public static final String translateHexColorCodes(String message) {
         Matcher matcher = GeneralUtils.HEX_PATTERN.matcher(message);
         StringBuffer buffer = new StringBuffer(message.length() + 32);
 
@@ -40,6 +40,17 @@ public class GeneralUtils {
         }
 
         return matcher.appendTail(buffer).toString();
+    }
+
+    public static String hexToMinecraftColor(String hexColor) {
+        if (hexColor.startsWith("#") && hexColor.length() == 7) {
+            StringBuilder converted = new StringBuilder("§x");
+            for (char c : hexColor.substring(1).toCharArray()) {
+                converted.append("§").append(c);
+            }
+            return converted.toString();
+        }
+        return hexColor;
     }
 
     public static void runCommand(CommandSender sender, String cmd) {
@@ -146,5 +157,40 @@ public class GeneralUtils {
         return id;
     }
 
+    public static String generateLoadingBar(int percentage, String barColor, String backgroundColor) {
+        String bar = "";
+        for (int i = 1; i < 11; i++) {
+            if (percentage >= i * 10) {
+                bar += barColor + "█";
+            } else {
+                bar += backgroundColor + "█";
+            }
+        }
+        return bar;
+    }
+
+    public static Lobby getLobbyByID(int id) {
+        Optional<Lobby> _lobby = Lobby.lobbies.stream()
+                .filter(lobby -> lobby.getID() == id)
+                .findFirst();
+        if (!_lobby.isPresent()) {
+            return null;
+        }
+        Lobby lobby = _lobby.get();
+        return lobby;
+    }
+
+    public static String formatSeconds(int seconds) {
+        int minutes = seconds/60;
+        seconds = seconds%60;
+
+        String sMinutes = minutes + "";
+        String sSeconds = seconds + "";
+
+        if(minutes < 10) sMinutes = "0" + minutes;
+        if(seconds < 10) sSeconds = "0" + seconds;
+
+        return sMinutes + ":" + sSeconds;
+    }
 
 }

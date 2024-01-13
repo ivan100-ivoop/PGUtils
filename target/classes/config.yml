@@ -1,16 +1,5 @@
-prefix: "&7[&e&lPGUtils&7] "
-reload-message: "&aSuccesval reload!"
-save-lobby-message: "&aSuccesval saved Lobby Location!"
-save-portal-message: "&aSuccesval saved Portal Location's!"
-tp-lobby-message: "&aTeleported to Lobby Location!"
-missing-lobby-message: "&cLobby Location is not set!"
-missing-portal-message: "&cThe portal locations are not properly defined."
-tp-portal-message: "&aTeleported to Portal Location!"
-lobby-join-message: "&eYour join to Lobby!"
-leave-message: "&eYour leave a game!"
-respawn-set-message: "&aSuccesval saved Leave Location!"
-not-join-message: "&eYour are not in game!"
-not-chest-message: "&eYou do not have a game chest yet."
+
+lang: "en"
 
 portal-tool:
   material: STICK
@@ -28,12 +17,23 @@ lobby-menu:
     - "&7Status: &c%status%"
     - "&7Online: &a&l%min%&7/&e&l%max%"
 
+game-sb:
+  title: "TestScore"
+  teams: "%team_color%Team %team_id%: %team_point%"
+  lines:
+    - "&c====================="
+    - "Time: %time%"
+    - "%teams%"
+    - "&f====================="
+
 rewards:
-  1:
+  '1':
     type: command
-    item: eco give %player% 100
-  2:
+    reward: give %player% diamond_block 1
+    lobby: 1
+  '2':
     type: item
-    item:
-      Material: Gold
-      name:
+    reward:
+      material: CHISELED_STONE_BRICKS
+      amount: 64
+    lobby: 1

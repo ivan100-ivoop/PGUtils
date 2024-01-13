@@ -1,13 +1,12 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.interfaces.EvenDependent;
 import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.PlayerPVP;
+import com.github.pgutils.utils.PlayerManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
@@ -15,7 +14,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.github.pgutils.enums.LobbyStatus;
 import org.bukkit.potion.PotionEffect;
@@ -50,7 +48,7 @@ public class Lobby {
     // Saved
     private int minPlayers = 2;
 
-    private int lobbyStartingTime = 60;
+    private int lobbyStartingTime = 200;
 
     private int lobbyResettingTime = 200;
 
@@ -179,7 +177,7 @@ public class Lobby {
                         .sendMessage(ChatMessageType.ACTION_BAR,
                                 new TextComponent(Messages.getMessage("game-end-message", "&eThe game has been ended!", false)));
                     player.teleport(pos);
-                    PlayerPVP.disablePVP(player);
+                    PlayerManager.disablePVP(player);
                 });
 
 
@@ -202,7 +200,7 @@ public class Lobby {
         player.sendMessage(Messages.messageWithPrefix("success-joined-lobby", "&aYou have joined lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
-        PlayerPVP.disablePVP(player);
+        PlayerManager.disablePVP(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 1, true, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 5, true, false));
         players.add(player);
@@ -226,7 +224,7 @@ public class Lobby {
 
         player.removePotionEffect(PotionEffectType.SATURATION);
         player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-        PlayerPVP.enablePVP(player);
+        PlayerManager.enablePVP(player);
 
         players.remove(player);
     }

@@ -2,22 +2,21 @@ package com.github.pgutils.commands.all;
 
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.utils.PGSubCommand;
-import com.github.pgutils.utils.ScoreboardManager;
+import com.github.pgutils.utils.GameScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import javax.swing.text.PlainDocument;
 import java.util.Collections;
 import java.util.List;
 
 public class ScordBoardCommand extends PGSubCommand {
-    private ScoreboardManager sb;
+    private GameScoreboardManager sb;
     private int time = 0;
 
     public  ScordBoardCommand(){
-        sb = new ScoreboardManager();
+        sb = new GameScoreboardManager();
     }
 
     @Override
@@ -44,17 +43,16 @@ public class ScordBoardCommand extends PGSubCommand {
     public boolean execute(CommandSender sender, String[] args) {
         if(sender instanceof Player){
             Player player = (Player) sender;
+            sb.addTeam(1, "#FFAA00", 1);
+            sb.addTeam(2, "#5555FF", 1);
             sb.createGameScoreboard(player, 1);
-            sb.addTeam(1, "&a", 1);
-            sb.addTeam(2, "&b", 1);
             Bukkit.getScheduler().runTaskTimer(PGUtils.getPlugin(PGUtils.class), new Runnable() {
                 @Override
                 public void run() {
                     time++;
                     sb.setTime(time, 1);
                     sb.addTeamPoint(1, 1);
-                    sb.addTeamPoint(2, 1);
-                    if(time > 40){
+                    if(time > 20){
                         time = 0;
                         sb.removeGameScore(1);
                     }
