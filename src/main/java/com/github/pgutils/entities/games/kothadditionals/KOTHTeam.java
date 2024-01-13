@@ -38,9 +38,7 @@ public class KOTHTeam {
         this.arena = arena;
 
         team = arena.getScoreboard().registerNewTeam("Team_" + id);
-
-
-        arena.getSbManager().addTeam(id, GeneralUtils.hexToMinecraftColor(colorString), arena.getID());
+        arena.getSbManager().addTeam(id, colorString, arena.getID());
     }
     public void addPlayer(Player player) {
         players.add(player);
@@ -109,11 +107,11 @@ public class KOTHTeam {
     }
     public void addPoint(int point) {
         points += point;
-        arena.getSbManager().setTeamPoint(id, arena.getID(), points);
+        arena.getSbManager().setTeamPoint(id, points, arena.getID());
     }
     public void removePoint(int point) {
         points -= point;
-        arena.getSbManager().setTeamPoint(id, arena.getID(), points);
+        arena.getSbManager().setTeamPoint(id, points, arena.getID());
     }
     public int getPoints() {
         return points;

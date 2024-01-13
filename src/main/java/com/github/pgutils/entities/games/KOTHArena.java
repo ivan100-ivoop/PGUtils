@@ -12,7 +12,7 @@ import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.ScoreboardManager;
+import com.github.pgutils.utils.GameScoreboardManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -39,7 +39,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     private int testMessageTick = 0;
 
-    private int endingTime = 100;
+    private int endingTime = 1000;
 
     private int endingTick = 0;
 
@@ -49,10 +49,10 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private int teamsAmount = 2;
 
     // Saved
-    private int matchTime = 30;
+    private int matchTime = 3000;
 
 
-    private ScoreboardManager sbManager;
+    private GameScoreboardManager sbManager;
     private boolean overtime = false;
 
     private int overtimeMAX = 10;
@@ -71,7 +71,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public void start() {
         System.out.println("Starting game " + getID() + " of type " + getType() + " with " + players.size() + " players!");
 
-        sbManager = new ScoreboardManager();
+        sbManager = new GameScoreboardManager();
 
         Collections.shuffle(players);
 
@@ -283,7 +283,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         this.teamsAmount = readObject;
     }
 
-    public ScoreboardManager getSbManager() {
+    public GameScoreboardManager getSbManager() {
         return sbManager;
     }
 

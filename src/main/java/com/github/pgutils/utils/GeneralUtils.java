@@ -30,7 +30,7 @@ public class GeneralUtils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    private static final String translateHexColorCodes(String message) {
+    public static final String translateHexColorCodes(String message) {
         Matcher matcher = GeneralUtils.HEX_PATTERN.matcher(message);
         StringBuffer buffer = new StringBuffer(message.length() + 32);
 
@@ -178,6 +178,19 @@ public class GeneralUtils {
         }
         Lobby lobby = _lobby.get();
         return lobby;
+    }
+
+    public static String formatSeconds(int seconds) {
+        int minutes = seconds/60;
+        seconds = seconds%60;
+
+        String sMinutes = minutes + "";
+        String sSeconds = seconds + "";
+
+        if(minutes < 10) sMinutes = "0" + minutes;
+        if(seconds < 10) sSeconds = "0" + seconds;
+
+        return sMinutes + ":" + sSeconds;
     }
 
 }
