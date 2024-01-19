@@ -11,18 +11,17 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-import java.awt.*;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CustomItemRepo {
+public class CustomItemRepository {
 
     public final static Map<String, Supplier<ItemStack>> custom_item_name = new HashMap<>();
 
     static {
-        custom_item_name.put("Party Stick", CustomItemRepo::createPartyStick);
-        custom_item_name.put("Crown of the Fallen", CustomItemRepo::createCrownOfTheFallen);
-        custom_item_name.put("Godless", CustomItemRepo::createGodless);
+        custom_item_name.put("Party Stick", CustomItemRepository::createPartyStick);
+        custom_item_name.put("Crown of the Fallen", CustomItemRepository::createCrownOfTheFallen);
+        custom_item_name.put("Godless", CustomItemRepository::createGodless);
     }
 
     public static ItemStack createCustomItem(String name, Material material, CustomItemRarities rarity, List<String> lore) {

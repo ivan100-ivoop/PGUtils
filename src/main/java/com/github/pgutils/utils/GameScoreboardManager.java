@@ -188,4 +188,8 @@ public class GameScoreboardManager {
             this.gameScor.put(gameID, Bukkit.getScoreboardManager().getNewScoreboard());
         return this.gameScor.get(gameID);
     }
+
+    public void removeScoreboard(Player player) {
+
+    }
 }

@@ -1,6 +1,6 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.customitems.CustomItemRepo;
+import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.utils.GeneralUtils;

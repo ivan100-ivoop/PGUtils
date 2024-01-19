@@ -2,8 +2,8 @@ package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.enums.GameStatus;
+import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
-import com.github.pgutils.utils.ScoreboardManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -30,7 +30,7 @@ public abstract class PlaySpace {
 
     protected GameStatus status = GameStatus.INACTIVE;
 
-    private ScoreboardManager scoreboardManager = null;
+    private GameScoreboardManager scoreboardManager = null;
 
     protected int tick = 0;
 
@@ -54,7 +54,7 @@ public abstract class PlaySpace {
     }
 
     public void setup(List<Player> players) {
-        scoreboardManager = new ScoreboardManager();
+        scoreboardManager = new GameScoreboardManager();
         this.players.addAll(players);
         status = GameStatus.STARTING;
         start();
@@ -99,8 +99,8 @@ public abstract class PlaySpace {
     public void reset() {
         status = GameStatus.INACTIVE;
         tick = 0;
-        if (scoreboardManager != null)
-            scoreboardManager.removeAllScoreboard(getID());
+        //if (scoreboardManager != null)
+        //    scoreboardManager.removeAllScoreboard(getID());
         players = new ArrayList<>();
     }
 
@@ -169,7 +169,7 @@ public abstract class PlaySpace {
         return scoreboardManager.getScoreboard(getID());
     }
 
-    public ScoreboardManager getSbManager() {
+    public GameScoreboardManager getSbManager() {
         return scoreboardManager;
     }
 

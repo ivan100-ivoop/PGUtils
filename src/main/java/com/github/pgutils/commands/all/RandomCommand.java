@@ -1,11 +1,10 @@
 package com.github.pgutils.commands.all;
 
-import com.github.pgutils.customitems.CustomItemRepo;
 import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.UltimateUtilsX;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+import com.github.pgutils.customitems.CustomItemRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +58,7 @@ public class RandomCommand extends PGSubCommand {
         // if its item then return the list of items
         if (args[0].equalsIgnoreCase("item")) {
             // add items in a list
-            List<String> list = new ArrayList<>( CustomItemRepo.custom_item_name.keySet());
+            List<String> list = new ArrayList<>(CustomItemRepository.custom_item_name.keySet());
             return list;
 
         }

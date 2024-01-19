@@ -12,7 +12,6 @@ import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.ScoreboardManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;

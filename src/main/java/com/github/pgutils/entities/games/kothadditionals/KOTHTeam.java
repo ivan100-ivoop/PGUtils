@@ -1,6 +1,6 @@
 package com.github.pgutils.entities.games.kothadditionals;
 
-import com.github.pgutils.customitems.CustomItemRepo;
+import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.entities.Team;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.utils.GeneralUtils;
@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +25,13 @@ public class KOTHTeam extends Team {
     private Color color;
     private String colorString;
     private int points = 0;
-    private Team team;
+    private org.bukkit.scoreboard.Team team;
     private int id;
 
     public KOTHTeam(String color, int id, KOTHArena arena) {
         super(color, id, arena);
         this.arena = arena;
 
-        team = arena.getScoreboard().registerNewTeam("Team_" + id);
         arena.getSbManager().addTeam(id, colorString, arena.getID());
     }
 
@@ -88,7 +86,7 @@ public class KOTHTeam extends Team {
         boots.setItemMeta(meta4);
         player.getInventory().setBoots(boots);
 
-        player.getInventory().setItem(player.getInventory().firstEmpty(), CustomItemRepo.createPartyStick());
+        player.getInventory().setItem(player.getInventory().firstEmpty(), CustomItemRepository.createPartyStick());
 
         System.out.println("Added player "+player.getName()+" to team "+getID());
     }
