@@ -1,11 +1,15 @@
 package com.github.pgutils;
 
 import com.github.pgutils.commands.PGUtilsCommand;
+import com.github.pgutils.customitems.CustomEffect;
 import com.github.pgutils.customitems.CustomEffectUpdater;
 import com.github.pgutils.customitems.CustomItemLibrary;
+import com.github.pgutils.customitems.CustomItemRepo;
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
+import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -13,6 +17,7 @@ import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
 import com.github.pgutils.utils.RewardManager;
 import org.bukkit.Bukkit;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -85,6 +90,9 @@ public final class PGUtils extends JavaPlugin {
 
         deserializationBootstrap();
 
+        PlaySpace.playSpaceTypes.put("koth", KOTHArena.class);
+
+        CustomItemLibrary.onStart();
     }
     public static PortalManager getPortalManager() { return PM; }
 
@@ -92,8 +100,13 @@ public final class PGUtils extends JavaPlugin {
     public void onDisable() {
         Lobby.lobbies.forEach(lobby -> {
             lobby.kickAll();
-            lobby.delete();
         });
+
+        PlaySpace.playSpaces.forEach(playSpace -> {
+            playSpace.end();
+        });
+
+        CustomEffect.removeAllEffects();
 
         serializationBootstrap();
     }

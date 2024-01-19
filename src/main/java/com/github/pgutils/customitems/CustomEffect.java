@@ -1,5 +1,6 @@
 package com.github.pgutils.customitems;
 
+import com.github.pgutils.customitems.effects.PartyEffect;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -18,6 +19,23 @@ public abstract class CustomEffect {
     public CustomEffect(Player effectedPlayer) {
         this.effectedPlayer = effectedPlayer;
         customEffects.add(this);
+    }
+
+    public static void removeAllEffects(Player player) {
+        for (int i = customEffects.size() - 1; i >= 0; i--) {
+            if (customEffects.get(i).getEffectedPlayer().equals(player)) {
+                removeEffect(customEffects.get(i));
+            }
+        }
+    }
+
+    public static CustomEffect getEffect(Player e, Class<? extends CustomEffect> partyEffectClass) {
+        for (CustomEffect effect : customEffects) {
+            if (effect.getEffectedPlayer().equals(e) && effect.getClass().equals(partyEffectClass)) {
+                return effect;
+            }
+        }
+        return null;
     }
 
     public void update(){
@@ -53,7 +71,16 @@ public abstract class CustomEffect {
 
     public static void removeEffect(CustomEffect effect) {
         customEffects.remove(effect);
+        effect.onRemove();
     }
+
+    public static void removeAllEffects() {
+        for (int i = customEffects.size() - 1; i >= 0; i--) {
+            removeEffect(customEffects.get(i));
+        }
+    }
+
+    public abstract void onRemove();
 
     public static boolean hasEffect(Player player, Class<? extends CustomEffect> effectClass) {
         for (CustomEffect effect : customEffects) {

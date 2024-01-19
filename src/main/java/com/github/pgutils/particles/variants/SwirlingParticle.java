@@ -1,6 +1,7 @@
 package com.github.pgutils.particles.variants;
 
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.particles.EnhancedParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -67,7 +68,6 @@ public abstract class SwirlingParticle extends EnhancedParticle {
             location.getWorld().spawnParticle(swirlingParticle, location, 0, 0, verticalSpeed, 0);
 
         }
-
     }
 
     @Override
@@ -168,5 +168,23 @@ public abstract class SwirlingParticle extends EnhancedParticle {
 
     public void setInitialVerticalSpeed(double initialVerticalSpeed) {
         this.initialVerticalSpeed = initialVerticalSpeed;
+    }
+
+    public static void objectLessParticle(Location location, double radius, double y_offset, int points, Particle swirlingParticle, double verticalSpeed, double angle) {
+        // The angle has to be rotated by the speed
+        // Each point is 360/points degrees apart
+        for (int i = 0; i < points; i++) {
+            // Calculate the angle for this point
+            double a = angle + (2 * Math.PI * i / points);
+            // Calculate the x and y coordinates for this point
+            double x = radius * Math.cos(a);
+            double z = radius * Math.sin(a);
+
+            Location location1 = location.clone();
+            location1.add(x, y_offset, z);
+
+            location1.getWorld().spawnParticle(swirlingParticle, location1, 0, 0, verticalSpeed, 0);
+
+        }
     }
 }

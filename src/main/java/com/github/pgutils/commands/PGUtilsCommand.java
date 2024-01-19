@@ -31,6 +31,7 @@ public class PGUtilsCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new GameCommand());
         registerSubCommand(new LobbyCommand());
         registerSubCommand(new ScordBoardCommand());
+        registerSubCommand(new RandomCommand());
     }
 
     public void registerSubCommand(PGSubCommand subCommand) {

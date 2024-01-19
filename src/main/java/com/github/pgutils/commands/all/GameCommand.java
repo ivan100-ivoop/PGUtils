@@ -10,6 +10,7 @@ import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PGSubCommand;
+import com.github.pgutils.utils.UltimateUtilsX;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -46,210 +47,19 @@ public class GameCommand extends PGSubCommand {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (args[0].equalsIgnoreCase("koth")) {
-                if (args.length >= 2) {
+            switch (args[0].toLowerCase()) {
+                case "create":
+                    return UltimateUtilsX.createGame(player, args);
 
-                    if (args[1].equalsIgnoreCase("create")) {
-                        if (args.length >= 3) {
-                            if (PGUtils.selectedPlaySpace.stream().filter(player_ -> player_.player.equals(player)).findFirst().orElse(null) == null) {
-                                player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                return false;
-                            }
-                            if (args[2].equalsIgnoreCase("spawn")) {
-                                if (args.length >= 4) {
-                                    int team = Integer.parseInt(args[3]);
+                case "set":
+                    return UltimateUtilsX.setGame(player, args);
 
-                                    Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                            .filter(selector -> selector.player.equals(player))
-                                            .findFirst();
-                                    if (!arena.isPresent()) {
-                                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                    } else {
-                                        if (arena.get().playSpace instanceof KOTHArena) {
-                                            KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHSpawn kothSpawn = kothArena.addSpawnLocation(player.getLocation(), team);
-                                            player.sendMessage(Messages.messageWithPrefix("create-spawn-message", "&aSuccessful created Spawn Location! With ID: %id% and Team ID: %team%").replace("%id%", kothSpawn.getID() + "").replace("%team%", team + ""));
-                                        } else {
-                                            player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                                        }
-                                    }
-                                }
-                            }
-                            if (args[2].equalsIgnoreCase("point")) {
-                                if (args.length == 6) {
-                                    int radius = Integer.parseInt(args[3]);
-                                    int points = Integer.parseInt(args[4]);
-                                    int captureTime = Integer.parseInt(args[5]);
-                                    Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                            .filter(selector -> selector.player.equals(player))
-                                            .findFirst();
-                                    if (!arena.isPresent()) {
-                                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                    } else {
-                                        if (arena.get().playSpace instanceof KOTHArena) {
-                                            KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation(), radius, points, captureTime);
-                                            player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
-                                                    .replace("%id%", kothPoint.getID() + "")
-                                                    .replace("%radius%", radius + "")
-                                                    .replace("%points%", points + "")
-                                                    .replace("%time%", captureTime + ""));
-                                        } else {
-                                            player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                                        }
-                                    }
-                                }
-                                if (args.length == 5) {
-                                    int radius = Integer.parseInt(args[3]);
-                                    int points = Integer.parseInt(args[4]);
-                                    Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                            .filter(selector -> selector.player.equals(player))
-                                            .findFirst();
-                                    if (!arena.isPresent()) {
-                                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                    } else {
-                                        if (arena.get().playSpace instanceof KOTHArena) {
-                                            KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation(), radius, points);
-                                            player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
-                                                    .replace("%id%", kothPoint.getID() + "")
-                                                    .replace("%radius%", radius + "")
-                                                    .replace("%points%", points + ""));
-                                        } else {
-                                            player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                                        }
-                                    }
-                                } else if (args.length == 4) {
-                                    int radius = Integer.parseInt(args[3]);
-                                    Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                            .filter(selector -> selector.player.equals(player))
-                                            .findFirst();
-                                    if (!arena.isPresent()) {
-                                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                    } else {
-                                        if (arena.get().playSpace instanceof KOTHArena) {
-                                            KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                            KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation(), radius);
-                                            player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
-                                                    .replace("%id%", kothPoint.getID() + "")
-                                                    .replace("%radius%", radius + ""));
-                                        } else {
-                                            player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                                        }
-                                    }
-                                }
-                                Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                        .filter(selector -> selector.player.equals(player))
-                                        .findFirst();
-                                if (!arena.isPresent()) {
-                                    player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                                } else {
-                                    if (arena.get().playSpace instanceof KOTHArena) {
-                                        KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                        kothArena.addCapturePoint(player.getLocation());
-                                        KOTHPoint kothPoint = kothArena.addCapturePoint(player.getLocation());
-                                        player.sendMessage(Messages.messageWithPrefix("create-point-message", "&aSuccessful created Point Location! With ID: %id% and radius: %radius% and points: %points% and capture time: %time%")
-                                                .replace("%id%", kothPoint.getID() + ""));
-                                    } else {
-                                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                                    }
-                                }
+                case "select":
+                    return UltimateUtilsX.selectGame(player, args);
 
-                            }
-                        } else {
-                            KOTHArena arena = new KOTHArena();
-                            arena.setPos(player.getLocation());
-                            player.sendMessage(Messages.messageWithPrefix("create-arena-message", "&aSuccessful created KOTH Arena!"));
-                            GeneralUtils.playerSelectPlaySpace(player, arena);
-                        }
-
-                    }
-                    if (args[1].equalsIgnoreCase("set")) {
-                        Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                                .filter(selector -> selector.player.equals(player))
-                                .findFirst();
-                        if (!arena.isPresent()) {
-                            player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                        } else {
-                            if (arena.get().playSpace instanceof KOTHArena) {
-                                KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                                kothArena.setPos(player.getLocation());
-                                player.sendMessage(Messages.messageWithPrefix("set-arena-message", "&aSuccessful set KOTH Arena Location!"));
-                            } else {
-                                player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                            }
-                        }
-                    }
-                    return true;
-                }
+                case "delete":
+                    return UltimateUtilsX.deleteGame(player, args);
             }
-            if (args[0].equalsIgnoreCase("select")) {
-                if (args.length >= 2) {
-                    int id = Integer.parseInt(args[1]);
-                    PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                            .filter(space -> space.getID() == id)
-                            .findFirst()
-                            .orElse(null);
-                    if (playSpace == null) {
-                        player.sendMessage(Messages.messageWithPrefix("missing-arena-playspace-message", "&cPlaySpace is not found!"));
-                    } else {
-                        GeneralUtils.playerSelectPlaySpace(player, playSpace);
-                        player.sendMessage(Messages.messageWithPrefix("select-arena-playspace-message", "&aSuccessful selected %gamename%").replace("%gamename%", playSpace.getType()));
-                    }
-                }
-                return true;
-            }
-
-            // TODO: FIX THIS
-            if (args[0].equalsIgnoreCase("delete")) {
-                if (args.length >= 2) {
-                    int id = Integer.parseInt(args[1]);
-                    PlaySpace playSpace = PlaySpace.playSpaces.stream()
-                            .filter(space -> space.getID() == id)
-                            .findFirst()
-                            .orElse(null);
-                    if (playSpace == null) {
-                        player.sendMessage(Messages.messageWithPrefix("missing-arena-playspace-message", "&cPlaySpace is not found!"));
-                    } else {
-                        Lobby lobby = Lobby.lobbies.stream()
-                                .filter(lobby_ -> lobby_.getPlaySpaces().contains(playSpace))
-                                .findFirst()
-                                .orElse(null);
-                        if (lobby != null) {
-                            if (lobby.getCurrentPlaySpace() == playSpace) {
-                                lobby.getCurrentPlaySpace().end();
-                                lobby.setCurrentPlaySpace(null);
-                            }
-                            lobby.removePlaySpace(playSpace);
-                        }
-                        PlaySpace.playSpaces.remove(playSpace);
-                        PGUtils.selectedPlaySpace.remove(PGUtils.selectedPlaySpace.stream()
-                                .filter(selector -> selector.playSpace.equals(playSpace))
-                                .findFirst()
-                                .orElse(null));
-                        player.sendMessage(Messages.messageWithPrefix("delete-arena-playspace-message", "&aSuccessful deleted"));
-                    }
-                }
-
-            }
-            if (args[0].equalsIgnoreCase("set")) {
-                Optional<PlayerPlaySpaceSelector> arena = PGUtils.selectedPlaySpace.stream()
-                        .filter(selector -> selector.player.equals(player))
-                        .findFirst();
-                if (!arena.isPresent()) {
-                    player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cPlayspace is not selected!"));
-                } else {
-                    if (arena.get().playSpace instanceof KOTHArena) {
-                        KOTHArena kothArena = (KOTHArena) arena.get().playSpace;
-                        kothArena.setPos(player.getLocation());
-                        player.sendMessage(Messages.messageWithPrefix("set-arena-message", "&aSuccessful set KOTH Arena Location!"));
-                    } else {
-                        player.sendMessage(Messages.messageWithPrefix("missing-arena-message", "&cYou need to select a KOTH arena!"));
-                    }
-                }
-            }
-
-
         }
         return false;
     }

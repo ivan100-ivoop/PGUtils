@@ -1,12 +1,17 @@
 package com.github.pgutils.entities;
 
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.ScoreboardManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PlaySpace {
     private int ID;
@@ -14,6 +19,8 @@ public abstract class PlaySpace {
     private String UID;
 
     public static List<PlaySpace> playSpaces = new ArrayList<>();
+
+    public static Map<String, Class<? extends PlaySpace>> playSpaceTypes = new HashMap<>();
 
     private Location pos;
 
@@ -23,14 +30,19 @@ public abstract class PlaySpace {
 
     protected GameStatus status = GameStatus.INACTIVE;
 
+    private ScoreboardManager scoreboardManager = null;
+
     protected int tick = 0;
 
     protected String type = "Typeless";
+
+    private String name;
 
     public PlaySpace() {
         playSpaces.add(this);
         ID = playSpaces.size();
         UID = GeneralUtils.generateUniqueID();
+        name = "PlaySpace-" + ID;
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -42,6 +54,7 @@ public abstract class PlaySpace {
     }
 
     public void setup(List<Player> players) {
+        scoreboardManager = new ScoreboardManager();
         this.players.addAll(players);
         status = GameStatus.STARTING;
         start();
@@ -58,6 +71,23 @@ public abstract class PlaySpace {
 
     abstract public void endProcedure();
 
+    public boolean delete() {
+
+        playSpaces.remove(this);
+        if (getLobby() != null) {
+            end();
+            getLobby().removePlaySpace(this);
+            setLobby(null);
+        }
+        for (int i = PGUtils.selectedPlaySpace.size() - 1; i >= 0; i--) {
+            if (PGUtils.selectedPlaySpace.get(i).playSpace == this) {
+                PGUtils.selectedPlaySpace.remove(i);
+            }
+        }
+        System.out.println("Deleted PlaySpace " + ID + " playSpaces.size() = " + playSpaces.size());
+        return true;
+    }
+
     public void end() {
         endProcedure();
         reset();
@@ -69,6 +99,8 @@ public abstract class PlaySpace {
     public void reset() {
         status = GameStatus.INACTIVE;
         tick = 0;
+        if (scoreboardManager != null)
+            scoreboardManager.removeAllScoreboard(getID());
         players = new ArrayList<>();
     }
 
@@ -124,5 +156,32 @@ public abstract class PlaySpace {
 
     public String getUID() {
         return UID;
+    }
+
+    public abstract boolean addGameObjects(Player player, String[] args);
+
+    public abstract boolean removeGameObjects(Player player, String[] args);
+
+
+    public abstract boolean setGameObjects(Player player, String[] args);
+
+    public Scoreboard getScoreboard() {
+        return scoreboardManager.getScoreboard(getID());
+    }
+
+    public ScoreboardManager getSbManager() {
+        return scoreboardManager;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }

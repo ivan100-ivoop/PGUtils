@@ -24,6 +24,7 @@ public class LobbyUtils {
             bukkitObjectOutputStream.writeObject(lobby.getMaxPlayers());
             bukkitObjectOutputStream.writeObject(lobby.isLocked());
             bukkitObjectOutputStream.writeObject(lobby.getUID());
+            bukkitObjectOutputStream.writeObject(lobby.getName());
             bukkitObjectOutputStream.flush();
 
             byte[] serializedSlotMachineBytes = biteArrayOutputStream.toByteArray();
@@ -57,6 +58,9 @@ public class LobbyUtils {
             lobby.setMaxPlayers((int) bukkitObjectInputStream.readObject());
             lobby.setLocked((boolean) bukkitObjectInputStream.readObject());
             lobby.setUID((String) bukkitObjectInputStream.readObject());
+            lobby.setName((String) bukkitObjectInputStream.readObject());
+
+            bufferedReader.close();
 
             return lobby;
 
@@ -115,9 +119,10 @@ public class LobbyUtils {
     }
 
     public static void saveLobbies() {
-        Lobby.lobbies.forEach(lobby -> {
-            saveLobby(lobby, "plugins/PGUtils/saves/lobby/" + lobby.getID() + ".ser");
-        });
+        for (int i = Lobby.lobbies.size() - 1; i >= 0; i--) {
+            Lobby lobby = Lobby.lobbies.get(i);
+            saveLobby(lobby, "plugins/PGUtils/saves/lobby/" + lobby.getUID() + ".ser");
+        }
     }
 
     public static Lobby getLobbyByUID(String lobbyUID) {

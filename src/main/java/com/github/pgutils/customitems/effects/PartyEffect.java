@@ -31,4 +31,9 @@ public class PartyEffect extends CustomEffect {
 
         }
     }
+
+    @Override
+    public void onRemove() {
+
+    }
 }

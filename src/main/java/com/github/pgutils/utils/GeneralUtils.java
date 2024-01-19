@@ -193,4 +193,25 @@ public class GeneralUtils {
         return sMinutes + ":" + sSeconds;
     }
 
+    public static PlaySpace getPlaySpaceByID(int id) {
+        Optional<PlaySpace> _playSpace = PlaySpace.playSpaces.stream()
+                .filter(playSpace -> playSpace.getID() == id)
+                .findFirst();
+        if (!_playSpace.isPresent()) {
+            return null;
+        }
+        PlaySpace playSpace = _playSpace.get();
+        return playSpace;
+    }
+
+    public static float getAngleFromTo(Location location, Location entityLocation) {
+        double x = entityLocation.getX() - location.getX();
+        double z = entityLocation.getZ() - location.getZ();
+        return (float) Math.toDegrees(Math.atan2(-x, z));
+    }
+
+    public static double speedFunc2(double target, double current, double speed) {
+        return (target - current) / speed;
+
+    }
 }

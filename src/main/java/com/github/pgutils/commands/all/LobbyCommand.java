@@ -53,7 +53,7 @@ public class LobbyCommand extends PGSubCommand {
             case "remove-game-id":
                 return UltimateUtilsX.removeGameFromLobbyID(sender, args);
 
-            case "remove-id":
+            case "delete-id":
                 return UltimateUtilsX.removeLobbyID(sender, args);
 
             case "kick-player":
@@ -67,6 +67,12 @@ public class LobbyCommand extends PGSubCommand {
 
             case "force-pull-player":
                 return UltimateUtilsX.forcePullPlayerToLobby(sender,args);
+
+            case "info-id":
+                return UltimateUtilsX.lobbyInfoID(sender,args);
+
+            case "info-games-id":
+                return UltimateUtilsX.lobbyGamesInfoID(sender,args);
         }
 
 
@@ -79,7 +85,7 @@ public class LobbyCommand extends PGSubCommand {
                     case "create":
                         return UltimateUtilsX.createLobby(player);
 
-                    case "remove":
+                    case "delete":
                         return UltimateUtilsX.removeLobby(player);
 
                     case "join":
@@ -99,6 +105,12 @@ public class LobbyCommand extends PGSubCommand {
 
                     case "force-pull-world-id":
                         return UltimateUtilsX.forcePullAllInWorldToLobbyID(player,args);
+
+                    case "info":
+                        return UltimateUtilsX.lobbyInfo(player,args);
+
+                    case "info-games":
+                        return UltimateUtilsX.lobbyGamesInfo(player,args);
                 }
             }
         }
@@ -114,8 +126,8 @@ public class LobbyCommand extends PGSubCommand {
                     "create",
                     "select",
                     "set",
-                    "remove",
-                    "remove-id",
+                    "delete",
+                    "delete-id",
                     "add-game",
                     "add-game-id",
                     "remove-game",
@@ -124,7 +136,12 @@ public class LobbyCommand extends PGSubCommand {
                     "kick-all",
                     "force-end-id",
                     "force-pull-player",
-                    "force-pull-world-id"
+                    "force-pull-world-id",
+                    "info",
+                    "info-id",
+                    "info-games",
+                    "info-games-id"
+
 
             );
         }
