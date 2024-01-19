@@ -190,6 +190,14 @@ public class GameScoreboardManager {
     }
 
     public void removeScoreboard(Player player) {
-
+        for(Map.Entry<Integer, List<FastBoard>> sb : this.playerScoreboards.entrySet()){
+            for(FastBoard _sb : sb.getValue()){
+                if(_sb.getPlayer() == player){
+                    if (!_sb.isDeleted()) {
+                        _sb.delete();
+                    }
+                }
+            }
+        }
     }
 }
