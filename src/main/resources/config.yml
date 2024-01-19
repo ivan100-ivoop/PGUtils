@@ -19,12 +19,15 @@ lobby-menu:
 
 game-sb:
   title: "TestScore"
-  teams: "%team_color%Team %team_id%: %team_point%"
+  teams: "Team %team_id%&7: &f%team_point%"
   lines:
     - "&c====================="
     - "Time: %time%"
     - "%teams%"
     - "&f====================="
+
+whitelist-commands:
+  - "pg"
 
 rewards:
   '1':

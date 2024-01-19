@@ -7,13 +7,16 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class RewardManager {
 
@@ -50,20 +53,20 @@ public class RewardManager {
                             .addCommand(rewardSection.getString("reward"))
                             .setLobbyId(rewardSection.getInt("lobby")));
                 } else {
-                    Material material = Material.getMaterial(rewardSection.getString("reward.material", "STONE"));
-                    int amount = rewardSection.getInt("reward.amount", 1);
+                    ConfigurationSection _reward = rewardSection.getConfigurationSection("reward");
+                    ItemStack item = new ItemStack(Material.valueOf(_reward.getString("type", "STONE")), _reward.getInt("amount", 1));
+                    item.setItemMeta(((ItemMeta) _reward.get("meta")));
 
                     this.rewards.add(new Rewards()
                             .setType(type)
                             .setItemID(rewards.size() + 1)
-                            .addItem(new ItemStack(material, amount))
+                            .addItem(item)
                             .setLobbyId(rewardSection.getInt("lobby")));
                 }
             }
         }
 
-
-        public FileConfiguration getClear(){
+    public FileConfiguration getClear(){
         FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
         config.set("rewards", null);
         PGUtils.getPlugin(PGUtils.class).saveConfig();
@@ -84,9 +87,11 @@ public class RewardManager {
                 if (reward.getType() == RewardsType.COMMAND) {
                     update.set("reward", reward.getCommand());
                 } else {
-                    ConfigurationSection updateItem = update.createSection("reward");
-                    updateItem.set("material", reward.getItem().getType().toString());
-                    updateItem.set("amount", reward.getItem().getAmount());
+
+                   ConfigurationSection _reward = update.createSection("reward");
+                    _reward.set("meta", reward.getItem().getItemMeta());
+                    _reward.set("type", reward.getItem().getType().toString());
+                    _reward.set("amount", reward.getItem().getAmount());
                 }
 
                 update.set("lobby", reward.getLobbyID());

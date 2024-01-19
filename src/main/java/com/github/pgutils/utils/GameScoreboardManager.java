@@ -1,180 +1,191 @@
 package com.github.pgutils.utils;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
+import com.github.pgutils.utils.sb.Team;
+import fr.mrmicky.fastboard.adventure.FastBoard;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GameScoreboardManager {
-        private Map<Player, Scoreboard> playerScoreboards;
-        private Map<Integer, Scoreboard> gameScor;
-        private Map<Integer, String> teamsColor;
-        private Map<Integer, Integer> teamsPoint;
-        private ConfigurationSection sbConfig;
-        private int time = 0;
+    private final ConfigurationSection sbConfig;
+    private final Map<Integer, List<FastBoard>> playerScoreboards;
+    private final Map<Integer, List<Team>> teams;
+    private final Map<Integer, Scoreboard> gameScor;
 
-        public GameScoreboardManager() {
-            this.sbConfig = PGUtils.getPlugin(PGUtils.class).getConfig().getConfigurationSection("game-sb");
-            this.playerScoreboards = new HashMap<>();
-            this.gameScor = new HashMap<>();
-            this.teamsColor = new HashMap<>();
-            this.teamsPoint = new HashMap<>();
-        }
-        public void removeScoreboard(Player player) {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-            playerScoreboards.remove(player);
-        }
-        public void addTeam(Integer team, String color, Integer gameID) {
-            this.teamsColor.put(team, color);
-            for (Player p : playerScoreboards.keySet()) {
-                updateGameScore(p, gameID);
-            }
-        }
-        public void addTeamPoint(Integer team, Integer gameID) {
-            teamsPoint.merge(team, 1, Integer::sum);
-            for (Player p : playerScoreboards.keySet()) {
-                updateGameScore(p, gameID);
-            }
-        }
+    public GameScoreboardManager() {
+        this.sbConfig = PGUtils.getPlugin(PGUtils.class).getConfig().getConfigurationSection("game-sb");
+        this.playerScoreboards = new HashMap<>();
+        this.teams = new HashMap<>();
+        this.gameScor = new HashMap<>();
+    }
 
-        public void setTeamPoint(Integer team, Integer points, Integer gameID) {
-        if(teamsPoint.containsKey(team))
-            teamsPoint.remove(team);
-        teamsPoint.put(team, points);
-        for (Player p : playerScoreboards.keySet()) {
-            updateGameScore(p, gameID);
+    public void addTeam(Integer teamID, String color, Integer gameID) {
+        if (!teams.containsKey(gameID))
+            teams.put(gameID, new ArrayList<>());
+
+        teams.get(gameID).add(new Team()
+                .setId(teamID)
+                .setColor(color)
+                .setPoints(0)
+        );
+        this.update(gameID);
+    }
+
+    public void addTeamPoint(Integer teamID, Integer gameID) {
+        List<Team> game = teams.get(gameID);
+        if (game != null) {
+            for (Team team1 : game) {
+                if (team1.getId() == teamID) {
+                    team1.addPoint();
+                }
+            }
+            this.update(gameID);
         }
     }
 
-        public void setTime(Integer time, int gameId) {
-            this.time = time;
-            for (Player p : playerScoreboards.keySet()) {
-                updateGameScore(p, gameId);
+    public void setTeamPoint(Integer teamID, Integer points, Integer gameID) {
+        List<Team> game = teams.get(gameID);
+        if (game != null) {
+            for (Team team1 : game) {
+                if (team1.getId() == teamID) {
+                    team1.setPoints(points);
+                }
             }
+            this.update(gameID);
         }
-        private int getPoint(int teamID){
-            if(!teamsPoint.containsKey(teamID)){
-                teamsPoint.put(teamID, 0);
-            }
-            return teamsPoint.get(teamID);
-        }
-        public void removeGameScore(int gameID) {
-            teamsPoint.clear();
-            teamsColor.clear();
+    }
 
-            for (Player p : playerScoreboards.keySet()) {
-                Scoreboard scoreboard = playerScoreboards.get(p);
-                Objective objective = scoreboard.getObjective("kothScore" + gameID);
-                if (objective != null) {
-                    objective.unregister();
-                    removeScoreboard(p);
+    public void setTime(Integer time, int gameId) {
+        List<Team> game = teams.get(gameId);
+        if (game != null) {
+            for (Team team1 : game) {
+                team1.setTime(time);
+            }
+            this.update(gameId);
+        }
+    }
+
+    private int getPoint(int teamId, Integer gameID) {
+        List<Team> game = teams.get(gameID);
+        if (game != null) {
+            for (Team team1 : game) {
+                if (team1.getId() == teamId) {
+                    return team1.getPoints();
                 }
             }
         }
-        public void createGameScoreboard(Player player, int gameID) {
-            Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-            Objective objective = scoreboard.registerNewObjective("kothScore" + gameID, "dummy", GeneralUtils.fixColors(sbConfig.getString("title", "TestScore")));
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        return 0;
+    }
 
-            int index = 0;
-            if (!sbConfig.isString("lines")){
-                List<String> lines = sbConfig.getStringList("lines");
-                index = lines.size();
-                for (int i=0; i<lines.size(); i++){
-                    String line = lines.get(i);
+    private int getTime(int gameId) {
+        List<Team> game = teams.get(gameId);
+        if (game != null) {
+            for (Team team1 : game) {
+                return team1.getTime();
+            }
+        }
+        return 0;
+    }
 
-                    if(line.contains("%teams%")) {
-                        for(Map.Entry<Integer, String> teams : teamsColor.entrySet()){
-                            objective.getScore(GeneralUtils.fixColors(getTeamString(teams.getKey(), teams.getValue(), getPoint(teams.getKey())))).setScore(index);
-                            index--;
+    public void removeGameScore(int gameID) {
+        for (FastBoard _sb : playerScoreboards.get(gameID)) {
+            if (!_sb.isDeleted()) {
+                _sb.delete();
+            }
+        }
+        teams.remove(gameID);
+    }
+
+    public void createGameScoreboard(Player player, int gameID) {
+        if (!playerScoreboards.containsKey(gameID))
+            playerScoreboards.put(gameID, new ArrayList<>());
+
+        FastBoard board = new FastBoard(player);
+        playerScoreboards.get(gameID).add(board);
+
+        board.updateTitle(Component.text(GeneralUtils.fixColors(sbConfig.getString("title", "TestScore"))));
+        this.update(gameID);
+    }
+
+    private void update(int gameID) {
+        if (playerScoreboards.containsKey(gameID)) {
+            if (!sbConfig.isString("lines")) {
+                this.updateLinesScore(gameID);
+            } else {
+                this.updateStringScore(gameID);
+            }
+        }
+    }
+
+    private void updateLinesScore(int gameID) {
+        List<Component> lines = new ArrayList<>();
+        int time = this.getTime(gameID);
+
+        if (playerScoreboards.containsKey(gameID)) {
+            for (FastBoard sb : playerScoreboards.get(gameID)) {
+                for (String line : sbConfig.getStringList("lines")) {
+                    if (line.contains("%teams%")) {
+                        for (Team team : teams.get(gameID)) {
+                            lines.add(Component.text(GeneralUtils.fixColors(line.replace("%teams%", ""))).append(this.getTeamString(team.getId(), team.getColor(), team.getPoints())));
                         }
                     } else {
-                        if(line.contains("%time%")) {
+                        if (line.contains("%time%")) {
                             line = line.replace("%time%", GeneralUtils.formatSeconds(time));
                         }
-
-                        objective.getScore(GeneralUtils.fixColors(line)).setScore(index);
-                        index--;
+                        lines.add(Component.text(GeneralUtils.fixColors(line)));
                     }
                 }
-            } else {
-                objective.getScore(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines")))).setScore(index);
-            }
-
-            player.setScoreboard(scoreboard);
-            playerScoreboards.put(player, scoreboard);
-        }
-        public void updateGameScore(Player player, int id) {
-            Scoreboard scoreboard = playerScoreboards.get(player);
-            if (scoreboard != null) {
-                Objective objective = scoreboard.getObjective("kothScore" + id);
-                if (objective != null) {
-                    for (String entry : scoreboard.getEntries()) {
-                        scoreboard.resetScores(entry);
-                    }
-                    int index = 0;
-                    if (!sbConfig.isString("lines")){
-                        List<String> lines = sbConfig.getStringList("lines");
-                        index = lines.size();
-                        for (int i=0; i<lines.size(); i++){
-                            String line = lines.get(i);
-
-                            if(line.contains("%teams%")) {
-                                for(Map.Entry<Integer, String> teams : teamsColor.entrySet()){
-                                    objective.getScore(GeneralUtils.fixColors(getTeamString(teams.getKey(), teams.getValue(), getPoint(teams.getKey())))).setScore(index);
-                                    index--;
-                                }
-                            } else {
-                                if(line.contains("%time%")) {
-                                    line = line.replace("%time%", GeneralUtils.formatSeconds(time));
-                                }
-
-                                objective.getScore(GeneralUtils.fixColors(line)).setScore(index);
-                                index--;
-                            }
-                        }
-                    } else {
-                        objective.getScore(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines")))).setScore(index);
-                    }
-                }
+                sb.updateLines(lines);
             }
         }
+    }
 
-        private String getColor(String color){
-            List<String> colorGarbage = Arrays.asList("§0", "§1", "§2", "§3", "§4", "§5", "§6", "§7","§8", "§9", "§a", "§b", "§c", "§d", "§e");
-            return colorGarbage.get(KOTHTeam.colors.indexOf(color.substring(1).toUpperCase()));
-        }
-        private String fixPlaceHolders(String line) {
-
-            if(line.contains("%time%")) {
-                line = line.replace("%time%", GeneralUtils.formatSeconds(time));
+    private void updateStringScore(int gameID) {
+        if (playerScoreboards.containsKey(gameID)) {
+            for (FastBoard sb : playerScoreboards.get(gameID)) {
+                sb.updateLines(Component.text(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines"), gameID))));
             }
+        }
+    }
 
-            if(line.contains("%teams%")) {
-                StringBuilder teams = new StringBuilder();
-                teamsColor.forEach((key, value)->{
-                    teams.append(getTeamString(key, value, getPoint(key)));
-                });
-                line = line.replace("%teams%", teams.toString());
+    private String fixPlaceHolders(String line, int gameID) {
+        int time = this.getTime(gameID);
+
+        if (line.contains("%time%")) {
+            line = line.replace("%time%", GeneralUtils.formatSeconds(time));
+        }
+
+        if (line.contains("%teams%")) {
+            StringBuilder _teams = new StringBuilder();
+            for (Team team : teams.get(gameID)) {
+                _teams.append(GeneralUtils.fixColors(line.replace("%teams%", "")) + getTeamString(team.getId(), team.getColor(), team.getPoints()));
             }
-
-            return line;
-        }
-        private String getTeamString(int teamID, String color, int points){
-            return sbConfig.getString("teams", "%team_color%Team %team_id%: %team_point%")
-                    .replace("%team_color%", getColor(color))
-                    .replace("%team_id%", String.valueOf(teamID))
-                    .replace("%team_point%", String.valueOf(points));
-        }
-        public Scoreboard getScoreboard(int gameID){
-            if(!this.gameScor.containsKey(gameID))
-                this.gameScor.put(gameID, Bukkit.getScoreboardManager().getNewScoreboard());
-            return this.gameScor.get(gameID);
+            line = line.replace("%teams%", _teams.toString());
         }
 
+        return line;
+    }
+
+    private Component getTeamString(int teamID, String color, int points) {
+        String coloredText = GeneralUtils.fixColors(sbConfig.getString("teams", "Team %team_id%&7: &f%team_point%")
+                .replace("%team_id%", String.valueOf(teamID))
+                .replace("%team_point%", String.valueOf(points)));
+        return Component.text(coloredText).color(TextColor.fromHexString(color));
+
+    }
+
+    public Scoreboard getScoreboard(int gameID) {
+        if (!this.gameScor.containsKey(gameID))
+            this.gameScor.put(gameID, Bukkit.getScoreboardManager().getNewScoreboard());
+        return this.gameScor.get(gameID);
+    }
 }

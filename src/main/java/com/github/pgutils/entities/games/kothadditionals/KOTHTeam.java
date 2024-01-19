@@ -103,7 +103,7 @@ public class KOTHTeam {
         players.remove(player);
         player.getInventory().clear();
         team.removeEntry(player.getName());
-        arena.getSbManager().removeScoreboard(player);
+        arena.getSbManager().removeGameScore(arena.getID());
     }
     public void addPoint(int point) {
         points += point;

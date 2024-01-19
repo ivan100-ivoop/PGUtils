@@ -13,7 +13,6 @@ import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
 import com.github.pgutils.utils.RewardManager;
 import org.bukkit.Bukkit;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -28,7 +27,7 @@ public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
     public static RewardManager rewardManager = null;
-    public static File database = null, saveInv = null, rewardsChest = null, lang = null;
+    public static File database = null, saveInv = null, rewardsChest = null, lang = null, subJarsDir = null;
     public static PortalManager PM = null;
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
@@ -46,12 +45,28 @@ public final class PGUtils extends JavaPlugin {
         database = new File(getDataFolder(), "database");
         saveInv = new File(database, "saveInv");
         rewardsChest = new File(database, "PlayerChest");
+        subJarsDir = new File(getDataFolder(), "sub-jars");
 
-        if (!lang.exists()){ lang.mkdir(); }
-        if (!database.exists()){ database.mkdir(); }
-        if (!saveInv.exists()){ saveInv.mkdir(); }
-        if (!rewardsChest.exists()){ rewardsChest.mkdir(); }
-        if(!new File(lang, "en.yml").exists()){ lang.mkdir(); saveResource("lang/en.yml", false); }
+
+        if (!lang.exists()) {
+            lang.mkdir();
+        }
+        if (!database.exists()) {
+            database.mkdir();
+        }
+        if (!saveInv.exists()) {
+            saveInv.mkdir();
+        }
+        if (!rewardsChest.exists()) {
+            rewardsChest.mkdir();
+        }
+        if (!subJarsDir.exists()) {
+            subJarsDir.mkdir();
+        }
+        if (!new File(lang, "en.yml").exists()) {
+            lang.mkdir();
+            saveResource("lang/en.yml", false);
+        }
 
         prefix = Messages.getMessage("prefix", "&7[&e&lPGUtils&7] ", false);
 
@@ -69,6 +84,7 @@ public final class PGUtils extends JavaPlugin {
         new CustomEffectUpdater().runTaskTimer(this, 20, 1);
 
         deserializationBootstrap();
+
     }
     public static PortalManager getPortalManager() { return PM; }
 

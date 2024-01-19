@@ -15,3 +15,6 @@ permissions:
   pgutils.reload:
     permission-message: You do not have permission to use this command.
     default: op
+  pgutils.bypass.commands:
+    permission-message: You do not have permission to use this command.
+    default: op

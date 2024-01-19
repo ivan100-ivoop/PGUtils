@@ -1,9 +1,12 @@
 package com.github.pgutils.hooks;
 
-import com.github.pgutils.utils.*;
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.Lobby;
+import com.github.pgutils.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,12 +16,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-
-import com.github.pgutils.PGUtils;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PGLobbyHook implements Listener {
@@ -115,7 +118,20 @@ public class PGLobbyHook implements Listener {
 				event.setCancelled(true);
 			}
 		}
+	}
 
+	@EventHandler
+	public void PlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event){
+		Player player = event.getPlayer();
+		if(GeneralUtils.isPlayerInGame(player) != null){
+			if(!player.hasPermission("pgutils.bypass.commands") || !player.isOp()) {
+				String command = (event.getMessage().contains(" ") ? event.getMessage().substring(1, event.getMessage().indexOf(" ")) : event.getMessage());
+				if (!PGUtils.getPlugin(PGUtils.class).getConfig().getStringList("whitelist-commands").contains(command)) {
+					player.sendMessage(Messages.messageWithPrefix("not-allow-command", "&cYour in game now!"));
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 
 }
