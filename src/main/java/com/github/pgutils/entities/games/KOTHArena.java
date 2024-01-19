@@ -64,13 +64,12 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public KOTHArena() {
         super();
         type = "KOTH";
+        sbManager = new GameScoreboardManager();
     }
 
     @Override
     public void start() {
         System.out.println("Starting game " + getID() + " of type " + getType() + " with " + players.size() + " players!");
-
-        sbManager = new GameScoreboardManager();
 
         Collections.shuffle(players);
 

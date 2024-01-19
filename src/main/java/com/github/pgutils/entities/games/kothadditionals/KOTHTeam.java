@@ -31,8 +31,6 @@ public class KOTHTeam extends Team {
     public KOTHTeam(String color, int id, KOTHArena arena) {
         super(color, id, arena);
         this.arena = arena;
-
-        arena.getSbManager().addTeam(id, colorString, arena.getID());
     }
 
     public void addPlayer(Player player) {

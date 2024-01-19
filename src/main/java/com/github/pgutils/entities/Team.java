@@ -35,7 +35,7 @@ public class Team {
 
         team = placespace.getScoreboard().registerNewTeam("Team_" + id);
 
-        arena.getSbManager().addTeam(id, GeneralUtils.hexToMinecraftColor(colorString), arena.getID());
+        arena.getSbManager().addTeam(id, colorString, arena.getID());
     }
     public void addPlayer(Player player) {
         players.add(player);
