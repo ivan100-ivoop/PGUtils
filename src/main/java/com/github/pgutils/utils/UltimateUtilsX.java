@@ -757,7 +757,7 @@ public class UltimateUtilsX {
         }
         String name = nameBuilder.toString().trim(); // Trim to remove trailing spaces
         // Retrieve the item
-        Supplier<ItemStack> itemSupplier = CustomItemRepo.custom_item_name.get(name);
+        Supplier<ItemStack> itemSupplier = CustomItemRepository.custom_item_name.get(name);
         if (itemSupplier == null) {
             player.sendMessage(Messages.messageWithPrefix("custom-item-missing-message", "&cCustom Item not found!"));
             return true;
