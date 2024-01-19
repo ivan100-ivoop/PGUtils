@@ -70,7 +70,7 @@ public class ScoreboardManager {
 
         for (Player p : playerScoreboards.keySet()) {
             Scoreboard scoreboard = playerScoreboards.get(p);
-            Objective objective = scoreboard.getObjective("kothScore" + gameID);
+            Objective objective = scoreboard.getObjective("pgScore" + gameID);
             if (objective != null) {
                 objective.unregister();
             }
@@ -80,7 +80,7 @@ public class ScoreboardManager {
 
     public void createGameScoreboard(Player player, int lobbyID) {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("kothScore" + lobbyID, "dummy", GeneralUtils.fixColors(sbConfig.getString("title", "TestScore")));
+        Objective objective = scoreboard.registerNewObjective("pgScore" + lobbyID, "dummy", GeneralUtils.fixColors(sbConfig.getString("title", "TestScore")));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         int index = 0;
@@ -116,7 +116,7 @@ public class ScoreboardManager {
     public void updateGameScore(Player player, int id) {
         Scoreboard scoreboard = playerScoreboards.get(player);
         if (scoreboard != null) {
-            Objective objective = scoreboard.getObjective("kothScore" + id);
+            Objective objective = scoreboard.getObjective("pgScore" + id);
             if (objective != null) {
                 for (String entry : scoreboard.getEntries()) {
                     scoreboard.resetScores(entry);
@@ -181,4 +181,14 @@ public class ScoreboardManager {
     }
 
 
+    public void removeAllScoreboard(int id) {
+        for (Player p : playerScoreboards.keySet()) {
+            Scoreboard scoreboard = playerScoreboards.get(p);
+            Objective objective = scoreboard.getObjective("pgScore" + id);
+            if (objective != null) {
+                objective.unregister();
+            }
+            removeScoreboard(p);
+        }
+    }
 }

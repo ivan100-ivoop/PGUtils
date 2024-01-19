@@ -21,8 +21,11 @@ public class KOTHArenaUtils {
 
             bukkitObjectOutputStream.writeObject(kotharena.getLocation());
             bukkitObjectOutputStream.writeObject(kotharena.getUID());
+            bukkitObjectOutputStream.writeObject(kotharena.getName());
             bukkitObjectOutputStream.writeObject(kotharena.getTeamsAmount());
-            bukkitObjectOutputStream.writeObject(kotharena.getLobby().getUID());
+            if (kotharena.getLobby() != null)
+                bukkitObjectOutputStream.writeObject(kotharena.getLobby().getUID());
+            else bukkitObjectOutputStream.writeObject("none");
 
             File directory = new File(fileName + kotharena.getUID());
             if (!directory.exists()) {
@@ -64,6 +67,7 @@ public class KOTHArenaUtils {
 
             kotharena.setPos((Location) bukkitObjectInputStream.readObject());
             kotharena.setUID((String) bukkitObjectInputStream.readObject());
+            kotharena.setName((String) bukkitObjectInputStream.readObject());
             kotharena.setTeamsAmount((int) bukkitObjectInputStream.readObject());
             String lobbyUID = (String) bukkitObjectInputStream.readObject();
             Lobby lobby = LobbyUtils.getLobbyByUID(lobbyUID);
@@ -106,6 +110,7 @@ public class KOTHArenaUtils {
                 System.out.println("Invalid directory path or the path is not a directory. : " + directoryPath);
             }
 
+            bufferedReader.close();
             return kotharena;
 
         } catch (IOException e) {
@@ -182,6 +187,8 @@ public class KOTHArenaUtils {
 
             kothPoint.setup();
 
+            bufferedReader.close();
+
             return kothPoint;
 
         } catch (IOException e) {
@@ -209,6 +216,8 @@ public class KOTHArenaUtils {
             kothSpawn.setPos((Location) bukkitObjectInputStream.readObject());
             kothSpawn.setTeamID((int) bukkitObjectInputStream.readObject());
             kothSpawn.setArena(kothArena);
+
+            bufferedReader.close();
 
             return kothSpawn;
 

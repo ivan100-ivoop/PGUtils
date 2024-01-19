@@ -7,19 +7,14 @@ import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
-import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.ScoreboardManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,13 +44,10 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private int teamsAmount = 2;
 
     // Saved
-    private int matchTime = 30;
-
-
-    private ScoreboardManager sbManager;
+    private int matchTime = 3000;
     private boolean overtime = false;
 
-    private int overtimeMAX = 10;
+    private int overtimeMAX = 1000;
 
     // Saved
     private int initial_points_active = 2;
@@ -71,7 +63,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public void start() {
         System.out.println("Starting game " + getID() + " of type " + getType() + " with " + players.size() + " players!");
 
-        sbManager = new ScoreboardManager();
+
 
         Collections.shuffle(players);
 
@@ -129,7 +121,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                                 .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("game-progress", "&eGame is in progress!", false))));
             }
             if (matchTime % 20 == 0 && (matchTime / 20 - tick / 20) >= 0) {
-                sbManager.setTime(matchTime / 20 - tick / 20, getID());
+                getSbManager().setTime(matchTime / 20 - tick / 20, getID());
             }
             if (tick - 30 >= matchTime) {
                 checkEnd();
@@ -161,7 +153,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             point.deactivatePointFull();
             point.resetDownTime();
         });
-        sbManager.removeGameScore(getID());
         teams.clear();
         startingTick = 0;
         testMessageTick = 0;
@@ -189,6 +180,95 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     @Override
     public void updateView(Player player) {
 
+    }
+
+    @Override
+    public boolean addGameObjects(Player player, String[] args) {
+        switch (args[2].toLowerCase()) {
+            case "spawn":
+                return createSpawn(player, args);
+            case "point":
+                return createPoint(player, args);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeGameObjects(Player player, String[] args) {
+        return false;
+    }
+
+    @Override
+    public boolean setGameObjects(Player player, String[] args) {
+        return false;
+    }
+
+    public boolean createPoint(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+        if (args.length == 3) {
+            addCapturePoint(player.getLocation(), 2.5);
+            player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", "2.5")));
+            return true;
+        }
+        if (args.length == 4) {
+            try {
+                double radius = Double.parseDouble(args[3]);
+                addCapturePoint(player.getLocation(), radius);
+                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", radius + "")));
+                return true;
+            } catch (NumberFormatException e) {
+                player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+                return true;
+            }
+        }
+        if (args.length == 5) {
+            try {
+                double radius = Double.parseDouble(args[3]);
+                int pointsAwarding = Integer.parseInt(args[4]);
+                addCapturePoint(player.getLocation(), radius, pointsAwarding);
+                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points%")
+                        .replace("%id%", points.size() + "")
+                        .replace("%radius%", radius + "")
+                        .replace("%points%", pointsAwarding + "")));
+                return true;
+            } catch (NumberFormatException e) {
+                player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+                return true;
+            }
+        }
+        if (args.length == 6) {
+            try {
+                double radius = Double.parseDouble(args[3]);
+                int pointsAwarding = Integer.parseInt(args[4]);
+                int timeToCapture = Integer.parseInt(args[5]);
+                addCapturePoint(player.getLocation(), radius, pointsAwarding, timeToCapture);
+                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points% and time to capture : %time%")
+                        .replace("%id%", points.size() + "")
+                        .replace("%radius%", radius + "")
+                        .replace("%points%", pointsAwarding + "")
+                        .replace("%time%", timeToCapture + "")));
+                return true;
+            } catch (NumberFormatException e) {
+                player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean createSpawn(Player player, String[] args) {
+        if (args.length < 4) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+
+        int team_id = Integer.parseInt(args[3]);
+        addSpawnLocation(player.getLocation(), team_id);
+        player.sendMessage(Messages.messageWithPrefix("spawn-created-message", ("&aSuccessfully created spawn! With id : %id% and team id : %team_id%").replace("%id%", spawns.size() + "").replace("%team_id%", team_id + "")));
+        return true;
     }
 
     public void checkEnd() {
@@ -232,20 +312,20 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         return kothPoint;
     }
 
-    public KOTHPoint addCapturePoint(Location location, int radius) {
+    public KOTHPoint addCapturePoint(Location location, double radius) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius);
         points.add(kothPoint);
         return kothPoint;
 
     }
 
-    public KOTHPoint addCapturePoint(Location location, int radius, int pointsAwarding) {
+    public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding);
         points.add(kothPoint);
         return kothPoint;
     }
 
-    public KOTHPoint addCapturePoint(Location location, int radius, int pointsAwarding, int timeToCapture) {
+    public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding, int timeToCapture) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding, timeToCapture);
         points.add(kothPoint);
         return kothPoint;
@@ -281,14 +361,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     public void setTeamsAmount(int readObject) {
         this.teamsAmount = readObject;
-    }
-
-    public ScoreboardManager getSbManager() {
-        return sbManager;
-    }
-
-    public Scoreboard getScoreboard() {
-        return sbManager.getScoreboard(getID());
     }
 
     public List<KOTHTeam> getTeams() {

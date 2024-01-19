@@ -58,7 +58,7 @@ public abstract class RandomisedDirCylinderParticle extends EnhancedParticle {
     public abstract void onUpdate();
 
 
-    public Location getRandomPointInCylinder(Location center, double radius, double height) {
+    public static Location getRandomPointInCylinder(Location center, double radius, double height) {
         Random random = new Random();
         double angle = random.nextDouble() * Math.PI * 2;
         double randomRadius = radius * Math.sqrt(random.nextDouble());
@@ -130,6 +130,13 @@ public abstract class RandomisedDirCylinderParticle extends EnhancedParticle {
 
     public double getInitialVerticalSpeed() {
         return initialVerticalSpeed;
+    }
+
+    public static void objectLessParticle(Location center, double radius, double height, int amountOfParticles, Particle particle, double verticalSpeed) {
+        for (int i = 0; i < amountOfParticles; i++) {
+            Location location = getRandomPointInCylinder(center, radius, height);
+            center.getWorld().spawnParticle(particle, location, 0, 0, verticalSpeed, 0);
+        }
     }
 
 

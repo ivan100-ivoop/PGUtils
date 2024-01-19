@@ -85,7 +85,7 @@ public class KOTHPoint {
         activateParticles();
     }
 
-    public KOTHPoint(KOTHArena arena, Location pos, int radius, int pointsAwarding) {
+    public KOTHPoint(KOTHArena arena, Location pos, double radius, int pointsAwarding) {
         this.arena = arena;
         this.pos = pos;
         this.radius = radius;
@@ -94,7 +94,7 @@ public class KOTHPoint {
         activateParticles();
     }
 
-    public KOTHPoint(KOTHArena arena, Location pos, int radius, int pointsAwarding, int capturetime) {
+    public KOTHPoint(KOTHArena arena, Location pos, double radius, int pointsAwarding, int capturetime) {
         this.arena = arena;
         this.pos = pos;
         this.radius = radius;

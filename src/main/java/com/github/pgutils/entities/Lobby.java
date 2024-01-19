@@ -1,5 +1,6 @@
 package com.github.pgutils.entities;
 
+import com.github.pgutils.PGUtils;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
@@ -9,6 +10,7 @@ import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.PlayerManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -31,6 +33,8 @@ public class Lobby {
     private Location pos;
 
     private List<Player> players;
+
+    private List<Player> waitingPlayers;
 
     private LobbyStatus status;
 
@@ -66,13 +70,18 @@ public class Lobby {
     // Saved
     private boolean isLocked = false;
 
+    // Saved
+    private String name;
+
     public Lobby() {
         players = new ArrayList<>();
+        waitingPlayers = new ArrayList<>();
         status = LobbyStatus.WAITING_FOR_PLAYERS;
         lobbies.add(this);
         // Generate a unique ID
         ID = lobbies.size();
         uniqueID = GeneralUtils.generateUniqueID();
+        name = "Unnamed Lobby " + ID;
     }
 
     public void update() {
@@ -171,6 +180,7 @@ public class Lobby {
         status = LobbyStatus.RESETTING;
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
+
         players.stream()
                 .forEach(player -> {
                     player.spigot()
@@ -178,8 +188,12 @@ public class Lobby {
                                 new TextComponent(Messages.getMessage("game-end-message", "&eThe game has been ended!", false)));
                     player.teleport(pos);
                     PlayerManager.disablePVP(player);
+                    PlayerManager.enableMove(player);
+                    if (waitingPlayers.contains(player)) {
+                        player.setGameMode(GameMode.SURVIVAL);
+                    }
                 });
-
+        waitingPlayers.clear();
 
     }
 
@@ -204,6 +218,11 @@ public class Lobby {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 1, true, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 5, true, false));
         players.add(player);
+        if(status == LobbyStatus.IN_PROGRESS){
+            waitingPlayers.add(player);
+            player.setGameMode(GameMode.SPECTATOR);
+            player.teleport(currentPlaySpace.getPos());
+        }
     }
 
     public void removePlayer(Player player) {
@@ -225,7 +244,12 @@ public class Lobby {
         player.removePotionEffect(PotionEffectType.SATURATION);
         player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
         PlayerManager.enablePVP(player);
-
+        PlayerManager.enableMove(player);
+        PlayerManager.enableDamage(player);
+        if (waitingPlayers.contains(player)) {
+            waitingPlayers.remove(player);
+            player.setGameMode(GameMode.SURVIVAL);
+        }
         players.remove(player);
     }
 
@@ -241,11 +265,23 @@ public class Lobby {
         playSpaces.remove(playSpace);
     }
 
-    public void delete() {
+    public boolean delete() {
         kickAll();
         if (getCurrentPlaySpace() != null)
             getCurrentPlaySpace().end();
-        playSpaces.stream().forEach(playSpace -> playSpace.end());
+        playSpaces.stream().forEach(
+                playSpace -> {
+                    playSpace.end();
+                    playSpace.setLobby(null);
+                });
+        lobbies.remove(this);
+        for (int i = PGUtils.selectedLobby.size() - 1; i >= 0; i--) {
+            if (PGUtils.selectedLobby.get(i).lobby == this) {
+                PGUtils.selectedLobby.remove(i);
+            }
+        }
+        System.out.println("Deleted lobby " + ID + " Lobbies left: " + lobbies.size());
+        return true;
     }
 
     public void setMaxPlayers(int maxPlayers) {
@@ -346,5 +382,13 @@ public class Lobby {
 
     public void setUID(String uid) {
         uniqueID = uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

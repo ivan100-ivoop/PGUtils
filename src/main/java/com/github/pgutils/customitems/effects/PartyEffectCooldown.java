@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class PartyEffectCooldown extends CustomEffect {
 
-    int maxTicks = 30;
+    int maxTicks = 200;
 
     public PartyEffectCooldown(Player effectedPlayer) {
         super(effectedPlayer);
@@ -41,6 +41,11 @@ public class PartyEffectCooldown extends CustomEffect {
             getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&cParty Cooldown %cooldownbar%")
                     .replace("%cooldownbar%", GeneralUtils.generateLoadingBar(percentage, "§e", "§7"))));
         }
+
+    }
+
+    @Override
+    public void onRemove() {
 
     }
 }
