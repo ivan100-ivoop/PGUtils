@@ -32,8 +32,10 @@ public class AtomizerEffect extends GodlessEffect{
         if (item != null) {
             if (item.getItemMeta() != null) {
                 PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-                if (!container.has(Keys.atomizer, PersistentDataType.BOOLEAN))
+                if (!container.has(Keys.atomizer, PersistentDataType.BOOLEAN)) {
                     CustomEffect.removeEffect(this);
+                    return;
+                }
             }
         }
         if (summonCooldown < summonCooldownTime && attackAnimation == 0) {
@@ -133,6 +135,8 @@ public class AtomizerEffect extends GodlessEffect{
         armorStand.setInvulnerable(true);
         armorStand.setGravity(false);
         armorStand.getPersistentDataContainer().set(Keys.atomizer, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         // Set right arm pose
         armorStand.setRightArmPose(new EulerAngle(0, Math.toRadians(270), Math.toRadians(120))); // Adjust angle as needed

@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -136,5 +137,14 @@ public class PGLobbyHook implements Listener {
 			}
 		}
 	}
+	@EventHandler
+	public void onPlayerArmorStandManipulateEvent(PlayerArmorStandManipulateEvent event){
+		System.out.printf("Manipulate");
+		if(event.getRightClicked().getPersistentDataContainer().has(Keys.noSteal, PersistentDataType.BOOLEAN)){
+			System.out.printf("Cancel");
+			event.setCancelled(true);
+		}
+	}
+
 
 }

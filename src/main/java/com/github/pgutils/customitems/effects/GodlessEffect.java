@@ -82,8 +82,10 @@ public class GodlessEffect extends CustomEffect {
         if (item != null) {
             if (item.getItemMeta() != null) {
                 PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-                if (!container.has(Keys.godLess, PersistentDataType.BOOLEAN))
+                if (!container.has(Keys.godLess, PersistentDataType.BOOLEAN)) {
                     CustomEffect.removeEffect(this);
+                    return;
+                }
             }
         }
         if (summonCooldown < summonCooldownTime) {
@@ -182,6 +184,8 @@ public class GodlessEffect extends CustomEffect {
         armorStand.setInvulnerable(true);
         armorStand.setGravity(false);
         armorStand.getPersistentDataContainer().set(Keys.godLess, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         // Set right arm pose
         armorStand.setRightArmPose(new EulerAngle(Math.toRadians(80), 0, 0)); // Adjust angle as needed
@@ -264,6 +268,8 @@ public class GodlessEffect extends CustomEffect {
         attackArmorStand.setGravity(false);
         attackArmorStand.setArms(true);
         attackArmorStand.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+        attackArmorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        attackArmorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         animationIndex = random.nextInt(3);
 
