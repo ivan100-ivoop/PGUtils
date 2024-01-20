@@ -50,8 +50,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     // Saved
     private int matchTime = 3000;
 
-
-    private GameScoreboardManager sbManager;
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
@@ -64,7 +62,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public KOTHArena() {
         super();
         type = "KOTH";
-        sbManager = new GameScoreboardManager();
     }
 
     @Override
@@ -159,7 +156,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             point.deactivatePointFull();
             point.resetDownTime();
         });
-        sbManager.removeGameScore(getID());
+        getSbManager().removeGameScore(getID());
         teams.clear();
         startingTick = 0;
         testMessageTick = 0;
@@ -368,14 +365,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     public void setTeamsAmount(int readObject) {
         this.teamsAmount = readObject;
-    }
-
-    public GameScoreboardManager getSbManager() {
-        return sbManager;
-    }
-
-    public Scoreboard getScoreboard() {
-        return sbManager.getScoreboard(getID());
     }
 
     public List<KOTHTeam> getTeams() {

@@ -99,8 +99,8 @@ public abstract class PlaySpace {
     public void reset() {
         status = GameStatus.INACTIVE;
         tick = 0;
-        //if (scoreboardManager != null)
-        //    scoreboardManager.removeAllScoreboard(getID());
+        if (scoreboardManager != null)
+            scoreboardManager.removeGameScore(getID());
         players = new ArrayList<>();
     }
 
