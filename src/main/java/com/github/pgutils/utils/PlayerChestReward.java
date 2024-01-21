@@ -18,13 +18,13 @@ public class PlayerChestReward {
     public static final String ChestTitle = Messages.getMessage("reward-title", "&8Reward Chest", false);
 
     public static boolean isPlayerHaveChest(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
         return chestFile.exists();
     }
 
     public static boolean createEmptyPlayerChest(Player player) {
         if (!isPlayerHaveChest(player)) {
-            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
             try {
                 chestFile.createNewFile();
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -39,7 +39,7 @@ public class PlayerChestReward {
     }
 
     public static boolean isPlayerChestFull(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
 
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -52,7 +52,7 @@ public class PlayerChestReward {
     public static boolean clearPlayerChest(Player player) {
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             try {
-                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
                 chest.set("content", new ArrayList<ItemStack>());
                 chest.save(chestFile);
@@ -64,7 +64,7 @@ public class PlayerChestReward {
     }
 
     public static Inventory getPlayerChest(Player player) {
-        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+        File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
 
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
@@ -81,7 +81,7 @@ public class PlayerChestReward {
     public static boolean updatePlayerCheste(ItemStack[] contents, Player player) {
         if (PlayerChestReward.isPlayerHaveChest(player)) {
             try {
-                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+                File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
                 FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
                 List<ItemStack> chestContents = new ArrayList<ItemStack>();
 
@@ -111,7 +111,7 @@ public class PlayerChestReward {
 
     private static boolean putItem(ItemStack item, Player player) {
         try {
-            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).database, player.getName() + ".yml");
+            File chestFile = new File(PGUtils.getPlugin(PGUtils.class).rewardsChest, player.getName() + ".yml");
             FileConfiguration chest = YamlConfiguration.loadConfiguration(chestFile);
             List<ItemStack> chestContents = (List<ItemStack>) chest.getList("content");
             if (chestContents.size() < 9) {
