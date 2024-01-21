@@ -22,6 +22,7 @@ public class CustomItemRepository {
         custom_item_name.put("Party Stick", CustomItemRepository::createPartyStick);
         custom_item_name.put("Crown of the Fallen", CustomItemRepository::createCrownOfTheFallen);
         custom_item_name.put("Godless", CustomItemRepository::createGodless);
+        custom_item_name.put("Atomizer", CustomItemRepository::createAtomizer);
     }
 
     public static ItemStack createCustomItem(String name, Material material, CustomItemRarities rarity, List<String> lore) {
@@ -68,6 +69,19 @@ public class CustomItemRepository {
         ItemStack itemStack = createCustomItem("Godless", Material.IRON_HELMET, CustomItemRarities.MYTHIC, lore);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.getPersistentDataContainer().set(Keys.godLess, PersistentDataType.BOOLEAN, true);
+        itemMeta.setUnbreakable(true);
+
+        itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
+    }
+
+
+    public static ItemStack createAtomizer() {
+        List<String> lore = Arrays.asList("Destruction on atmoic level", GeneralUtils.hexToMinecraftColor("#FFAA00") + "[Passive: Summons Atomizer!]");
+        ItemStack itemStack = createCustomItem("Atomizer", Material.NETHERITE_HELMET, CustomItemRarities.DEVELOPER, lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(Keys.atomizer, PersistentDataType.BOOLEAN, true);
         itemMeta.setUnbreakable(true);
 
         itemStack.setItemMeta(itemMeta);

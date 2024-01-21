@@ -22,53 +22,53 @@ import java.util.Random;
 
 public class GodlessEffect extends CustomEffect {
 
-    private Random random = new Random();
+    protected Random random = new Random();
 
-    private int summonCooldown = 0;
+    protected int summonCooldown = 0;
 
-    private int summonCooldownTime = 20;
+    protected int summonCooldownTime = 20;
 
-    private int attackCooldown = 0;
+    protected int attackCooldown = 0;
 
-    private int attackCooldownTime = 10;
+    protected int attackCooldownTime = 10;
 
-    private double distanceBehind = 0.5;
+    protected double distanceBehind = 0.5;
 
-    private int hoverCooldown = 0;
+    protected int hoverCooldown = 0;
 
-    private int hoverCooldownTime = 30;
+    protected int hoverCooldownTime = 30;
 
-    private boolean hoverDir = false;
+    protected boolean hoverDir = false;
 
-    private double current_y_offset = 1.5;
+    protected double current_y_offset = 1.5;
 
-    private ArmorStand armorStand = null;
+    protected ArmorStand armorStand = null;
 
-    private double attackRange = 7;
+    protected double attackRange = 7;
 
-    private double attackDamage = 10;
+    protected double attackDamage = 10;
 
-    private double attackKnockback = 0.5;
+    protected double attackKnockback = 0.5;
 
-    private double disappearTime = 10;
+    protected double disappearTime = 10;
 
-    private double disappear = 0;
+    protected double disappear = 0;
 
-    private boolean attacking = false;
+    protected boolean attacking = false;
 
-    private int attackAnimationTime = 15;
+    protected int attackAnimationTime = 15;
 
-    private int attackAnimation = 0;
+    protected int attackAnimation = 0;
 
-    private Entity target = null;
+    protected Entity target = null;
 
-    private List<Player> hostilePlayers;
+    protected List<Player> hostilePlayers;
 
-    private ArmorStand attackArmorStand = null;
+    protected ArmorStand attackArmorStand = null;
 
-    private Vector attackOffset = null;
+    protected Vector attackOffset = null;
 
-    private int animationIndex = 1;
+    protected int animationIndex = 1;
 
     public GodlessEffect(Player effectedPlayer) {
         super(effectedPlayer);
@@ -82,8 +82,10 @@ public class GodlessEffect extends CustomEffect {
         if (item != null) {
             if (item.getItemMeta() != null) {
                 PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-                if (!container.has(Keys.godLess, PersistentDataType.BOOLEAN))
+                if (!container.has(Keys.godLess, PersistentDataType.BOOLEAN)) {
                     CustomEffect.removeEffect(this);
+                    return;
+                }
             }
         }
         if (summonCooldown < summonCooldownTime) {
@@ -141,7 +143,7 @@ public class GodlessEffect extends CustomEffect {
         }
     }
 
-    private void deactivate() {
+    protected void deactivate() {
         if (armorStand == null) {
             return;
         }
@@ -158,7 +160,7 @@ public class GodlessEffect extends CustomEffect {
         disappear = 0;
     }
 
-    private void summonGodless() {
+    protected void summonGodless() {
         Location playerLocation = getEffectedPlayer().getLocation();
         Vector direction = playerLocation.getDirection().clone().setY(0).normalize().multiply(-distanceBehind);
         // Offset the location a little to the right because the sword is not centered
@@ -182,6 +184,8 @@ public class GodlessEffect extends CustomEffect {
         armorStand.setInvulnerable(true);
         armorStand.setGravity(false);
         armorStand.getPersistentDataContainer().set(Keys.godLess, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        armorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         // Set right arm pose
         armorStand.setRightArmPose(new EulerAngle(Math.toRadians(80), 0, 0)); // Adjust angle as needed
@@ -211,7 +215,7 @@ public class GodlessEffect extends CustomEffect {
         }
     }
 
-    private void checkForTargets() {
+    protected void checkForTargets() {
         if (attackCooldown < attackCooldownTime) {
             attackCooldown++;
         }
@@ -248,7 +252,7 @@ public class GodlessEffect extends CustomEffect {
         target = entity;
     }
 
-    private void attack(Entity entity) {
+    protected void attack(Entity entity) {
         // Spawn attack armor stand in front of the entity
         Location entityLocation = entity.getLocation();
 
@@ -264,6 +268,8 @@ public class GodlessEffect extends CustomEffect {
         attackArmorStand.setGravity(false);
         attackArmorStand.setArms(true);
         attackArmorStand.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+        attackArmorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        attackArmorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         animationIndex = random.nextInt(3);
 
@@ -282,8 +288,6 @@ public class GodlessEffect extends CustomEffect {
         Vector knockbackVelocity = entity.getLocation().toVector().subtract(getEffectedPlayer().getLocation().toVector()).normalize().setY(0).multiply(attackKnockback);
         entity.setVelocity(knockbackVelocity);
     }
-
-
 
     public void attackAnimations(){
         if (attackArmorStand == null) {
@@ -355,13 +359,7 @@ public class GodlessEffect extends CustomEffect {
                     relative.add(attackOffset);
                 }
                 break;
-
-
         }
-
-
-
-
         Location attackLocation = entityLocation.clone().add(relative);
         // The yaw should be an angle from the player to the entity
         attackLocation.setYaw(GeneralUtils.getAngleFromTo(getEffectedPlayer().getLocation(), entityLocation));

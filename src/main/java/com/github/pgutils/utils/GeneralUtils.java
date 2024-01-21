@@ -8,10 +8,14 @@ import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -230,5 +234,15 @@ public class GeneralUtils {
     public static double speedFunc2(double target, double current, double speed) {
         return (target - current) / speed;
 
+    }
+
+    public static void cleanupArmorStands() { // Will be executed onEnable
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (entity instanceof ArmorStand && entity.getPersistentDataContainer().has(Keys.dynamicObject, PersistentDataType.BOOLEAN)) {
+                    entity.teleport(new Location(world, 0, -100000, 0));
+                }
+            }
+        }
     }
 }

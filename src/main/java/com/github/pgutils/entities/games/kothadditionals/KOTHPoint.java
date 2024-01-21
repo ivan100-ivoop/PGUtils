@@ -7,6 +7,7 @@ import com.github.pgutils.particles.variants.HollowCircleParticle;
 import com.github.pgutils.particles.variants.RandomisedDirCylinderParticle;
 import com.github.pgutils.particles.variants.SwirlingParticle;
 import com.github.pgutils.utils.GeneralUtils;
+import com.github.pgutils.utils.Keys;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -362,6 +364,8 @@ public class KOTHPoint {
         bannerStand.setGravity(false);
         bannerStand.setVisible(false);
         bannerStand.setBasePlate(false);
+        bannerStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
+        bannerStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
 
         ItemStack helmet = new ItemStack(Material.IRON_HELMET);
         bannerStand.setHelmet(helmet);
