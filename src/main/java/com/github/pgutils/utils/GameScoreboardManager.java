@@ -10,34 +10,47 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameScoreboardManager {
     private final ConfigurationSection sbConfig;
-    private final Map<Integer, List<FastBoard>> playerScoreboards;
     private final Map<Integer, List<Team>> teams;
     private final Map<Integer, Scoreboard> gameScor;
 
     public GameScoreboardManager() {
         this.sbConfig = PGUtils.getPlugin(PGUtils.class).getConfig().getConfigurationSection("game-sb");
-        this.playerScoreboards = new HashMap<>();
         this.teams = new HashMap<>();
         this.gameScor = new HashMap<>();
     }
 
-    public void addTeam(Integer teamID, String color, Integer gameID) {
-        if (!teams.containsKey(gameID))
-            teams.put(gameID, new ArrayList<>());
+    public void addTeam(Integer gameID, Integer teamID, String color) {
+        teams.computeIfAbsent(gameID, k -> new ArrayList<>());
 
-        teams.get(gameID).add(new Team()
-                .setId(teamID)
-                .setColor(color)
-                .setPoints(0)
-        );
+        if (!this.containsTeam(gameID, teamID)) {
+            teams.get(gameID).add(new Team()
+                    .setId(teamID)
+                    .setColor(color)
+                    .setPoints(0)
+            );
+        } else {
+            this.getTeam(gameID, teamID)
+                    .setColor(color);
+        }
         this.update(gameID);
+    }
+
+    public void addPlayer(int gameID, int teamID, Player player) {
+        List<Team> game = teams.get(gameID);
+        if (game != null) {
+            for (Team team1 : game) {
+                if (team1.getId() == teamID) {
+                    team1.addPlayer(player);
+                    FastBoard board = new FastBoard(player);
+                    team1.addScoreboard(board);
+                }
+            }
+            this.update(gameID);
+        }
     }
 
     public void addTeamPoint(Integer teamID, Integer gameID) {
@@ -46,6 +59,56 @@ public class GameScoreboardManager {
             for (Team team1 : game) {
                 if (team1.getId() == teamID) {
                     team1.addPoint();
+                }
+            }
+            this.update(gameID);
+        }
+    }
+
+    private Team getTeam(int gameID, int teamID) {
+        List<Team> gameTeams = teams.get(gameID);
+        if (gameTeams != null) {
+            for (Team team : gameTeams) {
+                if (team.getId() == teamID) {
+                    return team;
+                }
+            }
+        }
+        return null;
+    }
+
+    private int getTime(int gameId) {
+        List<Team> game = teams.get(gameId);
+        if (game != null) {
+            for (Team team1 : game) {
+                return team1.getTime();
+            }
+        }
+        return 0;
+    }
+
+    public boolean hasGame(int gameID) {
+        return teams.containsKey(gameID);
+    }
+
+    private boolean containsTeam(int gameID, int teamID) {
+        List<Team> gameTeams = teams.get(gameID);
+        if (gameTeams != null) {
+            for (Team team : gameTeams) {
+                if (team.getId() == teamID) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void removePoint(Integer teamID, Integer gameID) {
+        List<Team> game = teams.get(gameID);
+        if (game != null) {
+            for (Team team1 : game) {
+                if (team1.getId() == teamID) {
+                    team1.removePoint();
                 }
             }
             this.update(gameID);
@@ -63,7 +126,6 @@ public class GameScoreboardManager {
             this.update(gameID);
         }
     }
-
     public void setTime(Integer time, int gameId) {
         List<Team> game = teams.get(gameId);
         if (game != null) {
@@ -74,50 +136,53 @@ public class GameScoreboardManager {
         }
     }
 
-    private int getPoint(int teamId, Integer gameID) {
-        List<Team> game = teams.get(gameID);
-        if (game != null) {
-            for (Team team1 : game) {
-                if (team1.getId() == teamId) {
-                    return team1.getPoints();
-                }
-            }
-        }
-        return 0;
-    }
-
-    private int getTime(int gameId) {
-        List<Team> game = teams.get(gameId);
-        if (game != null) {
-            for (Team team1 : game) {
-                return team1.getTime();
-            }
-        }
-        return 0;
-    }
-
     public void removeGameScore(int gameID) {
-        for (FastBoard _sb : playerScoreboards.get(gameID)) {
-            if (!_sb.isDeleted()) {
-                _sb.delete();
+        for (Team team : teams.get(gameID)) {
+            for (FastBoard _sb : team.getScoreboards()) {
+                if (_sb != null && !_sb.isDeleted()) {
+                    _sb.delete();
+                }
+                team.setPoints(0);
             }
         }
         teams.remove(gameID);
     }
 
-    public void createGameScoreboard(Player player, int gameID) {
-        if (!playerScoreboards.containsKey(gameID))
-            playerScoreboards.put(gameID, new ArrayList<>());
+    public void removeScoreboard(Player player) {
+        teams.forEach((gameID, gameTeams) -> {
+            gameTeams.forEach(team -> {
+                Iterator<Player> playerIterator = team.getPlayers().iterator();
+                while (playerIterator.hasNext()) {
+                    Player pl = playerIterator.next();
+                    if (pl == player) {
+                        Iterator<FastBoard> scoreboardIterator = team.getScoreboards().iterator();
+                        while (scoreboardIterator.hasNext()) {
+                            FastBoard scoreboard = scoreboardIterator.next();
+                            if (scoreboard != null && !scoreboard.isDeleted() && scoreboard.getPlayer() == player) {
+                                scoreboard.delete();
+                                scoreboardIterator.remove();
+                            }
+                        }
+                        playerIterator.remove();
+                    }
+                }
+            });
+        });
+    }
 
-        FastBoard board = new FastBoard(player);
-        playerScoreboards.get(gameID).add(board);
-
-        board.updateTitle(Component.text(GeneralUtils.fixColors(sbConfig.getString("title", "TestScore"))));
+    public void createGameScoreboard(int gameID) {
+        if (teams.containsKey(gameID)) {
+            for (Team team : teams.get(gameID)) {
+                for (FastBoard board : team.getScoreboards()) {
+                    board.updateTitle(Component.text(GeneralUtils.fixColors(sbConfig.getString("title", "TestScore"))));
+                }
+            }
+        }
         this.update(gameID);
     }
 
     private void update(int gameID) {
-        if (playerScoreboards.containsKey(gameID)) {
+        if (teams.containsKey(gameID)) {
             if (!sbConfig.isString("lines")) {
                 this.updateLinesScore(gameID);
             } else {
@@ -127,32 +192,39 @@ public class GameScoreboardManager {
     }
 
     private void updateLinesScore(int gameID) {
-        List<Component> lines = new ArrayList<>();
-        int time = this.getTime(gameID);
-
-        if (playerScoreboards.containsKey(gameID)) {
-            for (FastBoard sb : playerScoreboards.get(gameID)) {
-                for (String line : sbConfig.getStringList("lines")) {
-                    if (line.contains("%teams%")) {
-                        for (Team team : teams.get(gameID)) {
-                            lines.add(Component.text(GeneralUtils.fixColors(line.replace("%teams%", ""))).append(this.getTeamString(team.getId(), team.getColor(), team.getPoints())));
+        if (teams.containsKey(gameID)) {
+            for (Team team : teams.get(gameID)) {
+                for (FastBoard sb : team.getScoreboards()) {
+                    if (sb != null && !sb.isDeleted()) {
+                        List<Component> lines = new ArrayList<>();
+                        for (String line : sbConfig.getStringList("lines")) {
+                            if (line.contains("%teams%")) {
+                                this.getComponentLines(gameID, lines, Component.text(GeneralUtils.fixColors(line.replace("%teams%", ""))));
+                            } else {
+                                if (line.contains("%time%")) {
+                                    line = line.replace("%time%", GeneralUtils.formatSeconds(team.getTime()));
+                                }
+                                lines.add(Component.text(GeneralUtils.fixColors(line)));
+                            }
                         }
-                    } else {
-                        if (line.contains("%time%")) {
-                            line = line.replace("%time%", GeneralUtils.formatSeconds(time));
-                        }
-                        lines.add(Component.text(GeneralUtils.fixColors(line)));
+                        sb.updateLines(lines);
                     }
                 }
-                sb.updateLines(lines);
             }
         }
     }
 
+    private void getComponentLines(int gameID, List<Component> lines, Component defaultComponent) {
+        for (Team team : teams.get(gameID)) {
+            lines.add(defaultComponent.append(this.getTeamString(team.getId(), team.getColor(), team.getPoints())));
+        }
+    }
+
     private void updateStringScore(int gameID) {
-        if (playerScoreboards.containsKey(gameID)) {
-            for (FastBoard sb : playerScoreboards.get(gameID)) {
-                sb.updateLines(Component.text(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines"), gameID))));
+        for (Team team : teams.get(gameID)) {
+            for (FastBoard sb : team.getScoreboards()) {
+                if (sb != null && !sb.isDeleted())
+                    sb.updateLines(Component.text(GeneralUtils.fixColors(fixPlaceHolders(sbConfig.getString("lines"), gameID))));
             }
         }
     }
@@ -189,15 +261,4 @@ public class GameScoreboardManager {
         return this.gameScor.get(gameID);
     }
 
-    public void removeScoreboard(Player player) {
-        for(Map.Entry<Integer, List<FastBoard>> sb : this.playerScoreboards.entrySet()){
-            for(FastBoard _sb : sb.getValue()){
-                if(_sb.getPlayer() == player){
-                    if (!_sb.isDeleted()) {
-                        _sb.delete();
-                    }
-                }
-            }
-        }
-    }
 }

@@ -43,6 +43,7 @@ public abstract class PlaySpace {
         ID = playSpaces.size();
         UID = GeneralUtils.generateUniqueID();
         name = "PlaySpace-" + ID;
+        scoreboardManager = new GameScoreboardManager();
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -54,7 +55,6 @@ public abstract class PlaySpace {
     }
 
     public void setup(List<Player> players) {
-        scoreboardManager = new GameScoreboardManager();
         this.players.addAll(players);
         status = GameStatus.STARTING;
         start();
@@ -99,8 +99,6 @@ public abstract class PlaySpace {
     public void reset() {
         status = GameStatus.INACTIVE;
         tick = 0;
-        //if (scoreboardManager != null)
-        //    scoreboardManager.removeAllScoreboard(getID());
         players = new ArrayList<>();
     }
 

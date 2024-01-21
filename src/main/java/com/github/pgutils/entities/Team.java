@@ -1,17 +1,10 @@
 package com.github.pgutils.entities;
 
-import com.github.pgutils.customitems.CustomItemRepository;
-import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,16 +25,15 @@ public class Team {
         this.colorString = "#"+color;
         this.id = id;
         this.placespace = arena;
-
         team = placespace.getScoreboard().registerNewTeam("Team_" + id);
+        placespace.getSbManager().addTeam(placespace.getID(), id, colorString);
 
-        arena.getSbManager().addTeam(id, colorString, arena.getID());
     }
     public void addPlayer(Player player) {
         players.add(player);
-        placespace.getSbManager().createGameScoreboard(player, placespace.getID());
         team.addEntry(player.getName());
-        System.out.println("Added player "+player.getName()+" to team "+id);
+        placespace.getSbManager().addPlayer(placespace.getID(), id, player);
+        System.out.println("Added player " + player.getName() + " to team " + id);
         player.sendMessage(Messages.messageWithPrefix("game-join-team", "%color%Joined team %id%!").replace("%color%", GeneralUtils.hexToMinecraftColor(colorString)).replace("%id%", id+""));
     }
 
@@ -49,15 +41,14 @@ public class Team {
         players.remove(player);
         player.getInventory().clear();
         team.removeEntry(player.getName());
-        placespace.getSbManager().removeScoreboard(player);
     }
     public void addPoint(int point) {
         points += point;
-        placespace.getSbManager().setTeamPoint(id, placespace.getID(), points);
+        placespace.getSbManager().setTeamPoint(id, points, placespace.getID());
     }
     public void removePoint(int point) {
         points -= point;
-        placespace.getSbManager().setTeamPoint(id, placespace.getID(), points);
+        placespace.getSbManager().setTeamPoint(id, points, placespace.getID());
     }
     public int getPoints() {
         return points;
