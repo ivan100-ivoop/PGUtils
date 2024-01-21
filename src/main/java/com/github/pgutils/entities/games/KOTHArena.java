@@ -168,9 +168,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         startingTick = 0;
         testMessageTick = 0;
         endingTick = 0;
-        if (getSbManager() != null && getSbManager().hasGame(getID())) {
-            getSbManager().removeGameScore(getID());
-        }
+
 
     }
 
