@@ -163,7 +163,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             point.deactivatePointFull();
             point.resetDownTime();
         });
-        getSbManager().removeGameScore(getID());
         teams.clear();
         startingTick = 0;
         testMessageTick = 0;
