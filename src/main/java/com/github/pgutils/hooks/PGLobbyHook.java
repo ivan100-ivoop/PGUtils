@@ -87,10 +87,10 @@ public class PGLobbyHook implements Listener {
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
-		if (e.getClickedInventory() == null) {
+		if (e.getClickedInventory() != null) {
+			LobbyMenu.JoinLobbyClick(e);
 			return;
 		}
-		LobbyMenu.JoinLobbyClick(e);
 	}
 
 	@EventHandler

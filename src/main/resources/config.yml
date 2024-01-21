@@ -45,9 +45,3 @@ rewards:
     type: command
     reward: give %player% diamond_block 1
     lobby: 1
-  '2':
-    type: item
-    reward:
-      material: CHISELED_STONE_BRICKS
-      amount: 64
-    lobby: 1
