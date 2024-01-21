@@ -11,12 +11,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.scoreboard.Score;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class KOTHTeam extends Team {
@@ -31,6 +28,7 @@ public class KOTHTeam extends Team {
     public KOTHTeam(String color, int id, KOTHArena arena) {
         super(color, id, arena);
         this.arena = arena;
+        this.colorString = "#" + color;
     }
 
     public void addPlayer(Player player) {

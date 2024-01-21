@@ -13,6 +13,7 @@ import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
+import com.github.pgutils.utils.DatabaseManager;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
 import com.github.pgutils.utils.RewardManager;
@@ -21,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,11 +34,12 @@ public final class PGUtils extends JavaPlugin {
     public Logger logger = Bukkit.getLogger();
     public String prefix;
     public static RewardManager rewardManager = null;
-    public static File database = null, saveInv = null, rewardsChest = null, lang = null, subJarsDir = null;
+    public static File database = null, saveInv = null, rewardsChest = null, lang = null;
     public static PortalManager PM = null;
+    public static PGUtilsCommand PGCommands = null;
+    public static DatabaseManager sqlDB = null;
     public static List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public static List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
-
 
     @Override
     public void onEnable() {
@@ -44,14 +47,11 @@ public final class PGUtils extends JavaPlugin {
 
         instance = this;
 
-        prefix = getConfig().getString("prefix", "&7[&e&lPGUtils&7] ");
-
         lang = new File(getDataFolder(), "lang");
-        database = new File(getDataFolder(), "database");
+        database = new File(getDataFolder(), "savedPlayers");
         saveInv = new File(database, "saveInv");
         rewardsChest = new File(database, "PlayerChest");
-        subJarsDir = new File(getDataFolder(), "sub-jars");
-
+        sqlDB = new DatabaseManager(this);
 
         if (!lang.exists()) {
             lang.mkdir();
@@ -59,14 +59,9 @@ public final class PGUtils extends JavaPlugin {
         if (!database.exists()) {
             database.mkdir();
         }
-        if (!saveInv.exists()) {
-            saveInv.mkdir();
-        }
+        if (!saveInv.exists()) { saveInv.mkdir(); }
         if (!rewardsChest.exists()) {
             rewardsChest.mkdir();
-        }
-        if (!subJarsDir.exists()) {
-            subJarsDir.mkdir();
         }
         if (!new File(lang, "en.yml").exists()) {
             lang.mkdir();
@@ -75,11 +70,12 @@ public final class PGUtils extends JavaPlugin {
 
         prefix = Messages.getMessage("prefix", "&7[&e&lPGUtils&7] ", false);
 
-        PM = new PortalManager();
+        PM = new PortalManager(sqlDB);
         rewardManager = new RewardManager();
+        PGCommands = new PGUtilsCommand();
 
-        getCommand("pg").setExecutor(new PGUtilsCommand());
-        getCommand("pg").setTabCompleter(new PGUtilsCommand());
+        getCommand("pg").setExecutor(PGCommands);
+        getCommand("pg").setTabCompleter(PGCommands);
 
 
         Bukkit.getPluginManager().registerEvents(new PGLobbyHook(), this);
@@ -94,8 +90,6 @@ public final class PGUtils extends JavaPlugin {
 
         CustomItemLibrary.onStart();
     }
-    public static PortalManager getPortalManager() { return PM; }
-
     @Override
     public void onDisable() {
         Lobby.lobbies.forEach(lobby -> {
@@ -109,6 +103,7 @@ public final class PGUtils extends JavaPlugin {
         CustomEffect.removeAllEffects();
 
         serializationBootstrap();
+        sqlDB.disconnect();
     }
 
     public void serializationBootstrap() {

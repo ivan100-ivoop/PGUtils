@@ -14,6 +14,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,38 +112,53 @@ public class GeneralUtils {
     }
 
     public static boolean setRespawnPoint(Location loc1) {
-        File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
-        try {
-            respawnFile.createNewFile();
-            FileConfiguration spawn = YamlConfiguration.loadConfiguration(respawnFile);
-            spawn.set("respawn.world", loc1.getWorld().getName());
-            spawn.set("respawn.loc1.x", loc1.getX());
-            spawn.set("respawn.loc1.y", loc1.getY());
-            spawn.set("respawn.loc1.z", loc1.getZ());
-
-            spawn.save(respawnFile);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        db.connect();
+        if(db.isMysql()){
+            db.execute("CREATE TABLE IF NOT EXISTS " + db.fixName("respawn") + " (" +
+                    "  `id` int(11) NOT NULL," +
+                    "  `location_x` double NOT NULL,"+
+                    "  `location_y` double NOT NULL,"+
+                    "  `location_z` double NOT NULL,"+
+                    "  `location_world` varchar(255) NOT NULL" +
+                    ");");
+            db.execute("ALTER TABLE " + db.fixName("respawn") + " ADD PRIMARY KEY (`id`);");
+            db.execute("ALTER TABLE " + db.fixName("respawn") + " MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;");
+        } else {
+            db.execute("CREATE TABLE IF NOT EXISTS " + db.fixName("respawn") + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "location_x DOUBLE," +
+                    "location_y DOUBLE," +
+                    "location_z DOUBLE," +
+                    "location_world VARCHAR (255)," +
+                    "UNIQUE (id)" +
+                    ");");
         }
-        return false;
+
+        db.emptyTable(db.fixName("respawn"));
+        String insertQuery = "INSERT INTO " + db.fixName("respawn") + " (location_x, location_y, location_z, location_world) VALUES (?, ?, ?, ?)";
+        return db.executeInsert(insertQuery,  loc1.getX(), loc1.getY(), loc1.getZ(), loc1.getWorld().getName());
     }
 
     public static Location getRespawnPoint() {
-        File respawnFile = new File(PGUtils.getPlugin(PGUtils.class).database, "respawn.yml");
-        try {
-            respawnFile.createNewFile();
-            FileConfiguration spawn = YamlConfiguration.loadConfiguration(respawnFile);
-            double loc1X = spawn.getDouble("respawn.loc1.x");
-            double loc1Y = spawn.getDouble("respawn.loc1.y");
-            double loc1Z = spawn.getDouble("respawn.loc1.z");
-            String worldName = spawn.getString("respawn.world");
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        db.connect();
 
-            return new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z);
+        if (db.tableExists(db.fixName("respawn"))) {
+            String selectQuery = "SELECT location_x, location_y, location_z, location_world FROM " + db.fixName("respawn");
+            List<Object[]> results = db.executeQuery(selectQuery);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (results != null && results.size() >= 1) {
+                Object[] data = results.get(0);
+                double loc1X = (double) data[0];
+                double loc1Y = (double) data[1];
+                double loc1Z = (double) data[2];
+                String worldName = (String) data[3];
+                db.disconnect();
+                return new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z);
+            }
         }
+        db.disconnect();
         return null;
     }
 

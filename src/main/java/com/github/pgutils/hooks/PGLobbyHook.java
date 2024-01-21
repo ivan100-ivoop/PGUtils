@@ -57,7 +57,7 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		if (PGUtils.getPlugin(PGUtils.class).getPortalManager().inPortal(player.getLocation())) {
+		if (PGUtils.getPlugin(PGUtils.class).PM.inPortal(player.getLocation())) {
 			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
 				int id = GeneralUtils.findPriorityLobby();
 				Lobby lobby = Lobby.lobbies.stream()

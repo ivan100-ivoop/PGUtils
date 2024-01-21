@@ -46,7 +46,7 @@ public class CreatePortal extends PGSubCommand {
                 return true;
             }
 
-            if (PGUtils.getPlugin(PGUtils.class).getPortalManager().savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2, player.getLocation())) {
+            if (PGUtils.getPlugin(PGUtils.class).PM.savePortalLocations("join", PGLobbyHook.pos1, PGLobbyHook.pos2, player.getLocation())) {
 
                 if (player.getInventory().contains(PortalManager.getTool())) {
                     player.getInventory().remove(PortalManager.getTool());
