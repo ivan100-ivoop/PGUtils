@@ -1,10 +1,7 @@
 package com.github.pgutils.customitems;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.customitems.effects.CrownOfTheFallenEffect;
-import com.github.pgutils.customitems.effects.GodlessEffect;
-import com.github.pgutils.customitems.effects.PartyEffect;
-import com.github.pgutils.customitems.effects.PartyEffectCooldown;
+import com.github.pgutils.customitems.effects.*;
 import com.github.pgutils.utils.Keys;
 import com.github.pgutils.utils.PlayerManager;
 import org.bukkit.Bukkit;
@@ -176,6 +173,10 @@ public class CustomItemLibrary implements Listener {
             if (CustomEffect.hasEffect(player, GodlessEffect.class)) {
                 CustomEffect.removeEffect(CustomEffect.getEffect(player, GodlessEffect.class));
             }
+
+            if (CustomEffect.hasEffect(player, AtomizerEffect.class)) {
+                CustomEffect.removeEffect(CustomEffect.getEffect(player, AtomizerEffect.class));
+            }
         }
 
         if (armor[3] != null) {
@@ -203,6 +204,18 @@ public class CustomItemLibrary implements Listener {
                     else if (event instanceof EntityDamageByEntityEvent) {
                         if (CustomEffect.hasEffect(player, GodlessEffect.class)) {
                             GodlessEffect effect = (GodlessEffect) CustomEffect.getEffect(player, GodlessEffect.class);
+                            effect.handlePlayerDamage((EntityDamageByEntityEvent) event);
+                        }
+                    }
+                }
+
+                if (container.has(Keys.atomizer, PersistentDataType.BOOLEAN)) {
+                    if (!CustomEffect.hasEffect(player, AtomizerEffect.class)) {
+                        new AtomizerEffect(player);
+                    }
+                    else if (event instanceof EntityDamageByEntityEvent) {
+                        if (CustomEffect.hasEffect(player, AtomizerEffect.class)) {
+                            AtomizerEffect effect = (AtomizerEffect) CustomEffect.getEffect(player, AtomizerEffect.class);
                             effect.handlePlayerDamage((EntityDamageByEntityEvent) event);
                         }
                     }

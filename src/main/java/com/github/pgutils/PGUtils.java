@@ -14,6 +14,7 @@ import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import com.github.pgutils.utils.DatabaseManager;
+import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PortalManager;
 import com.github.pgutils.utils.RewardManager;
@@ -89,6 +90,8 @@ public final class PGUtils extends JavaPlugin {
         PlaySpace.playSpaceTypes.put("koth", KOTHArena.class);
 
         CustomItemLibrary.onStart();
+
+        GeneralUtils.cleanupArmorStands();
     }
     @Override
     public void onDisable() {

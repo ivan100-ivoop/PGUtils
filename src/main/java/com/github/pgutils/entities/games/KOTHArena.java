@@ -1,10 +1,15 @@
 package com.github.pgutils.entities.games;
 
+import java.util.*;
+
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
+import com.github.pgutils.hooks.PGLobbyHook;
+import com.github.pgutils.utils.*;
+
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.GameScoreboardManager;
@@ -48,10 +53,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private int teamsAmount = 2;
 
     // Saved
-    private final int matchTime = 1000;
+    private int matchTime = 3000;
 
 
-    private GameScoreboardManager sbManager;
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
@@ -64,7 +68,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public KOTHArena() {
         super();
         type = "KOTH";
-        sbManager = getSbManager();
     }
 
     @Override
@@ -96,7 +99,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                 player.teleport(spawn.getPos());
             }
         }
-        sbManager.createGameScoreboard(getID());
+        getSbManager().createGameScoreboard(getID());
     }
 
     @Override
@@ -128,7 +131,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                                 .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("game-progress", "&eGame is in progress!", false))));
             }
             if (matchTime % 20 == 0 && (matchTime / 20 - tick / 20) >= 0) {
-                sbManager.setTime(matchTime / 20 - tick / 20, getID());
+                getSbManager().setTime(matchTime / 20 - tick / 20, getID());
             }
             if (tick - 30 >= matchTime) {
                 checkEnd();
@@ -164,9 +167,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         startingTick = 0;
         testMessageTick = 0;
         endingTick = 0;
-        if (sbManager != null && sbManager.hasGame(getID())) {
-            sbManager.removeGameScore(getID());
-        }
+
 
     }
 
@@ -179,7 +180,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public void removePlayer(Player player) {
         players.remove(player);
         teams.stream().forEach(team -> team.removePlayer(player));
-        sbManager.removeScoreboard(player);
+        getSbManager().removeScoreboard(player);
     }
 
     @Override
@@ -373,10 +374,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         this.teamsAmount = readObject;
     }
 
-
-    public Scoreboard getScoreboard() {
-        return sbManager.getScoreboard(getID());
-    }
 
     public List<KOTHTeam> getTeams() {
         return teams;
