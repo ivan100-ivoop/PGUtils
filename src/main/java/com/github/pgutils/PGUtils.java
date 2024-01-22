@@ -72,7 +72,7 @@ public final class PGUtils extends JavaPlugin {
         prefix = Messages.getMessage("prefix", "&7[&e&lPGUtils&7] ", false);
 
         PM = new PortalManager(sqlDB);
-        rewardManager = new RewardManager();
+        rewardManager = new RewardManager(sqlDB);
         PGCommands = new PGUtilsCommand();
 
         getCommand("pg").setExecutor(PGCommands);
@@ -114,7 +114,7 @@ public final class PGUtils extends JavaPlugin {
 
     public void deserializationBootstrap() {
         LobbyUtils.loadLobbies();
-        LobbyUtils.deleteAllLobbies();
+        //LobbyUtils.deleteAllLobbies();
         KOTHArenaUtils.loadArenas();
         KOTHArenaUtils.deleteAllArenas();
 
