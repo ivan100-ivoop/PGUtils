@@ -120,8 +120,7 @@ public class RewardCommand extends PGSubCommand {
 
     private boolean removeCommand(Player player, String[] args, RewardManager rewards, int lobbyID){
         if(args.length == 3){
-            int itemID = Integer.parseInt(args[2]);
-            if(!rewards.removeItem(lobbyID, itemID)){
+            if(!rewards.removeItem(lobbyID, Integer.parseInt(args[2]))){
                 return false;
             }
             player.sendMessage(Messages.messageWithPrefix("rewards-success-remove-message", "&aSuccessfully removed reward!"));
@@ -156,13 +155,7 @@ public class RewardCommand extends PGSubCommand {
         }
 
         if (args.length == 3 && args[1].equals("remove")) {
-            List<String> tabComplite = new ArrayList<>();
-            for(RewardManager.Rewards reward : PGUtils.getPlugin(PGUtils.class).rewardManager.getRewards()){
-               if(reward.getLobbyID() == Integer.parseInt(args[0])){
-                   tabComplite.add(reward.getItemID() + "");
-               }
-            }
-            return tabComplite;
+            return PGUtils.getPlugin(PGUtils.class).rewardManager.getRewards(Integer.parseInt(args[0]));
         }
 
         if (args.length == 3 && args[1].equals("give")) {

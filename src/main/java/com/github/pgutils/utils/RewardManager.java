@@ -20,230 +20,167 @@ import java.util.Map;
 
 public class RewardManager {
 
-    private List<Rewards> rewards = new ArrayList<>();
+    private DatabaseManager db;
 
-    public RewardManager() {
-        if (rewards.isEmpty()) {
-            loadRewards();
+    public RewardManager(DatabaseManager db) {
+        this.db = db;
+        db.connect();
+
+        if (!db.tableExists(db.fixName("rewards"))) {
+            if (!db.isMysql()) {
+                db.execute("CREATE TABLE IF NOT EXISTS " + db.fixName("rewards") + " (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "lobbyID INTEGER (11)," +
+                        "reward_type VARCHAR (255)," +
+                        "reward_command VARCHAR (255)," +
+                        "reward_item_type VARCHAR (255)," +
+                        "reward_item_amount INTEGER (64)," +
+                        "reward_item_meta TEXT," +
+                        "UNIQUE (id)" +
+                        ");");
+            } else {
+                db.execute("CREATE TABLE IF NOT EXISTS " + db.fixName("rewards") + " (" +
+                        "  `id` int(11) NOT NULL," +
+                        "  `lobbyID` int(11) NULL," +
+                        "  `reward_type` varchar(255) NOT NULL," +
+                        "  `reward_command` varchar(255) NULL," +
+                        "  `reward_item_type` varchar(255) NULL," +
+                        "  `reward_item_amount` int(64) NULL," +
+                        "  `reward_item_meta` text NULL," +
+                        ");");
+                db.execute("ALTER TABLE " + db.fixName("rewards") + " ADD PRIMARY KEY (`id`);");
+                db.execute("ALTER TABLE " + db.fixName("rewards") + " MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;");
+
+            }
         }
+        db.disconnect();
     }
 
-    public List<Rewards> getRewards() {
-        if (rewards.isEmpty()) {
-            loadRewards();
-        }
-        return rewards;
-    }
+    public List<String> getRewards(int lobbyID) {
+        List<String> tabComplite = new ArrayList<>();
+        db.connect();
+        if (db.tableExists(db.fixName("rewards"))) {
+            String selectAllQuery = "SELECT id FROM " + db.fixName("rewards") + " WHERE lobbyID=?";
+            List<Object[]> results = db.executeQuery(selectAllQuery, lobbyID);
 
-    public void loadRewards() {
-
-        if(!rewards.isEmpty()){
-            rewards.clear();
-        }
-        FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
-
-            for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
-                ConfigurationSection rewardSection = config.getConfigurationSection("rewards." + key);
-                RewardsType type = (rewardSection.getString("type", "command" ).equals("command") ? RewardsType.COMMAND : RewardsType.ITEM);
-
-                if (type == RewardsType.COMMAND) {
-                    this.rewards.add(new Rewards()
-                            .setType(type)
-                            .setItemID(rewards.size() + 1)
-                            .addCommand(rewardSection.getString("reward"))
-                            .setLobbyId(rewardSection.getInt("lobby")));
-                } else {
-                    ConfigurationSection _reward = rewardSection.getConfigurationSection("reward");
-                    ItemStack item = new ItemStack(Material.valueOf(_reward.getString("type", "STONE")), _reward.getInt("amount", 1));
-                    item.setItemMeta(((ItemMeta) _reward.get("meta")));
-
-                    this.rewards.add(new Rewards()
-                            .setType(type)
-                            .setItemID(rewards.size() + 1)
-                            .addItem(item)
-                            .setLobbyId(rewardSection.getInt("lobby")));
+            if (results != null) {
+                for (Object[] data : results) {
+                    tabComplite.add(String.valueOf(data[0]));
                 }
             }
         }
-
-    public FileConfiguration getClear(){
-        FileConfiguration config = PGUtils.getPlugin(PGUtils.class).getConfig();
-        config.set("rewards", null);
-        PGUtils.getPlugin(PGUtils.class).saveConfig();
-        return PGUtils.getPlugin(PGUtils.class).getConfig();
+        db.disconnect();
+        return tabComplite;
     }
 
-    private void saveRewards() {
-
-        if (!rewards.isEmpty()) {
-            FileConfiguration config = getClear();
-
-            ConfigurationSection newRewards = config.getConfigurationSection("rewards");
-            for (int i = 0; i < rewards.size(); i++) {
-                Rewards reward = rewards.get(i);
-                ConfigurationSection update = newRewards.createSection((i + 1) + "");
-                update.set("type", (reward.getType() == RewardsType.COMMAND ? "command" : "item"));
-
-                if (reward.getType() == RewardsType.COMMAND) {
-                    update.set("reward", reward.getCommand());
-                } else {
-
-                   ConfigurationSection _reward = update.createSection("reward");
-                    _reward.set("meta", reward.getItem().getItemMeta());
-                    _reward.set("type", reward.getItem().getType().toString());
-                    _reward.set("amount", reward.getItem().getAmount());
-                }
-
-                update.set("lobby", reward.getLobbyID());
-            }
-            PGUtils.getPlugin(PGUtils.class).saveConfig();
+    private static String itemMetaToString(ItemStack itemStack) {
+        if (itemStack != null && itemStack.hasItemMeta()) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            YamlConfiguration config = new YamlConfiguration();
+            config.set("item-meta", itemMeta);
+            return config.saveToString();
         }
+        return null;
+    }
+
+    private static ItemMeta stringToItemMeta(String serializedItemMeta) {
+        if (serializedItemMeta != null && !serializedItemMeta.isEmpty()) {
+            YamlConfiguration config = new YamlConfiguration();
+            try {
+                config.loadFromString(serializedItemMeta);
+                return (ItemMeta) config.get("item-meta");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public boolean addCommandReward(int lobbyID, String command) {
-        if (rewards.add(new Rewards()
-                .setType(RewardsType.COMMAND)
-                .addCommand(command)
-                .setItemID(rewards.size())
-                .setLobbyId(lobbyID))) {
-            saveRewards();
+        db.connect();
+        String insertSql = "INSERT INTO " + db.fixName("rewards") + " (lobbyID, reward_type, reward_command) VALUES (?, ?, ?)";
+        if (db.execute(insertSql, lobbyID, "command", command)) {
             return true;
         }
         return false;
     }
 
     public boolean addItemReward(int lobbyID, ItemStack item) {
-        if (rewards.add(new Rewards()
-                .setType(RewardsType.ITEM)
-                .addItem(item)
-                .setItemID(rewards.size())
-                .setLobbyId(lobbyID))) {
-            saveRewards();
-            return true;
+        db.connect();
+        String insertSql = "INSERT INTO " + db.fixName("rewards") + " (lobbyID, reward_type, reward_item_type, reward_item_amount, reward_item_meta) VALUES (?, ?, ?, ?, ?)";
+        if (db.execute(insertSql, lobbyID, "item", item.getType().toString(), item.getAmount(), this.itemMetaToString(item))) {
+           return true;
         }
         return false;
     }
 
     public boolean removeItem(int lobbyID, int itemID) {
-        if (rewards.isEmpty())
-            this.loadRewards();
-
-        Iterator<Rewards> iterator = rewards.iterator();
-
-        while (iterator.hasNext()) {
-            Rewards reward = iterator.next();
-
-            if (reward.getLobbyID() == lobbyID && reward.getItemID() == itemID) {
-                iterator.remove();
-                this.saveRewards();
-
-                return true;
-            }
+        db.connect();
+        String removeSql = "DELETE FROM " + db.fixName("rewards") + " WHERE id=? AND lobbyID=?";
+        if (db.execute(removeSql, itemID, lobbyID)) {
+            return true;
         }
         return false;
     }
 
     public void giveRewards(int lobbyID, Player player) {
-        for(Rewards reward : rewards){
-            if(reward.getLobbyID() == lobbyID){
-                if(reward.getType() == RewardsType.COMMAND){
-                    reward.setPlayer(player);
-                    GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommand()));
-                } else if(reward.getType() == RewardsType.ITEM){
-                    PlayerChestReward.addItem(reward.getItem(), player);
+        db.connect();
+        if (db.tableExists(db.fixName("rewards"))) {
+            String selectAllQuery = "SELECT reward_type, reward_command, reward_item_type, reward_item_amount, reward_item_meta FROM " + db.fixName("rewards") + " WHERE lobbyID=?";
+            List<Object[]> results = db.executeQuery(selectAllQuery, lobbyID);
+
+            if (results != null) {
+                for (Object[] data : results) {
+                    if (data[0].equals("command")) {
+                        String cmd = (String) data[1];
+                        GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(cmd.replace("%player%", player.getName())));
+                    } else if (data[0].equals("item")) {
+                        String material = (String) data[2];
+                        int amount = (int) data[3];
+                        String itemMeta = (String) data[4];
+                        ItemStack item = new ItemStack(Material.valueOf(material), amount);
+                        item.setItemMeta(this.stringToItemMeta(itemMeta));
+                        PlayerChestReward.addItem(item, player);
+                    }
                 }
             }
+            db.disconnect();
         }
     }
 
     public StringBuilder getList(int lobbyID) {
-        if (rewards.isEmpty()) {
-            loadRewards();
-        }
-
         StringBuilder outputList = new StringBuilder();
         outputList.append(Messages.getMessage("items-listing-lobby", "&bRewards in Lobby: &6&l%lobby%\n", false).replace("%lobby%", lobbyID + ""));
         outputList.append("------------------------\n");
 
-        for (Rewards reward : rewards) {
-            if (reward.getLobbyID() == lobbyID) {
-                outputList.append(Messages.getMessage("items-listing-id", "&eID: &c%id%\n", false).replace("%id%", reward.getItemID() + ""));
-                outputList.append(Messages.getMessage("items-listing-type", "&eType: &c%type%\n", false).replace("%type%", ((reward.getType() == RewardsType.COMMAND) ? "command" : "item")));
+        db.connect();
+        if (db.tableExists(db.fixName("rewards"))) {
+            String selectAllQuery = "SELECT id, reward_type, reward_command, reward_item_type, reward_item_amount, reward_item_meta FROM " + db.fixName("rewards") + " WHERE lobbyID=?";
+            List<Object[]> results = db.executeQuery(selectAllQuery, lobbyID);
 
-                if (reward.getType() == RewardsType.COMMAND) {
-                    outputList.append(Messages.getMessage("items-listing-command", "&eCommand: &c%command%\n", false).replace("%command%", reward.getCommand()));
-                } else {
-                    outputList.append(Messages.getMessage("items-listing-material", "&eMaterial: &c%material%\n", false).replace("%material%", reward.getItem().getType().toString()));
-                    outputList.append(Messages.getMessage("items-listing-amount", "&eAmount: &c%amount%\n", false).replace("%amount%", String.valueOf(reward.getItem().getAmount())));
+            if (results != null) {
+                for (Object[] data : results) {
+                    int id = (int) data[0];
+                    String type = (String) data[1];
+                    String command = (String) data[2];
+
+                    outputList.append(Messages.getMessage("items-listing-id", "&eID: &c%id%\n", false).replace("%id%", String.valueOf(id)));
+                    outputList.append(Messages.getMessage("items-listing-type", "&eType: &c%type%\n", false).replace("%type%", type));
+
+                    if (type.equals("command")) {
+                        outputList.append(Messages.getMessage("items-listing-command", "&eCommand: &c%command%\n", false).replace("%command%", command));
+                    } else if (type.equals("item")) {
+                        String material = (String) data[3];
+                        int amount = (int) data[4];
+                        outputList.append(Messages.getMessage("items-listing-material", "&eMaterial: &c%material%\n", false).replace("%material%", material));
+                        outputList.append(Messages.getMessage("items-listing-amount", "&eAmount: &c%amount%\n", false).replace("%amount%", String.valueOf(amount)));
+                    }
+                    outputList.append("------------------------\n");
                 }
-                outputList.append("------------------------\n");
             }
         }
+        db.disconnect();
 
         return outputList;
-    }
-
-    public class Rewards {
-        private RewardsType type = null;
-        private int itemID = -1;
-        private int lobbyId = -1;
-        private String command = null;
-        private ItemStack item = null;
-
-        public Rewards setType(RewardsType type) {
-            this.type = type;
-            return this;
-        }
-
-        public int getLobbyID() {
-            return this.lobbyId;
-        }
-
-        public int getItemID() {
-            return this.itemID;
-        }
-
-        public Rewards setItemID(int ID) {
-            this.itemID = ID;
-            return this;
-        }
-
-        public Rewards setLobbyId(int lobbyID) {
-            this.lobbyId = lobbyID;
-            return this;
-        }
-
-        public RewardsType getType() {
-            return this.type;
-        }
-
-        public String getCommand() {
-            return this.command;
-        }
-
-        public ItemStack getItem() {
-            return this.item;
-        }
-
-        public Rewards addItem(ItemStack item) {
-            if (this.type == RewardsType.ITEM) {
-                this.item = item;
-            }
-            return this;
-        }
-
-        public Rewards addCommand(String cmd) {
-            if (this.type == RewardsType.COMMAND) {
-                this.command = cmd;
-            }
-            return this;
-        }
-
-        public Rewards setPlayer(Player player) {
-            if (this.type == RewardsType.COMMAND) {
-                this.command = GeneralUtils.fixColors(this.command.replace("%player%", player.getName()));
-            }
-            return this;
-        }
     }
 }

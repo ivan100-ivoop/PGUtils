@@ -10,8 +10,6 @@ database:
   dbname: "pgutils"
   prefix: "pgutils_"
 
-
-
 portal-tool:
   material: STICK
   name: "&5&lPGUtils &e&lTool"
@@ -39,9 +37,3 @@ game-sb:
 
 whitelist-commands:
   - "pg"
-
-rewards:
-  '1':
-    type: command
-    reward: give %player% diamond_block 1
-    lobby: 1

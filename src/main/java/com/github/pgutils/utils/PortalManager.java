@@ -86,23 +86,25 @@ public class PortalManager {
 
             if (results != null) {
                 for (Object[] data : results) {
-                    int lobbyID = (int) data[0];
-                    double loc1X = (double) data[1];
-                    double loc1Y = (double) data[2];
-                    double loc1Z = (double) data[3];
+                    if(data[0] != null) {
+                        int lobbyID = (int) data[0];
+                        double loc1X = (double) data[1];
+                        double loc1Y = (double) data[2];
+                        double loc1Z = (double) data[3];
 
-                    double loc2X = (double) data[4];
-                    double loc2Y = (double) data[5];
-                    double loc2Z = (double) data[6];
+                        double loc2X = (double) data[4];
+                        double loc2Y = (double) data[5];
+                        double loc2Z = (double) data[6];
 
-                    String worldName = (String) data[7];
+                        String worldName = (String) data[7];
 
-                    Location loc1 = new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z);
-                    Location loc2 = new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc2X, loc2Y, loc2Z);
+                        Location loc1 = new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc1X, loc1Y, loc1Z);
+                        Location loc2 = new Location(PGUtils.getPlugin(PGUtils.class).getServer().getWorld(worldName), loc2X, loc2Y, loc2Z);
 
-                    if (isInRegion(location, loc1, loc2)) {
-                        db.disconnect();
-                        return lobbyID;
+                        if (isInRegion(location, loc1, loc2)) {
+                            db.disconnect();
+                            return lobbyID;
+                        }
                     }
                 }
             }
