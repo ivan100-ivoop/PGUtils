@@ -116,7 +116,7 @@ public final class PGUtils extends JavaPlugin {
 
     public void deserializationBootstrap() {
         LobbyUtils.loadLobbies();
-        LobbyUtils.deleteAllLobbies();
+        //LobbyUtils.deleteAllLobbies();
         KOTHArenaUtils.loadArenas();
         KOTHArenaUtils.deleteAllArenas();
 
