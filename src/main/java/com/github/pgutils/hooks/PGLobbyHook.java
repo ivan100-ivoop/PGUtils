@@ -58,21 +58,7 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		if (PGUtils.getPlugin(PGUtils.class).PM.inPortal(player.getLocation())) {
-			Bukkit.getScheduler().runTask(PGUtils.getPlugin(PGUtils.class), () -> {
-				int id = GeneralUtils.findPriorityLobby();
-				Lobby lobby = Lobby.lobbies.stream()
-						.filter(lobby_ -> lobby_.getID() == id)
-						.findFirst()
-						.orElse(null);
-				if (lobby == null) {
-					player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
-				} else {
-					e.setCancelled(true);
-					lobby.addPlayer(player);
-				}
-			});
-		}
+		PGUtils.getPlugin(PGUtils.class).PM.teleportPlayer(player, e);
 
 		if (PlayerManager.cannotMove.contains(player)) {
 			e.setCancelled(true);

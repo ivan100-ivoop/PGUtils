@@ -98,14 +98,21 @@ public class DatabaseManager {
         return false;
     }
 
-    public void execute(String query) {
+    public boolean execute(String query, Object... parameters) {
         if (isConnected()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                for (int i = 0; i < parameters.length; i++) {
+                    preparedStatement.setObject(i + 1, parameters[i]);
+                }
+
                 preparedStatement.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     public String fixName(String portals) {
