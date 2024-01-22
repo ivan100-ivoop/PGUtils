@@ -5,8 +5,6 @@ import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.enums.LobbyMode;
-import com.github.pgutils.interfaces.EvenDependent;
-import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.PlayerManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -65,6 +63,9 @@ public class Lobby {
     private int showPlayersMessageTick = 0;
 
     // Saved
+    private boolean tournamentMode = false;
+
+    // Saved
     private LobbyMode mode = LobbyMode.AUTO;
 
     // Saved
@@ -89,6 +90,9 @@ public class Lobby {
             if (players.size() >= minPlayers && mode == LobbyMode.AUTO) {
                 startSequence();
             }
+            else if (players.size() >= minPlayers && mode == LobbyMode.MANUAL) {
+                startWaitingForHost();
+            }
             showPlayersMessageTick++;
             if (showPlayersMessageTick >= showPlayersMessageTime) {
                 showPlayersMessageTick = 0;
@@ -96,6 +100,24 @@ public class Lobby {
                         .forEach(player -> player.spigot()
                                 .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("waiting-players", "&eWaiting for players &b%players%/%min_players% &e!", false).replace("%players%", String.valueOf(players.size())).replace("%min_players%", String.valueOf(minPlayers)))));
             }
+        }
+        else if (status == LobbyStatus.WAITING_FOR_HOST && mode == LobbyMode.MANUAL) {
+
+            showPlayersMessageTick++;
+            if (showPlayersMessageTick >= showPlayersMessageTime) {
+                showPlayersMessageTick = 0;
+                players.stream()
+                        .forEach(player -> player.spigot()
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("waiting-host", "&eWaiting for a host to start the game!", false))));
+            }
+            if (players.size() < minPlayers) {
+                status = LobbyStatus.WAITING_FOR_PLAYERS;
+                lobbyStartingTick = 0;
+                players.stream()
+                        .forEach(player -> player.spigot()
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
+            }
+
         }
         else if (status == LobbyStatus.STARTING) {
             if (lobbyStartingTick >= lobbyStartingTime) {
@@ -134,22 +156,22 @@ public class Lobby {
         if (playSpaces.size() == 0) return -1;
         if (playSpaces.size() == 1) return 0;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
-        if (players.size() % 2 != 0) {
-            for (PlaySpace playSpace : playSpaces) {
-                if (playSpace instanceof EvenIndependent) {
-                    possiblePlaySpaces.add(playSpace);
-                }
-            }
-        }
-        else {
-            for (PlaySpace playSpace : playSpaces) {
-                if (playSpace instanceof EvenDependent || playSpace instanceof EvenIndependent) {
-                    possiblePlaySpaces.add(playSpace);
-                }
+        for (PlaySpace playSpace : playSpaces) {
+            if (checkIfPlayspaceIsValid(playSpace) == "All Good") {
+                possiblePlaySpaces.add(playSpace);
             }
         }
         possiblePlaySpaces.remove(playSpaces.get(lastGame));
         return playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
+    }
+
+    private String checkIfPlayspaceIsValid(PlaySpace playSpace) {
+        return playSpace.passesChecks();
+
+    }
+
+    public void startWaitingForHost() {
+        status = LobbyStatus.WAITING_FOR_HOST;
     }
 
     public void startSequence() {
@@ -175,11 +197,25 @@ public class Lobby {
         currentPlaySpace.setup(players);
     }
 
-    public void reset() {
+    public void reset(List<Player> winner) {
         System.out.println("Resetting lobby " + ID);
         status = LobbyStatus.RESETTING;
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
+
+        if (winner != null) {
+
+            for (Player player : winner)
+                PGUtils.getPlugin(PGUtils.class).rewardManager.giveRewards(getID(), player);
+
+            // Kick all losers
+
+            for (Player player : players) {
+                if (!winner.contains(player)) {
+                    kickPlayer(player);
+                }
+            }
+        }
 
         players.stream()
                 .forEach(player -> {
@@ -194,7 +230,6 @@ public class Lobby {
                     }
                 });
         waitingPlayers.clear();
-
     }
 
     public void addPlayer(Player player) {
@@ -268,10 +303,10 @@ public class Lobby {
     public boolean delete() {
         kickAll();
         if (getCurrentPlaySpace() != null)
-            getCurrentPlaySpace().end();
+            getCurrentPlaySpace().end(null);
         playSpaces.stream().forEach(
                 playSpace -> {
-                    playSpace.end();
+                    playSpace.end(null);
                     playSpace.setLobby(null);
                 });
         lobbies.remove(this);
@@ -304,8 +339,15 @@ public class Lobby {
         return players.size();
     }
 
-    public void setGame(int gameID) {
-        pickedGameID = gameID;
+    public String setGame(int gameID) {
+        if (gameID < 1 || gameID >= playSpaces.size()) {
+            return "Invalid game ID!";
+        }
+        String check = checkIfPlayspaceIsValid(playSpaces.get(gameID - 1));
+        if (check == "All Good") {
+            pickedGameID = gameID;
+        }
+        return check;
     }
 
     public void setPos(Location pos) {
@@ -365,7 +407,7 @@ public class Lobby {
 
     public void closeDown() {
         kickAll();
-        getCurrentPlaySpace().end();
+        getCurrentPlaySpace().end(null);
     }
 
     public Location getLocation() {
@@ -390,5 +432,24 @@ public class Lobby {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setLock(boolean lock) {
+        isLocked = lock;
+    }
+
+    public void setTournamentMode(boolean tournamentMode) {
+        this.tournamentMode = tournamentMode;
+        setLock(tournamentMode);
+    }
+
+    public boolean startGame() {
+        if (status != LobbyStatus.WAITING_FOR_HOST) {
+            startSequence();
+            return true;
+        }
+
+
+        return false;
     }
 }

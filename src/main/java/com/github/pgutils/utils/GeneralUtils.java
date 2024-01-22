@@ -245,4 +245,38 @@ public class GeneralUtils {
             }
         }
     }
+
+    public static PlaySpace getPlaySpaceByName(String name) {
+        Optional<PlaySpace> _playSpace = PlaySpace.playSpaces.stream()
+                .filter(playSpace -> playSpace.getName().equalsIgnoreCase(name))
+                .findFirst();
+        if (!_playSpace.isPresent()) {
+            return null;
+        }
+        PlaySpace playSpace = _playSpace.get();
+        return playSpace;
+    }
+
+    public static Lobby getLobbyByName(String name) {
+        Optional<Lobby> _lobby = Lobby.lobbies.stream()
+                .filter(lobby -> lobby.getName().equalsIgnoreCase(name))
+                .findFirst();
+        if (!_lobby.isPresent()) {
+            return null;
+        }
+        Lobby lobby = _lobby.get();
+        return lobby;
+    }
+
+    public static Location getClosestLocation(Location location, List<Location> locations) {
+        double distance = Double.MAX_VALUE;
+        Location closest = null;
+        for (Location loc : locations) {
+            if (loc.distance(location) < distance) {
+                distance = loc.distance(location);
+                closest = loc;
+            }
+        }
+        return closest;
+    }
 }

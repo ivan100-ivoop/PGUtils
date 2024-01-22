@@ -1,19 +1,25 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public abstract class PlaySpace {
+
+
     private int ID;
 
     private String UID;
@@ -21,6 +27,8 @@ public abstract class PlaySpace {
     public static List<PlaySpace> playSpaces = new ArrayList<>();
 
     public static Map<String, Class<? extends PlaySpace>> playSpaceTypes = new HashMap<>();
+
+    public Map<String, BiFunction<Player, String[], Boolean>> commandMap = new HashMap<>();
 
     private Location pos;
 
@@ -30,7 +38,7 @@ public abstract class PlaySpace {
 
     protected GameStatus status = GameStatus.INACTIVE;
 
-    private GameScoreboardManager scoreboardManager = null;
+    private GameScoreboardManager scoreboardManager;
 
     protected int tick = 0;
 
@@ -75,7 +83,7 @@ public abstract class PlaySpace {
 
         playSpaces.remove(this);
         if (getLobby() != null) {
-            end();
+            end(null);
             getLobby().removePlaySpace(this);
             setLobby(null);
         }
@@ -87,14 +95,14 @@ public abstract class PlaySpace {
         System.out.println("Deleted PlaySpace " + ID + " playSpaces.size() = " + playSpaces.size());
         return true;
     }
-
-    public void end() {
+    public void end(List<Player> players) {
         endProcedure();
         reset();
         if (currentLobby != null) {
-            currentLobby.reset();
+            currentLobby.reset(players);
         }
     }
+
 
     public void reset() {
         status = GameStatus.INACTIVE;
@@ -135,7 +143,7 @@ public abstract class PlaySpace {
 
     public abstract void removePlayer(Player player);
 
-    public abstract boolean passesChecks();
+    public abstract String passesChecks();
 
     public abstract void updateView(Player player);
 
@@ -163,8 +171,9 @@ public abstract class PlaySpace {
 
     public abstract boolean removeGameObjects(Player player, String[] args);
 
-
     public abstract boolean setGameObjects(Player player, String[] args);
+
+    public abstract boolean setGameOptions(Player player, String[] args);
 
     public Scoreboard getScoreboard() {
         return scoreboardManager.getScoreboard(getID());
@@ -184,5 +193,10 @@ public abstract class PlaySpace {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    // return the commandmap
+    public Map<String, BiFunction<Player, String[], Boolean>> getCommandMap() {
+        return commandMap;
     }
 }

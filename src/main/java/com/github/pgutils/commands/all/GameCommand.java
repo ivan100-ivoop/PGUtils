@@ -57,8 +57,22 @@ public class GameCommand extends PGSubCommand {
                 case "select":
                     return UltimateUtilsX.selectGame(player, args);
 
+                case "select-name":
+                    return UltimateUtilsX.selectGameByName(player, args);
+
+                case "validate":
+                    return UltimateUtilsX.checkValid(player, args);
+
+                case "set-objects":
+                    return UltimateUtilsX.setGameObjects(player, args);
+
+                case "info":
+                    return UltimateUtilsX.gameInfo(player, args);
+
                 case "delete":
                     return UltimateUtilsX.deleteGame(player, args);
+
+
             }
         }
         return false;

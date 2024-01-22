@@ -10,6 +10,7 @@ import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
+import com.sun.tools.javac.jvm.Gen;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -84,6 +85,10 @@ public class UltimateUtilsX {
                 return setLobbyMode(player, args);
             case "name":
                 return setLobbyName(player, args);
+            case "lock":
+                return setLobbyLock(player, args);
+            case "tournament":
+                return setLobbyTournament(player, args);
             default:
                 player.sendMessage("Unknown set command.");
                 return true;
@@ -156,7 +161,7 @@ public class UltimateUtilsX {
         }
 
         if (lobby.getCurrentPlaySpace() == playSpace) {
-            playSpace.end();
+            playSpace.end(null);
         }
         lobby.removePlaySpace(playSpace);
         playSpace.setLobby(null);
@@ -248,9 +253,51 @@ public class UltimateUtilsX {
             player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
             return true;
         }
+        for (Lobby lobby : Lobby.lobbies) {
+            if (lobby.getName().equals(name)) {
+                player.sendMessage(Messages.messageWithPrefix("lobby-name-taken-message", "&cLobby Name is already taken!"));
+                return true;
+            }
+        }
         Lobby lobby = lobbySelector.get().lobby;
         lobby.setName(name);
         player.sendMessage(Messages.messageWithPrefix("set-lobby-name-message", "&aSuccessful set Lobby Name to %name%&a!").replace("%name%", "" + name));
+        return true;
+    }
+
+    private static boolean setLobbyLock(Player player, String[] args) {
+        if (args.length < 3) {
+            return false;
+        }
+        boolean lock = Boolean.parseBoolean(args[2]);
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!lobbySelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        Lobby lobby = lobbySelector.get().lobby;
+        lobby.setLock(lock);
+        player.sendMessage(Messages.messageWithPrefix("set-lobby-lock-message", "&aSuccessful set Lobby Lock to %lock%&a!").replace("%lock%", "" + lock));
+        return true;
+    }
+
+    private static boolean setLobbyTournament(Player player, String[] args) {
+        if (args.length < 3) {
+            return false;
+        }
+        boolean tournament = Boolean.parseBoolean(args[2]);
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!lobbySelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        Lobby lobby = lobbySelector.get().lobby;
+        lobby.setTournamentMode(tournament);
+        player.sendMessage(Messages.messageWithPrefix("set-lobby-tournament-message", "&aSuccessful set Lobby Tournament to %tournament%&a!").replace("%tournament%", "" + tournament));
         return true;
     }
 
@@ -297,7 +344,7 @@ public class UltimateUtilsX {
         }
 
         if (lobby.getCurrentPlaySpace() == playSpace) {
-            playSpace.end();
+            playSpace.end(null);
         }
         lobby.addPlaySpace(playSpace);
         playSpace.setLobby(lobby);
@@ -389,7 +436,7 @@ public class UltimateUtilsX {
             sender.sendMessage(Messages.messageWithPrefix("game-not-started-message", "&cGame is not started!"));
             return true;
         }
-        lobby.getCurrentPlaySpace().end();
+        lobby.getCurrentPlaySpace().end(null);
         sender.sendMessage(Messages.messageWithPrefix("force-end-message", "&aSuccessful force end game from %id%&a!").replace("%id%", "" + lobby.getID()));
         return true;
     }
@@ -495,6 +542,28 @@ public class UltimateUtilsX {
 
     }
 
+    public static boolean setGameObjects(Player player, String[] args) {
+        if (args.length < 2) {
+            return false;
+        }
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+
+        if (!playSpaceSelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+        PlaySpace playSpace = playSpaceSelector.get().playSpace;
+        if (playSpace == null) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+
+        return playSpace.setGameObjects(player, args);
+    }
+
+
 
     public static boolean deleteGame(Player player, String[] args) {
         if (args.length <= 2) {
@@ -545,6 +614,7 @@ public class UltimateUtilsX {
         return false;
     }
 
+
     public static boolean setGame(Player player, String[] args) {
         if (args.length < 2) {
             return false;
@@ -554,8 +624,27 @@ public class UltimateUtilsX {
                 return setGameLocation(player, args);
             case "name":
                 return setGameName(player, args);
+            case "options":
+                return setGameOptions(player, args);
         }
         return false;
+    }
+
+    private static boolean setGameOptions(Player player, String[] args) {
+        if (args.length < 3) {
+            return false;
+        }
+        Optional<PlayerPlaySpaceSelector> playSpace_ = PGUtils.selectedPlaySpace.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!playSpace_.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+
+        PlaySpace playSpace = playSpace_.get().playSpace;
+
+        return playSpace.setGameOptions(player, args);
     }
 
     private static boolean setGameName(Player player, String[] args) {
@@ -637,22 +726,24 @@ public class UltimateUtilsX {
             return true;
         }
         sender.sendMessage(Messages.messageWithPrefix("lobby-info-message", "&aLobby Info:\n" +
-                "&aID: %id%\n" +
-                "&aName: %name%\n" +
-                "&aMin Players: %min%\n" +
-                "&aMax Players: %max%\n" +
-                "&aMode: %mode%\n" +
-                "&aLocation: %location%\n" +
-                "&aPlaySpaces: %playspaces%")
+                        "&aID: %id%\n" +
+                        "&aName: %name%\n" +
+                        "&aMin Players: %min%\n" +
+                        "&aMax Players: %max%\n" +
+                        "&aMode: %mode%\n" +
+                        "&aLocation: %location%\n" +
+                        "&aPlaySpaces: %playspaces%\n" +
+                        "&aStatus: %status%")
                 .replace("%id%", "" + lobby.getID())
                 .replace("%name%", "" + lobby.getName())
                 .replace("%min%", "" + lobby.getMinPlayers())
                 .replace("%max%", "" + lobby.getMaxPlayers())
                 .replace("%mode%", "" + lobby.getMode())
                 .replace("%location%", "" + lobby.getPos())
-                .replace("%playspaces%", "" + lobby.getPlaySpaces().size()));
+                .replace("%playspaces%", "" + lobby.getPlaySpaces().size())
+                .replace("%status%", "" + lobby.getStatus()));
 
-        return false;
+        return true;
 
     }
 
@@ -673,14 +764,16 @@ public class UltimateUtilsX {
                 "&aMax Players: %max%\n" +
                 "&aMode: %mode%\n" +
                 "&aLocation: %location%\n" +
-                "&aPlaySpaces: %playspaces%")
+                "&aPlaySpaces: %playspaces%\n" +
+                "&aStatus: %status%")
                 .replace("%id%", "" + lobby.getID())
                 .replace("%name%", "" + lobby.getName())
                 .replace("%min%", "" + lobby.getMinPlayers())
                 .replace("%max%", "" + lobby.getMaxPlayers())
                 .replace("%mode%", "" + lobby.getMode())
                 .replace("%location%", "" + lobby.getPos())
-                .replace("%playspaces%", "" + lobby.getPlaySpaces().size()));
+                .replace("%playspaces%", "" + lobby.getPlaySpaces().size())
+                .replace("%status%", "" + lobby.getStatus()));
 
         return true;
 
@@ -703,11 +796,13 @@ public class UltimateUtilsX {
                     "&aType: %type% / " +
                     "&aName: %name% / " +
                     "&aPlayers: %players% / " +
+                    "&aValid: %valid% / " +
                     "&aStatus: %status%")
                     .replace("%id%", "" + playSpace.getID())
                     .replace("%type%", "" + playSpace.getType())
                     .replace("%name%", "" + playSpace.getName())
                     .replace("%players%", "" + playSpace.getPlayers().size())
+                    .replace("%valid%", "" + playSpace.passesChecks())
                     .replace("%status%", "" + playSpace.getStatus()));
         }
         return true;
@@ -729,11 +824,13 @@ public class UltimateUtilsX {
                     "&aType: %type% / " +
                     "&aName: %name% / " +
                     "&aPlayers: %players% / " +
+                    "&aValid: %valid% / " +
                     "&aStatus: %status%")
                     .replace("%id%", "" + playSpace.getID())
                     .replace("%type%", "" + playSpace.getType())
                     .replace("%name%", "" + playSpace.getName())
                     .replace("%players%", "" + playSpace.getPlayers().size())
+                    .replace("%valid%", "" + playSpace.passesChecks())
                     .replace("%status%", "" + playSpace.getStatus()));
         }
         return true;
@@ -768,4 +865,171 @@ public class UltimateUtilsX {
         player.sendMessage(Messages.messageWithPrefix("custom-item-message", "&aSuccessfully got Custom Item %name%&a!").replace("%name%", name));
         return true;
     }
+
+    // Create a function that selects a game by name
+    public static boolean selectGameByName(Player player, String[] args) {
+        // Check if the arguments are sufficient
+        if (args.length < 2) {
+            return false;
+        }
+
+        // Concatenate the arguments to form the game name
+        StringBuilder nameBuilder = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            nameBuilder.append(args[i]);
+            if (i < args.length - 1) {
+                nameBuilder.append(" ");
+            }
+        }
+        String name = nameBuilder.toString().trim(); // Trim to remove trailing spaces
+        // Retrieve the game
+        PlaySpace playSpace = GeneralUtils.getPlaySpaceByName(name);
+        if (playSpace == null) {
+            player.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
+            return true;
+        }
+        GeneralUtils.playerSelectPlaySpace(player, playSpace);
+        player.sendMessage(Messages.messageWithPrefix("select-playspace-message", "&aSuccessful selected PlaySpace %id%&a!").replace("%id%", "" + playSpace.getID()));
+        return true;
+    }
+
+    // Create a function that selects a lobby by name
+    public static boolean selectLobbyByName(Player player, String[] args) {
+        // Check if the arguments are sufficient
+        if (args.length < 2) {
+            return false;
+        }
+
+        // Concatenate the arguments to form the lobby name
+        StringBuilder nameBuilder = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            nameBuilder.append(args[i]);
+            if (i < args.length - 1) {
+                nameBuilder.append(" ");
+            }
+        }
+        String name = nameBuilder.toString().trim(); // Trim to remove trailing spaces
+        // Retrieve the lobby
+        Lobby lobby = GeneralUtils.getLobbyByName(name);
+        if (lobby == null) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        GeneralUtils.playerSelectLobby(player, lobby);
+        player.sendMessage(Messages.messageWithPrefix("select-lobby-message", "&aSuccessful selected Lobby %id%&a!").replace("%id%", "" + lobby.getID()));
+        return true;
+    }
+
+    public static boolean gameInfo(Player player, String[] args) {
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!playSpaceSelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+        PlaySpace playSpace = playSpaceSelector.get().playSpace;
+        player.sendMessage(Messages.messageWithPrefix("playspace-info-message", "&aPlaySpace Info:\n" +
+                "&aID: %id%\n" +
+                "&aName: %name%\n" +
+                "&aType: %type%\n" +
+                "&aValid: %valid%\n" +
+                "&aLocation: %location%\n")
+                .replace("%id%", "" + playSpace.getID())
+                .replace("%name%", "" + playSpace.getName())
+                .replace("%type%", "" + playSpace.getType())
+                .replace("%valid%", "" + playSpace.passesChecks())
+                .replace("%location%", "" + playSpace.getPos()));
+
+        return true;
+    }
+
+    public static boolean gameInfoID(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            return false;
+        }
+        int id = Integer.parseInt(args[1]);
+        PlaySpace playSpace = GeneralUtils.getPlaySpaceByID(id);
+        if (playSpace == null) {
+            sender.sendMessage(Messages.messageWithPrefix("missing-playspace-message", "&cPlaySpace is not found!"));
+            return true;
+        }
+        sender.sendMessage(Messages.messageWithPrefix("playspace-info-message", "&aPlaySpace Info:\n" +
+                "&aID: %id%\n" +
+                "&aName: %name%\n" +
+                "&aType: %type%\n" +
+                "&aValid: %valid%\n" +
+                "&aLocation: %location%\n")
+                .replace("%id%", "" + playSpace.getID())
+                .replace("%name%", "" + playSpace.getName())
+                .replace("%type%", "" + playSpace.getType())
+                .replace("%valid%", "" + playSpace.passesChecks())
+                .replace("%location%", "" + playSpace.getPos()));
+
+        return true;
+    }
+
+    public static boolean checkValid(Player player, String[] args) {
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!playSpaceSelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+        PlaySpace playSpace = playSpaceSelector.get().playSpace;
+        player.sendMessage(Messages.messageWithPrefix("playspace-valid-message", "&aPlaySpace Validation: %valid%")
+                .replace("%valid%", "" + playSpace.passesChecks()));
+
+        return true;
+    }
+
+    public static boolean selectALobbyGameID(Player player, String[] args) {
+        if (args.length < 2) {
+            return false;
+        }
+        int gameID = Integer.parseInt(args[1]);
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!lobbySelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        Lobby lobby = lobbySelector.get().lobby;
+        String message = lobby.setGame(gameID);
+
+        if (message == "All Done")
+            player.sendMessage(Messages.messageWithPrefix("select-lobby-game-message", "&aSuccessful selected PlaySpace %id%&a!").replace("%id%", "" + gameID));
+        else
+            player.sendMessage(Messages.messageWithPrefix("select-lobby-game-message", "&cFailed to select PlaySpace %id%&c! Report: %message%").replace("%id%", "" + gameID).replace("%message%", message));
+
+
+        return true;
+    }
+
+    public static boolean startLobbyGame(Player player, String[] args) {
+        if (args.length < 2) {
+            return false;
+        }
+        int gameID = Integer.parseInt(args[1]);
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!lobbySelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        Lobby lobby = lobbySelector.get().lobby;
+
+        if (lobby.startGame()) {
+            player.sendMessage(Messages.messageWithPrefix("start-game-message", "&aSuccessful started %type% &afrom %id% &a!").replace("%type%", "" + lobby.getCurrentPlaySpace().getType()).replace("%id%", "" + lobby.getID()));
+        } else {
+            player.sendMessage(Messages.messageWithPrefix("start-game-message", "&cFailed to start %type% &cfrom %id% &c!").replace("%type%", "" + lobby.getCurrentPlaySpace().getType()).replace("%id%", "" + lobby.getID()));
+        }
+        return true;
+    }
+
+
+
 }

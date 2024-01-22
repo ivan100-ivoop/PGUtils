@@ -87,8 +87,6 @@ public final class PGUtils extends JavaPlugin {
 
         deserializationBootstrap();
 
-        PlaySpace.playSpaceTypes.put("koth", KOTHArena.class);
-
         CustomItemLibrary.onStart();
 
         GeneralUtils.cleanupArmorStands();
@@ -100,7 +98,7 @@ public final class PGUtils extends JavaPlugin {
         });
 
         PlaySpace.playSpaces.forEach(playSpace -> {
-            playSpace.end();
+            playSpace.end(null);
         });
 
         CustomEffect.removeAllEffects();

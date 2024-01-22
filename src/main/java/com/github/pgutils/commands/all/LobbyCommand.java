@@ -103,6 +103,9 @@ public class LobbyCommand extends PGSubCommand {
                     case "select":
                         return UltimateUtilsX.selectLobby(player, args);
 
+                    case "select-name":
+                        return UltimateUtilsX.selectLobbyByName(player, args);
+
                     case "force-pull-world-id":
                         return UltimateUtilsX.forcePullAllInWorldToLobbyID(player,args);
 
@@ -111,6 +114,12 @@ public class LobbyCommand extends PGSubCommand {
 
                     case "info-games":
                         return UltimateUtilsX.lobbyGamesInfo(player,args);
+
+                    case "select-game-id":
+                        return UltimateUtilsX.selectALobbyGameID(player,args);
+
+                    case "start":
+                        return UltimateUtilsX.startLobbyGame(player,args);
                 }
             }
         }

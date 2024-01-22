@@ -2,17 +2,12 @@ package com.github.pgutils.entities.games;
 
 import java.util.*;
 
-import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
-import com.github.pgutils.hooks.PGLobbyHook;
-import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
-import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerManager;
@@ -21,15 +16,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class KOTHArena extends PlaySpace implements EvenIndependent {
-    // Convert all ChatColor colors to Color
+public class KOTHArena extends PlaySpace {
+
 
     List<KOTHSpawn> spawns = new ArrayList<>();
 
@@ -56,6 +51,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     private int matchTime = 3000;
 
 
+    static {
+        playSpaceTypes.put("koth", KOTHArena.class);
+    }
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
@@ -68,6 +66,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public KOTHArena() {
         super();
         type = "KOTH";
+        commandMap.put("teams-amount", this::setTeamsAmount);
+        commandMap.put("match-time", this::setMatchTime);
+        commandMap.put("initial-points-active", this::setInitialPointsActive);
     }
 
     @Override
@@ -144,13 +145,14 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
                 });
             }
             if (overtime && tick - 30 >= matchTime + overtimeMAX) {
-                end();
+                end(null);
             }
             points.stream().forEach(point -> point.update());
         } else if (status == GameStatus.IS_ENDING) {
             endingTick++;
             if (endingTick >= endingTime) {
-                end();
+                List<Player> players = winner.getPlayers();
+                end(players);
             }
         }
     }
@@ -163,7 +165,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             point.deactivatePointFull();
             point.resetDownTime();
         });
-        getSbManager().removeGameScore(getID());
         teams.clear();
         startingTick = 0;
         testMessageTick = 0;
@@ -185,8 +186,26 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     }
 
     @Override
-    public boolean passesChecks() {
-        return true;
+    public String passesChecks() {
+
+        if (points.size() < initial_points_active + 2) {
+            return "Not enough points! Currently : " + points.size() + " | Needed : " + (initial_points_active + 2);
+        }
+
+        for (int i = 1; i <= teamsAmount; i++) {
+            int finalI = i;
+            if (spawns.stream().noneMatch(spawn -> spawn.getTeamID() == finalI)) {
+                return "No spawn for team " + i;
+            }
+        }
+
+        if (getLobby() != null) {
+            if (getLobby().getPlayers().size() % teamsAmount != 0) {
+                return "Players amount must be divisible by teams amount! Currently : " + getLobby().getPlayers().size() + " | Needed : " + (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount));
+            }
+        }
+
+        return "All Done";
     }
 
     @Override
@@ -212,8 +231,150 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     @Override
     public boolean setGameObjects(Player player, String[] args) {
+        switch (args[1].toLowerCase()) {
+            case "select-closest":
+                return selectClosest(player, args);
+            case "delete-closest":
+                return deleteClosestObject(player, args);
+        }
+
         return false;
     }
+
+    private boolean deleteClosestObject(Player player, String[] args) {
+        List<Location> locations = new ArrayList<>();
+        locations.addAll(spawns.stream().map(spawn -> spawn.getPos()).collect(Collectors.toList()));
+        locations.addAll(points.stream().map(point -> point.getLocation()).collect(Collectors.toList()));
+        Location closest = GeneralUtils.getClosestLocation(player.getLocation(), locations);
+        if (closest == null) {
+            player.sendMessage(Messages.messageWithPrefix("no-closest-object-message", "&c&lOops &cThere are no objects!"));
+            return true;
+        }
+
+        if (spawns.stream().anyMatch(spawn -> spawn.getPos().equals(closest))) {
+            removeSpawnLocation(spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getID());
+            player.sendMessage(Messages.messageWithPrefix("spawn-deleted-message", "&aSuccessfully deleted spawn!"));
+            return true;
+        }
+
+        if (points.stream().anyMatch(point -> point.getLocation().equals(closest))) {
+            removePoint(points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getID());
+            player.sendMessage(Messages.messageWithPrefix("point-deleted-message", "&aSuccessfully deleted point!"));
+            return true;
+        }
+
+        return false;
+    }
+    private boolean selectClosest(Player player, String[] args) {
+        List<Location> locations = new ArrayList<>();
+        locations.addAll(spawns.stream().map(spawn -> spawn.getPos()).collect(Collectors.toList()));
+        locations.addAll(points.stream().map(point -> point.getLocation()).collect(Collectors.toList()));
+        Location closest = GeneralUtils.getClosestLocation(player.getLocation(), locations);
+        System.out.println("Hello");
+        if (closest == null) {
+            player.sendMessage(Messages.messageWithPrefix("no-closest-object-message", "&c&lOops &cThere are no objects!"));
+            return true;
+        }
+
+        if (spawns.stream().anyMatch(spawn -> spawn.getPos().equals(closest))) {
+            player.sendMessage(Messages.messageWithPrefix("spawn-selected-message", "&a" +
+                    "Selected spawn! &6%id% &awith team id : %team_id%").replace("%id%", spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getID() + "").replace("%team_id%", spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getTeamID() + ""));
+
+            return true;
+        }
+
+        if (points.stream().anyMatch(point -> point.getLocation().equals(closest))) {
+            player.sendMessage(Messages.messageWithPrefix("point-selected-message", "&a" +
+                    "Selected point! &6%id% &awith radius : %radius% and points : %points% and time to capture : %time%").replace("%id%", points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getID() + "").replace("%radius%", points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getRadius() + "").replace("%points%", points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getPointsAwarding() + "").replace("%time%", points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getCaptureTime() + ""));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean setGameOptions(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+        System.out.println(args.length);
+        BiFunction<Player, String[], Boolean> function = getCommandMap().get(args[2].toLowerCase());
+        if (function != null) {
+            return function.apply(player, args);
+        }
+
+        return false;
+    }
+
+    public boolean setTeamsAmount(Player player, String[] args) {
+        if (args.length < 4) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+        try {
+            int teamsAmount = Integer.parseInt(args[3]);
+            if (teamsAmount < 2) {
+                player.sendMessage(Messages.messageWithPrefix("team-amount-error-message", "&c&lTeams must be above 2!"));
+                return true;
+            }
+            this.teamsAmount = teamsAmount;
+            player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
+                    .replace("%option%", args[2])
+                    .replace("%value%", args[3]));
+            return true;
+        } catch (NumberFormatException e) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+    }
+
+    public boolean setMatchTime(Player player, String[] args) {
+        if (args.length < 4) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+        try {
+            int matchTime = Integer.parseInt(args[3]);
+            if (matchTime < 5) {
+                player.sendMessage(Messages.messageWithPrefix("match-time-error-message", "&c&lMatch time must be above 5 seconds!"));
+                return true;
+            }
+            this.matchTime = matchTime;
+            this.overtimeMAX = matchTime / 3;
+            player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
+                    .replace("%option%", args[2])
+                    .replace("%value%", args[3]));
+            return true;
+        } catch (NumberFormatException e) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+    }
+
+    public boolean setInitialPointsActive(Player player, String[] args) {
+        if (args.length < 4) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+        try {
+            int initial_points_active = Integer.parseInt(args[3]);
+            if (initial_points_active < 1) {
+                player.sendMessage(Messages.messageWithPrefix("initial-points-active-error-message", "&c&lInitial points active must be above 1!"));
+                return true;
+            }
+            this.initial_points_active = initial_points_active;
+            player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
+                    .replace("%option%", args[2])
+                    .replace("%value%", args[3]));
+            return true;
+        } catch (NumberFormatException e) {
+            player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
+            return true;
+        }
+    }
+
 
     public boolean createPoint(Player player, String[] args) {
         if (args.length < 3) {
@@ -278,6 +439,10 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         }
 
         int team_id = Integer.parseInt(args[3]);
+        if (team_id < 1 || team_id > teamsAmount) {
+            player.sendMessage(Messages.messageWithPrefix("team-amount-error-message", "&c&lTeam id must be between 1 and " + teamsAmount + "!"));
+            return true;
+        }
         addSpawnLocation(player.getLocation(), team_id);
         player.sendMessage(Messages.messageWithPrefix("spawn-created-message", ("&aSuccessfully created spawn! With id : %id% and team id : %team_id%").replace("%id%", spawns.size() + "").replace("%team_id%", team_id + "")));
         return true;
@@ -300,7 +465,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
             player.sendTitle(GeneralUtils.fixColors(GeneralUtils.hexToMinecraftColor(winner.getColorString())+"Team " + winner.getID() + " won!"), "", 0, endingTime, 0);
             player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
             PlayerManager.disablePVP(player);
-            PGUtils.getPlugin(PGUtils.class).rewardManager.giveRewards(getLobby().getID(),player);
+
         });
     }
 
@@ -309,9 +474,12 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         return spawns.get(spawns.size() - 1);
     }
 
-    public int removeSpawnLocation(int id) {
-        spawns.remove(id);
-        return id;
+    public void removeSpawnLocation(String id) {
+        spawns.removeIf(spawn -> spawn.getID().equals(id));
+    }
+
+    private void removePoint(String id) {
+        points.removeIf(point -> point.getID().equals(id));
     }
 
     public void addCapturePoint(KOTHPoint point) {

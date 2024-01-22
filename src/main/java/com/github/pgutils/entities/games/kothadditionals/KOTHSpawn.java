@@ -1,11 +1,12 @@
 package com.github.pgutils.entities.games.kothadditionals;
 
 import com.github.pgutils.entities.games.KOTHArena;
+import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
 
 public class KOTHSpawn{
 
-    private int id;
+    private String id;
 
     private Location pos;
 
@@ -19,7 +20,7 @@ public class KOTHSpawn{
     public KOTHSpawn(Location pos, int team_id, KOTHArena arena) {
         this.pos = pos;
         this.team_id = team_id;
-        this.id = arena.getSpawns().size();
+        this.id = GeneralUtils.generateUniqueID();
     }
 
     public Location getPos(){
@@ -51,7 +52,7 @@ public class KOTHSpawn{
         this.arena = kothArena;
     }
 
-    public int getID() {
+    public String getID() {
         return id;
     }
 }
