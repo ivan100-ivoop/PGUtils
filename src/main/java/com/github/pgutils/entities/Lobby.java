@@ -1,25 +1,25 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.entities.entity_utils.LobbyUtils;
+import com.github.pgutils.enums.LobbyMode;
+import com.github.pgutils.enums.LobbyStatus;
+import com.github.pgutils.interfaces.EvenDependent;
+import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
-import com.github.pgutils.enums.LobbyMode;
-import com.github.pgutils.interfaces.EvenDependent;
-import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.PlayerManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.github.pgutils.enums.LobbyStatus;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class Lobby {
 
@@ -255,6 +255,7 @@ public class Lobby {
 
     public void setMode(LobbyMode mode) {
         this.mode = mode;
+        LobbyUtils.updateLobby("mode", this.mode, this.getUID());
     }
 
     public void addPlaySpace(PlaySpace playSpace) {
@@ -267,6 +268,7 @@ public class Lobby {
 
     public boolean delete() {
         kickAll();
+        LobbyUtils.deleteLobby(this.getUID());
         if (getCurrentPlaySpace() != null)
             getCurrentPlaySpace().end();
         playSpaces.stream().forEach(
@@ -286,10 +288,12 @@ public class Lobby {
 
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+        LobbyUtils.updateLobby("max_players", this.maxPlayers, this.getUID());
     }
 
     public void setMinPlayers(int minPlayers) {
         this.minPlayers = minPlayers;
+        LobbyUtils.updateLobby("min_players", this.minPlayers, this.getUID());
     }
 
     public int getMinPlayers() {
@@ -336,6 +340,7 @@ public class Lobby {
 
     public void setLocked(boolean isLocked) {
         this.isLocked = isLocked;
+        LobbyUtils.updateLobby("locked", this.isLocked, this.getUID());
     }
 
     public void kickPlayer(Player player) {
@@ -374,6 +379,12 @@ public class Lobby {
 
     public void setLocation(Location pos) {
         this.pos = pos;
+        LobbyUtils.updateLobby("location_x", this.pos.getX(), this.getUID());
+        LobbyUtils.updateLobby("location_y", this.pos.getY(), this.getUID());
+        LobbyUtils.updateLobby("location_z", this.pos.getZ(), this.getUID());
+        LobbyUtils.updateLobby("location_pitch", this.pos.getPitch(), this.getUID());
+        LobbyUtils.updateLobby("location_yaw", this.pos.getYaw(), this.getUID());
+        LobbyUtils.updateLobby("location_world", this.pos.getWorld().getName(), this.getUID());
     }
 
     public String getUID() {
@@ -390,5 +401,6 @@ public class Lobby {
 
     public void setName(String name) {
         this.name = name;
+        LobbyUtils.updateLobby("name", this.name, this.getUID());
     }
 }
