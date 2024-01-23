@@ -2,17 +2,12 @@ package com.github.pgutils.entities.games;
 
 import java.util.*;
 
-import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
-import com.github.pgutils.hooks.PGLobbyHook;
-import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
-import com.github.pgutils.interfaces.EvenIndependent;
-import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerManager;
@@ -21,15 +16,18 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class KOTHArena extends PlaySpace implements EvenIndependent {
-    // Convert all ChatColor colors to Color
+public class KOTHArena extends PlaySpace {
+
+    static {
+        playSpaceTypes.put("koth", KOTHArena.class);
+    }
 
     List<KOTHSpawn> spawns = new ArrayList<>();
 
@@ -55,7 +53,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     // Saved
     private int matchTime = 3000;
 
-
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
@@ -68,6 +65,9 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     public KOTHArena() {
         super();
         type = "KOTH";
+        commandMap.put("teams-amount", this::setTeamsAmount);
+        commandMap.put("match-time", this::setMatchTime);
+        commandMap.put("initial-points-active", this::setInitialPointsActive);
     }
 
     @Override
@@ -158,10 +158,8 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     @Override
     public void endProcedure() {
-        if (teams != null) {
-            if (teams.size() > 0)
-                teams.stream().forEach(team -> team.deleteTeam());
-        }
+        if (teams.size() > 0)
+            teams.stream().forEach(team -> team.deleteTeam());
         points.stream().forEach(point -> {
             point.deactivatePointFull();
             point.resetDownTime();
@@ -177,7 +175,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     @Override
     public void setPos(Location pos) {
         super.setPos(pos);
-        KOTHArenaUtils.updateLocation(pos, this.getUID());
     }
 
     @Override
@@ -472,9 +469,7 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
     }
 
     public KOTHSpawn addSpawnLocation(Location location, int team_id) {
-        KOTHSpawn temp = new KOTHSpawn(location, team_id, this);
-        KOTHArenaUtils.saveSpawn(temp, this.getUID());
-        spawns.add(temp);
+        spawns.add(new KOTHSpawn(location, team_id, this));
         return spawns.get(spawns.size() - 1);
     }
 
@@ -486,28 +481,18 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
         points.removeIf(point -> point.getID().equals(id));
     }
 
-    public int removeSpawnLocation(int id) {
-        KOTHSpawn temp = spawns.get(id);
-        KOTHArenaUtils.delSpawn(this.getUID(), temp.getTeamID());
-        spawns.remove(id);
-        return id;
-    }
-
     public void addCapturePoint(KOTHPoint point) {
-        KOTHArenaUtils.savePoint(point, this.getUID());
         points.add(point);
     }
 
     public KOTHPoint addCapturePoint(Location location) {
         KOTHPoint kothPoint =  new KOTHPoint(this, location, 2.5);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
 
     public KOTHPoint addCapturePoint(Location location, double radius) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
 
@@ -515,14 +500,12 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
 
     public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding, int timeToCapture) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding, timeToCapture);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
@@ -549,7 +532,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     public void addSpawn(KOTHSpawn spawn) {
         spawns.add(spawn);
-        KOTHArenaUtils.saveSpawn(spawn, this.getUID());
     }
 
     public int getTeamsAmount() {
@@ -558,7 +540,6 @@ public class KOTHArena extends PlaySpace implements EvenIndependent {
 
     public void setTeamsAmount(int readObject) {
         this.teamsAmount = readObject;
-        KOTHArenaUtils.updateArenas(this.getUID(), "games", "teams_amount", this.teamsAmount);
     }
 
 
