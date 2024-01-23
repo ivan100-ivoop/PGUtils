@@ -2,6 +2,8 @@ package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.customitems.CustomItemRepository;
+import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
+import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
@@ -52,6 +54,7 @@ public abstract class PlaySpace {
         UID = GeneralUtils.generateUniqueID();
         name = "PlaySpace-" + ID;
         scoreboardManager = new GameScoreboardManager();
+        KOTHArenaUtils.saveArenas();
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -80,7 +83,7 @@ public abstract class PlaySpace {
     abstract public void endProcedure();
 
     public boolean delete() {
-
+        KOTHArenaUtils.deleteArenas(getUID());
         playSpaces.remove(this);
         if (getLobby() != null) {
             end(null);
@@ -131,6 +134,7 @@ public abstract class PlaySpace {
 
     public void setLobby(Lobby lobby) {
         currentLobby = lobby;
+        KOTHArenaUtils.updateGameLobby(lobby, getUID());
     }
 
     public Lobby getLobby() {
