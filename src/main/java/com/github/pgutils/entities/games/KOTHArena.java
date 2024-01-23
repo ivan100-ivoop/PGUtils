@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 
 public class KOTHArena extends PlaySpace {
 
+    static {
+        playSpaceTypes.put("koth", KOTHArena.class);
+    }
 
     List<KOTHSpawn> spawns = new ArrayList<>();
 
@@ -50,10 +53,6 @@ public class KOTHArena extends PlaySpace {
     // Saved
     private int matchTime = 3000;
 
-
-    static {
-        playSpaceTypes.put("koth", KOTHArena.class);
-    }
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
