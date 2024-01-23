@@ -25,6 +25,7 @@ public class Lobby {
 
     private int ID;
 
+    // Saved
     private String uniqueID;
 
     // Saved
@@ -101,7 +102,7 @@ public class Lobby {
                                 .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("waiting-players", "&eWaiting for players &b%players%/%min_players% &e!", false).replace("%players%", String.valueOf(players.size())).replace("%min_players%", String.valueOf(minPlayers)))));
             }
         }
-        else if (status == LobbyStatus.WAITING_FOR_HOST && mode == LobbyMode.MANUAL) {
+        else if (status == LobbyStatus.WAITING_FOR_HOST) {
 
             showPlayersMessageTick++;
             if (showPlayersMessageTick >= showPlayersMessageTime) {
@@ -118,6 +119,8 @@ public class Lobby {
                                 .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
             }
 
+            if (mode == LobbyMode.AUTO)
+                startSequence();
         }
         else if (status == LobbyStatus.STARTING) {
             if (lobbyStartingTick >= lobbyStartingTime) {
@@ -154,14 +157,16 @@ public class Lobby {
 
     private int pickRandomGame() {
         if (playSpaces.size() == 0) return -1;
-        if (playSpaces.size() == 1) return 0;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         for (PlaySpace playSpace : playSpaces) {
             if (checkIfPlayspaceIsValid(playSpace) == "All Good") {
                 possiblePlaySpaces.add(playSpace);
             }
         }
-        possiblePlaySpaces.remove(playSpaces.get(lastGame));
+        if (possiblePlaySpaces.size() == 0) return -1;
+
+        if (possiblePlaySpaces.size() > 1)
+            possiblePlaySpaces.remove(playSpaces.get(lastGame));
         return playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
     }
 
@@ -207,8 +212,6 @@ public class Lobby {
 
             for (Player player : winner)
                 PGUtils.getPlugin(PGUtils.class).rewardManager.giveRewards(getID(), player);
-
-            // Kick all losers
 
             for (Player player : players) {
                 if (!winner.contains(player)) {
@@ -365,7 +368,12 @@ public class Lobby {
     }
 
     public String getStatus(){
-        return (status == LobbyStatus.STARTING ? Messages.getMessage("lobby-status-starting", "&6Starting", false) : (status == LobbyStatus.IN_PROGRESS ? Messages.getMessage("lobby-status-started", "&aStarted", false) : (status == LobbyStatus.WAITING_FOR_PLAYERS ? Messages.getMessage("lobby-status-waiting", "&eWaiting for Players", false) : Messages.getMessage("lobby-status-resetting", "&bResetting", false) )));
+        return (status == LobbyStatus.STARTING ?
+                Messages.getMessage("lobby-status-starting", "&6Starting", false)
+                : (status == LobbyStatus.IN_PROGRESS ? Messages.getMessage("lobby-status-started", "&aStarted", false)
+                : (status == LobbyStatus.WAITING_FOR_PLAYERS ? Messages.getMessage("lobby-status-waiting", "&eWaiting for Players", false)
+                : (status == LobbyStatus.RESETTING ?  Messages.getMessage("lobby-status-resetting", "&bResetting", false)
+                : Messages.getMessage("lobby-status-waiting-for-host", "&eWaiting for Host", false)))));
     }
 
     public LobbyMode getMode() {
