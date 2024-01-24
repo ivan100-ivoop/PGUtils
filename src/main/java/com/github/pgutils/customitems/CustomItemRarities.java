@@ -7,8 +7,6 @@ public enum CustomItemRarities {
 
     public ChatColor getColor() {
         switch (this) {
-            case UNCOMMON:
-                return ChatColor.GREEN;
             case RARE:
                 return ChatColor.BLUE;
             case EPIC:

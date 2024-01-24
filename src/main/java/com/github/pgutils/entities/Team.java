@@ -26,6 +26,7 @@ public class Team {
         this.id = id;
         this.placespace = arena;
         team = placespace.getScoreboard().registerNewTeam("Team_" + id);
+        team.setAllowFriendlyFire(false);
         placespace.getSbManager().addTeam(placespace.getID(), id, colorString);
 
     }

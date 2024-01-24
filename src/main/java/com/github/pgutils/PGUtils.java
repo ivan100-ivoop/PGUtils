@@ -83,6 +83,8 @@ public final class PGUtils extends JavaPlugin {
         CustomItemLibrary.onStart();
 
         GeneralUtils.cleanupArmorStands();
+
+        PlaySpace.playSpaceTypes.put("koth",KOTHArena.class);
     }
     @Override
     public void onDisable() {
