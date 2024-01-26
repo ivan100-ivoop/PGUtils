@@ -16,4 +16,5 @@ public class Keys {
     public static final NamespacedKey dynamicObject = new NamespacedKey(PGUtils.instance , "DynamicStand");
 
     public static final NamespacedKey noSteal = new NamespacedKey(PGUtils.instance , "NoSteal");
+    public static final NamespacedKey goldenHarp = new NamespacedKey(PGUtils.instance , "GoldenHarp");
 }

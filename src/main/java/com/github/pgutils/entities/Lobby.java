@@ -4,8 +4,6 @@ import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.enums.LobbyStatus;
-import com.github.pgutils.interfaces.EvenDependent;
-import com.github.pgutils.interfaces.EvenIndependent;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
@@ -159,7 +157,6 @@ public class Lobby {
 
     private int pickRandomGame() {
         if (playSpaces.size() == 0) return -1;
-        if (playSpaces.size() == 1) return 0;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         for (PlaySpace playSpace : playSpaces) {
             if (checkIfPlayspaceIsValid(playSpace) == "All Good") {
@@ -239,18 +236,18 @@ public class Lobby {
 
     }
 
-    public void addPlayer(Player player) {
+    public boolean addPlayer(Player player) {
         if (isLocked) {
             player.sendMessage(Messages.messageWithPrefix("error-lobby-locked", "&cLobby is locked!"));
-            return;
+            return false;
         }
         if (players.size() >= maxPlayers){
             player.sendMessage(Messages.messageWithPrefix("error-lobby-full", "&cLobby is full!"));
-            return;
+            return false;
         }
         if (players.contains(player)) {
             player.sendMessage(Messages.messageWithPrefix("error-already-in-lobby", "&cYou are already in the lobby!"));
-            return;
+            return false;
         }
         GeneralUtils.kickPlayerGlobal(player);
         player.sendMessage(Messages.messageWithPrefix("success-joined-lobby", "&aYou have joined lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
@@ -265,12 +262,13 @@ public class Lobby {
             player.setGameMode(GameMode.SPECTATOR);
             player.teleport(currentPlaySpace.getPos());
         }
+        return true;
     }
 
-    public void removePlayer(Player player) {
+    public boolean removePlayer(Player player) {
         if (!players.contains(player)) {
             player.sendMessage(Messages.messageWithPrefix("error-not-in-lobby", "&cYou are not in the lobby!"));
-            return;
+            return false;
         }
         if (currentPlaySpace != null) {
             if (currentPlaySpace.players.contains(player)) {
@@ -293,6 +291,7 @@ public class Lobby {
             player.setGameMode(GameMode.SURVIVAL);
         }
         players.remove(player);
+        return true;
     }
 
     public void setMode(LobbyMode mode) {
@@ -475,5 +474,9 @@ public class Lobby {
 
 
         return false;
+    }
+
+    public boolean isTournament() {
+        return tournamentMode;
     }
 }

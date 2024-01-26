@@ -70,9 +70,12 @@ public class GodlessEffect extends CustomEffect {
 
     protected int animationIndex = 1;
 
+    Player effectedPlayer;
+
     public GodlessEffect(Player effectedPlayer) {
         super(effectedPlayer);
         hostilePlayers = new ArrayList<>();
+        this.effectedPlayer = effectedPlayer;
     }
 
     @Override
@@ -382,4 +385,7 @@ public class GodlessEffect extends CustomEffect {
         }
     }
 
+    public Player getEffectedPlayer() {
+        return effectedPlayer;
+    }
 }

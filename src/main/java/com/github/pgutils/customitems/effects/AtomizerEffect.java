@@ -23,6 +23,7 @@ public class AtomizerEffect extends GodlessEffect{
         attackRange = 12;
         attackCooldownTime = 1;
         summonCooldownTime = 1;
+
     }
 
     @Override

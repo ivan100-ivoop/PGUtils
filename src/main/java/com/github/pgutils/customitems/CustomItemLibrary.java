@@ -5,25 +5,25 @@ import com.github.pgutils.customitems.effects.*;
 import com.github.pgutils.utils.Keys;
 import com.github.pgutils.utils.PlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomItemLibrary implements Listener {
 
@@ -32,20 +32,18 @@ public class CustomItemLibrary implements Listener {
         checkIfCustomItemInMainHand(event.getPlayer(), event);
     }
 
-    public static void checkIfCustomItemInMainHand(Player player, Event event) {
-        ItemStack item = player.getInventory().getItemInMainHand();
-    }
+
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInMainHand();
+
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            checkIfCustomItemInMainHandUsedRight(player, item, event);
+            checkIfCustomItemInMainHandUsedRight(player,  event);
         }
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            checkIfCustomItemInMainHandUsedLeft(player, item, event);
+            checkIfCustomItemInMainHandUsedLeft(player, event);
         }
     }
 
@@ -70,6 +68,33 @@ public class CustomItemLibrary implements Listener {
             Firework fw = (Firework) event.getDamager();
             if (fw.hasMetadata("nodamage")) {
                 event.setCancelled(true);
+            }
+        }
+        if (event.getDamager() instanceof Arrow) {
+
+            Arrow arrow = (Arrow) event.getDamager();
+            if (arrow.hasMetadata("GoldenHarpArrow")) {
+                if (arrow.getShooter() instanceof Entity) {
+                    Entity shooter = (Entity) arrow.getShooter();
+                    Location shooterLocation = shooter.getLocation();
+                    new GoldenHarpTargetEffect(event.getEntity(), shooterLocation.add(0, 10, 0));
+                    arrow.remove();
+                    event.setCancelled(true);
+                }
+
+            }
+
+            if (arrow.hasMetadata("GoldenHarpArrowSmall")) {
+                if (event.getEntity() instanceof LivingEntity) {
+                    LivingEntity entity = (LivingEntity) event.getEntity();
+
+                    entity.damage(1, (Player) arrow.getShooter());
+                    entity.setNoDamageTicks(1);
+
+                    event.setCancelled(true);
+                    arrow.remove();
+                }
+
             }
         }
     }
@@ -113,15 +138,46 @@ public class CustomItemLibrary implements Listener {
     }
 
     public static void onStart() {
+        Event event = new Event() {
+            @NotNull
+            @Override
+            public HandlerList getHandlers() {
+                return null;
+            }
+        };
         for (Player player : Bukkit.getOnlinePlayers()) {
-            checkIfCustomItemInArmor(player, null);
-            checkIfCustomItemInMainHand(player, null);
-            checkIfCustomItemInOffHand(player, null);
-            checkIfCustomItemInInventory(player, null);
+            checkIfCustomItemInArmor(player, event);
+            checkIfCustomItemInMainHand(player, event);
+            checkIfCustomItemInOffHand(player, event);
+            checkIfCustomItemInInventory(player, event);
         }
     }
 
-    public static void checkIfCustomItemInMainHandUsedRight(Player player, ItemStack item, Event event) {
+    public static <E extends Event> void checkIfCustomItemInMainHand(Player player, E event) {
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (item == null)
+            return;
+        if (item.getItemMeta() == null)
+            return;
+
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (container.has(Keys.goldenHarp, PersistentDataType.BOOLEAN)) {
+            if (event instanceof EntityShootBowEvent) {
+                EntityShootBowEvent shootEvent = (EntityShootBowEvent) event;
+                Arrow arrow = (Arrow) shootEvent.getProjectile();
+                arrow.setMetadata("GoldenHarpArrow", new FixedMetadataValue(PGUtils.instance, true));
+
+            }
+        }
+    }
+
+    // after item it should be something that extends event but is not event
+    public static <E extends Event> void checkIfCustomItemInMainHandUsedRight(Player player, E event) {
+        ItemStack item = player.getInventory().getItemInMainHand();
+
         if (item == null)
             return;
         if (item.getItemMeta() == null)
@@ -131,28 +187,21 @@ public class CustomItemLibrary implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         if (container.has(Keys.partyStick, PersistentDataType.BOOLEAN)) {
-            // Find if the player has the cooldown effect
             if(!CustomEffect.hasEffect(player, PartyEffectCooldown.class)) {
                 new PartyEffect(player);
-
-                // Get the direction the player is looking at
                 Vector direction = player.getLocation().getDirection().clone();
-                direction.normalize(); // Normalize the direction vector
-                direction.multiply(1.5); // Set the desired speed (magnitude of the velocity)
-
-                // Set the player's velocity to the calculated direction
+                direction.normalize();
+                direction.multiply(1.5);
                 player.setVelocity(direction);
-
-                // Add cooldown effect
                 new PartyEffectCooldown(player);
-
-                // Spawn particles
                 player.getLocation().getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 50, 0.5, 0.2, 0.5, 0.01);
             }
         }
+
+
     }
 
-    public static void checkIfCustomItemInMainHandUsedLeft(Player player, ItemStack item, Event event) {
+    public static void checkIfCustomItemInMainHandUsedLeft(Player player, Event event) {
 
     }
 
@@ -251,6 +300,35 @@ public class CustomItemLibrary implements Listener {
         checkIfCustomItemInOffHand(player, event);
         checkIfCustomItemInInventory(player, event);
     }
+
+
+    @EventHandler
+    public void onArrowHitGround(ProjectileHitEvent event) {
+        if (event.getEntity() instanceof Arrow) {
+            Arrow arrow = (Arrow) event.getEntity();
+            if (arrow.hasMetadata("GoldenHarpArrow") && event.getHitEntity() == null) {
+                if (arrow.getShooter() instanceof Entity) {
+                    Entity shooter = (Entity) arrow.getShooter();
+                    Location shooterLocation = shooter.getLocation();
+                    new GoldenHarpGroundEffect(event.getHitBlock().getLocation(), shooterLocation.clone().add(0, 10, 0));
+                    arrow.remove();
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBowShoot(EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        checkIfCustomItemInMainHand(player, event);
+
+    }
+
+
+
 
 
 }

@@ -6,7 +6,6 @@ import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
-import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
 import com.github.pgutils.utils.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -123,7 +122,7 @@ public class KOTHArenaUtils {
         db.disconnect();
     }
 
-    public static void deleteArenas(String gameUID) {
+    public static void deleteArena(String gameUID) {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
@@ -391,7 +390,7 @@ public class KOTHArenaUtils {
 
     }
 
-    public static boolean updateLocation(Location loc, String uid) {
+    public static boolean updateLocation(String uid, Location loc) {
         boolean isUpdated = false;
             KOTHArenaUtils.createTables();
             DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
@@ -415,7 +414,7 @@ public class KOTHArenaUtils {
             return isUpdated;
     }
 
-    public static boolean updateGameLobby(Lobby lobby, String uid) {
+    public static boolean updateGameLobby(String uid, Lobby lobby) {
         boolean isUpdated = false;
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;

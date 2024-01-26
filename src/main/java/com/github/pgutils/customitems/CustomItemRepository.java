@@ -23,6 +23,7 @@ public class CustomItemRepository {
         custom_item_name.put("Crown of the Fallen", CustomItemRepository::createCrownOfTheFallen);
         custom_item_name.put("Godless", CustomItemRepository::createGodless);
         custom_item_name.put("Atomizer", CustomItemRepository::createAtomizer);
+        custom_item_name.put("The Golden Harp", CustomItemRepository::createGoldenHarp);
     }
 
     public static ItemStack createCustomItem(String name, Material material, CustomItemRarities rarity, List<String> lore) {
@@ -87,5 +88,18 @@ public class CustomItemRepository {
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static ItemStack createGoldenHarp() {
+        List<String> lore = Arrays.asList("The harp of the gods", GeneralUtils.hexToMinecraftColor("#FFAA00") + "[Passive: Rains arrows from the heavens!]");
+        ItemStack itemStack = createCustomItem("The Golden Harp", Material.BOW, CustomItemRarities.LEGENDARY, lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(Keys.goldenHarp, PersistentDataType.BOOLEAN, true);
+        itemMeta.setUnbreakable(true);
+
+        itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
+
     }
 }

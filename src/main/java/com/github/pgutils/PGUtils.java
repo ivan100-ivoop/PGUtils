@@ -77,6 +77,7 @@ public final class PGUtils extends JavaPlugin {
 
         new LobbyUpdater().runTaskTimer(this, 20, 1);
         new CustomEffectUpdater().runTaskTimer(this, 20, 1);
+        new ParticleUpdater().runTaskTimer(this, 20, 1);
 
         deserializationBootstrap();
 
@@ -97,15 +98,9 @@ public final class PGUtils extends JavaPlugin {
         });
 
         CustomEffect.removeAllEffects();
-
-        serializationBootstrap();
         sqlDB.disconnect();
     }
 
-    public void serializationBootstrap() {
-        LobbyUtils.saveLobbies();
-        KOTHArenaUtils.saveArenas();
-    }
 
     public void deserializationBootstrap() {
         LobbyUtils.loadLobbies();

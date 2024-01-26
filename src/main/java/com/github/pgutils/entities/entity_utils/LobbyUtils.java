@@ -32,7 +32,7 @@ public class LobbyUtils {
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
         if (db.tableExists(db.fixName("lobby"))) {
-            String selectAllQuery = "SELECT name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked FROM " + db.fixName("lobby");
+            String selectAllQuery = "SELECT name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked, tournament FROM " + db.fixName("lobby");
             List<Object[]> results = db.executeQuery(selectAllQuery);
 
             if (results != null) {
@@ -52,6 +52,7 @@ public class LobbyUtils {
 
                     String mode = ((String) data[10]).toUpperCase();
                     boolean isLocked = ((int) data[11] == 1);
+                    boolean isTournament = ((int) data[12] == 1);
 
                     Lobby lobby = new Lobby();
                     lobby.setPos(new Location(Bukkit.getWorld(world), x, y, z, new Double(yaw).floatValue(), new Double(pitch).floatValue()));
@@ -87,7 +88,7 @@ public class LobbyUtils {
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
 
-        String insertSQL = "INSERT INTO " + db.fixName("lobby") + " (name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO " + db.fixName("lobby") + " (name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked, tournament) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String selectSQL = "SELECT name, lobbyUID FROM " + db.fixName("lobby") + " WHERE lobbyUID=?";
 
         for (int i = Lobby.lobbies.size() - 1; i >= 0; i--) {
@@ -108,7 +109,8 @@ public class LobbyUtils {
                         lobby.getMaxPlayers(),
                         lobby.getMinPlayers(),
                         lobby.getMode().toString(),
-                        lobby.isLocked()
+                        lobby.isLocked(),
+                        lobby.isTournament()
                 );
             }
         }
@@ -141,6 +143,7 @@ public class LobbyUtils {
                         "min_players INTEGER," +
                         "mode VARCHAR(255)," +
                         "locked BOOLEAN," +
+                        "tournament BOOLEAN," +
                         "UNIQUE (id)" +
                         ");");
             } else {
@@ -158,6 +161,7 @@ public class LobbyUtils {
                         "  `min_players` int(11) NOT NULL," +
                         "  `mode` varchar(255) NOT NULL," +
                         "  `locked` bool NOT NULL," +
+                        "  `tournament` bool NOT NULL," +
                         "  PRIMARY KEY (`id`)" +
                         ");");
                 db.execute("ALTER TABLE " + db.fixName("lobby") + " MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;");

@@ -473,8 +473,10 @@ public class UltimateUtilsX {
             sender.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
             return true;
         }
-        lobby.addPlayer(player);
-        sender.sendMessage(Messages.messageWithPrefix("pull-player-message", "&aSuccessful pulled %player%&a!").replace("%player%", "" + player.getName()));
+        if (lobby.addPlayer(player))
+            sender.sendMessage(Messages.messageWithPrefix("pull-player-message", "&aSuccessful pulled %player%&a!").replace("%player%", "" + player.getName()));
+        else
+            sender.sendMessage(Messages.messageWithPrefix("pull-player-message", "&cFailed to pull %player%&c!").replace("%player%", "" + player.getName()));
         return true;
     }
 
@@ -672,14 +674,12 @@ public class UltimateUtilsX {
             return true;
         }
         playSpace.setName(name);
+
         player.sendMessage(Messages.messageWithPrefix("set-playspace-name-message", "&aSuccessful set PlaySpace Name to %name%&a!").replace("%name%", "" + name));
         return true;
     }
 
     private static boolean setGameLocation(Player player, String[] args) {
-        if (args.length < 3) {
-            return false;
-        }
         Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
@@ -882,6 +882,7 @@ public class UltimateUtilsX {
             }
         }
         String name = nameBuilder.toString().trim(); // Trim to remove trailing spaces
+        System.out.println(name);
         // Retrieve the game
         PlaySpace playSpace = GeneralUtils.getPlaySpaceByName(name);
         if (playSpace == null) {

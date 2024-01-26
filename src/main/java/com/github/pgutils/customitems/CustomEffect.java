@@ -1,6 +1,6 @@
 package com.github.pgutils.customitems;
 
-import com.github.pgutils.customitems.effects.PartyEffect;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -12,18 +12,20 @@ public abstract class CustomEffect {
 
     public static List<CustomEffect> customEffects = new ArrayList<>();
 
-    private Player effectedPlayer;
+    private Entity effectedEntity;
 
     private int ticks;
 
-    public CustomEffect(Player effectedPlayer) {
-        this.effectedPlayer = effectedPlayer;
+    public CustomEffect(Entity effectedEntity) {
+        this.effectedEntity = effectedEntity;
         customEffects.add(this);
     }
 
     public static void removeAllEffects(Player player) {
         for (int i = customEffects.size() - 1; i >= 0; i--) {
-            if (customEffects.get(i).getEffectedPlayer().equals(player)) {
+            if (customEffects.get(i).getEffectedEntity() == null)
+                continue;
+            if (customEffects.get(i).getEffectedEntity().equals(player)) {
                 removeEffect(customEffects.get(i));
             }
         }
@@ -31,7 +33,9 @@ public abstract class CustomEffect {
 
     public static CustomEffect getEffect(Player e, Class<? extends CustomEffect> partyEffectClass) {
         for (CustomEffect effect : customEffects) {
-            if (effect.getEffectedPlayer().equals(e) && effect.getClass().equals(partyEffectClass)) {
+            if (effect.getEffectedEntity() == null)
+                continue;
+            if (effect.getEffectedEntity().equals(e) && effect.getClass().equals(partyEffectClass)) {
                 return effect;
             }
         }
@@ -45,12 +49,12 @@ public abstract class CustomEffect {
 
     public abstract void onUpdate();
 
-    public Player getEffectedPlayer() {
-        return effectedPlayer;
+    public Entity getEffectedEntity() {
+        return effectedEntity;
     }
 
     public void setEffectedPlayer(Player effectedPlayer) {
-        this.effectedPlayer = effectedPlayer;
+        this.effectedEntity = effectedPlayer;
     }
 
     public int getTicks() {
@@ -76,15 +80,19 @@ public abstract class CustomEffect {
 
     public static void removeAllEffects() {
         for (int i = customEffects.size() - 1; i >= 0; i--) {
+
             removeEffect(customEffects.get(i));
         }
     }
 
     public abstract void onRemove();
 
-    public static boolean hasEffect(Player player, Class<? extends CustomEffect> effectClass) {
+    public static boolean hasEffect(Entity player, Class<? extends CustomEffect> effectClass) {
         for (CustomEffect effect : customEffects) {
-            if (effect.getEffectedPlayer().equals(player) && effect.getClass().equals(effectClass)) {
+            if (effect.getEffectedEntity() == null)
+                continue;
+
+            if (effect.getEffectedEntity().equals(player) && effect.getClass().equals(effectClass)) {
                 return true;
             }
         }

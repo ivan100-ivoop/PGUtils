@@ -1,15 +1,13 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
-import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
@@ -17,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 public abstract class PlaySpace {
 
@@ -54,7 +51,7 @@ public abstract class PlaySpace {
         UID = GeneralUtils.generateUniqueID();
         name = "PlaySpace-" + ID;
         scoreboardManager = new GameScoreboardManager();
-        KOTHArenaUtils.saveArenas();
+
     }
 
     public void setCurrentLobby(Lobby lobby) {
@@ -83,7 +80,7 @@ public abstract class PlaySpace {
     abstract public void endProcedure();
 
     public boolean delete() {
-        KOTHArenaUtils.deleteArenas(getUID());
+        KOTHArenaUtils.deleteArena(getUID());
         playSpaces.remove(this);
         if (getLobby() != null) {
             end(null);
@@ -118,7 +115,18 @@ public abstract class PlaySpace {
 
     public void setPos(Location pos) {
         this.pos = pos;
+        savePos();
     }
+
+    public void setName(String name) {
+        this.name = name;
+        saveName();
+    }
+
+    protected abstract void saveName();
+
+    protected abstract void savePos();
+
 
     public Location getPos() {
         return pos;
@@ -134,7 +142,7 @@ public abstract class PlaySpace {
 
     public void setLobby(Lobby lobby) {
         currentLobby = lobby;
-        KOTHArenaUtils.updateGameLobby(lobby, getUID());
+        KOTHArenaUtils.updateGameLobby(getUID(), lobby);
     }
 
     public Lobby getLobby() {
@@ -149,7 +157,12 @@ public abstract class PlaySpace {
 
     public abstract String passesChecks();
 
-    public abstract void updateView(Player player);
+    public void updateView(Player player) {
+        player.spawnParticle(Particle.END_ROD, getLocation(), 1, 0.3, 1, 0.3, 0.01);
+        updateViewGame(player);
+
+    }
+    public abstract void updateViewGame(Player player);
 
     public GameStatus getStatus() {
         return status;
@@ -189,10 +202,6 @@ public abstract class PlaySpace {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Player> getPlayers() {

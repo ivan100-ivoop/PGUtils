@@ -25,8 +25,11 @@ public class CrownOfTheFallenEffect extends CustomEffect {
 
     private Random random = new Random();
 
+    Player effectedPlayer;
+
     public CrownOfTheFallenEffect(Player effectedPlayer) {
         super(effectedPlayer);
+        this.effectedPlayer = effectedPlayer;
     }
     @Override
     public void onUpdate() {
@@ -129,5 +132,9 @@ public class CrownOfTheFallenEffect extends CustomEffect {
             cooldown = 0;
         }
 
+    }
+
+    public Player getEffectedPlayer() {
+        return effectedPlayer;
     }
 }

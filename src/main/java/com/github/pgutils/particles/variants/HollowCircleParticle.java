@@ -121,4 +121,13 @@ public abstract class HollowCircleParticle extends EnhancedParticle{
     public double getInitialVerticalSpeed() {
         return initialVerticalSpeed;
     }
+
+    public static void objectlessParticle(Location location, double radius, Particle particle, int particleCount, double y_offset, double verticalSpeed) {
+        for (int i = 0; i < 360; i += 360 / particleCount) {
+            double x = radius * Math.cos(Math.toRadians(i));
+            double z = radius * Math.sin(Math.toRadians(i));
+            Location tempLocation = location.clone().add(x, y_offset, z);
+            tempLocation.getWorld().spawnParticle(particle, tempLocation, 0, 0, verticalSpeed, 0, 0);
+        }
+    }
 }

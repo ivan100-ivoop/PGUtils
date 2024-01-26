@@ -14,17 +14,20 @@ public class PartyEffectCooldown extends CustomEffect {
 
     int maxTicks = 200;
 
+    Player effectedPlayer;
+
     public PartyEffectCooldown(Player effectedPlayer) {
         super(effectedPlayer);
+        this.effectedPlayer = effectedPlayer;
     }
 
     @Override
     public void onUpdate() {
-        ItemStack item = getEffectedPlayer().getInventory().getItemInMainHand();
+        ItemStack item = effectedPlayer.getInventory().getItemInMainHand();
         if (getTicks() > maxTicks){
             CustomEffect.removeEffect(this);
-            getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&aParty Cooldown Ready!")));
-            getEffectedPlayer().playSound(getEffectedPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+            effectedPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&aParty Cooldown Ready!")));
+            effectedPlayer.playSound(getEffectedEntity().getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
             return;
         }
         if (item == null)
@@ -38,7 +41,7 @@ public class PartyEffectCooldown extends CustomEffect {
 
         if (item.getItemMeta().getPersistentDataContainer().has(Keys.partyStick, PersistentDataType.BOOLEAN)) {
             int percentage = (int) ((double) getTicks() / (double) maxTicks * 100);
-            getEffectedPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&cParty Cooldown %cooldownbar%")
+            effectedPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&cParty Cooldown %cooldownbar%")
                     .replace("%cooldownbar%", GeneralUtils.generateLoadingBar(percentage, "§e", "§7"))));
         }
 

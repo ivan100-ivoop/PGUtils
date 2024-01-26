@@ -19,6 +19,7 @@ import com.github.pgutils.utils.PlayerManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -76,6 +77,8 @@ public class KOTHArena extends PlaySpace {
         points = new ArrayList<>();
         spawns = new ArrayList<>();
         teams = new ArrayList<>();
+        //KOTHArenaUtils.saveArenas();
+
     }
 
     @Override
@@ -183,7 +186,17 @@ public class KOTHArena extends PlaySpace {
     @Override
     public void setPos(Location pos) {
         super.setPos(pos);
-        KOTHArenaUtils.updateLocation(pos, this.getUID());
+        KOTHArenaUtils.updateLocation(this.getUID(), pos);
+    }
+
+    @Override
+    protected void saveName() {
+        KOTHArenaUtils.updateArenas(this.getUID(), "games", "name", this.getName());
+    }
+
+    @Override
+    protected void savePos() {
+        KOTHArenaUtils.updateLocation(this.getUID(), this.getPos());
     }
 
     @Override
@@ -217,7 +230,10 @@ public class KOTHArena extends PlaySpace {
     }
 
     @Override
-    public void updateView(Player player) {
+    public void updateViewGame(Player player) {
+        // Spawn particles in special objects to show them
+        spawns.stream().forEach(spawn -> player.spawnParticle(Particle.VILLAGER_HAPPY, spawn.getPos(), 1, 0.3, 1, 0.3, 0.01));
+        points.stream().forEach(point -> player.spawnParticle(Particle.CRIT_MAGIC, point.getLocation(), 1, 0.3, 1, 0.3, 0.01));
 
     }
 
