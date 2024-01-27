@@ -4,13 +4,11 @@ import com.github.pgutils.PGUtils;
 import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.entities.games.KOTHArena;
-import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
-import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
+import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
+import com.github.pgutils.entities.entity_utils.LobbyUtils;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import com.sun.tools.javac.jvm.Gen;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +24,7 @@ public class UltimateUtilsX {
         Lobby lobby = new Lobby();
         lobby.setPos(player.getLocation());
         GeneralUtils.playerSelectLobby(player, lobby);
+        LobbyUtils.saveLobbies();
         player.sendMessage(Messages.messageWithPrefix("create-lobby-message", "&aSuccessful created Lobby Location %size%&a!").replace("%size%", "" + Lobby.lobbies.size()));
         return true;
     }
@@ -535,6 +534,7 @@ public class UltimateUtilsX {
             PlaySpace playSpace = playSpaceType.getConstructor().newInstance();
             playSpace.setPos(player.getLocation());
             GeneralUtils.playerSelectPlaySpace(player, playSpace);
+            KOTHArenaUtils.saveArenas();
             player.sendMessage(Messages.messageWithPrefix("create-playspace-message", "&aSuccessful created PlaySpace %id%&a!").replace("%id%", "" + playSpace.getID()));
             return true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

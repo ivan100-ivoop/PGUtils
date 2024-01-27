@@ -14,7 +14,9 @@ public class KOTHSpawn{
 
     private KOTHArena arena;
 
-    public KOTHSpawn() { }
+    public KOTHSpawn() {
+        this.id = GeneralUtils.generateUniqueID();
+    }
 
 
     public KOTHSpawn(Location pos, int team_id, KOTHArena arena) {

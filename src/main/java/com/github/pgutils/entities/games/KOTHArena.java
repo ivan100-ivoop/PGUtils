@@ -77,8 +77,6 @@ public class KOTHArena extends PlaySpace {
         points = new ArrayList<>();
         spawns = new ArrayList<>();
         teams = new ArrayList<>();
-        //KOTHArenaUtils.saveArenas();
-
     }
 
     @Override
@@ -191,7 +189,7 @@ public class KOTHArena extends PlaySpace {
 
     @Override
     protected void saveName() {
-        KOTHArenaUtils.updateArenas(this.getUID(), "games", "name", this.getName());
+        KOTHArenaUtils.updateArenas(this.getUID(), "koth", "name", this.getName());
     }
 
     @Override
@@ -242,6 +240,7 @@ public class KOTHArena extends PlaySpace {
         switch (args[2].toLowerCase()) {
             case "spawn":
                 return createSpawn(player, args);
+
             case "point":
                 return createPoint(player, args);
         }
@@ -405,14 +404,14 @@ public class KOTHArena extends PlaySpace {
             return true;
         }
         if (args.length == 3) {
-            addCapturePoint(player.getLocation(), 2.5);
+            KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), 2.5), this.getUID());
             player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", "2.5")));
             return true;
         }
         if (args.length == 4) {
             try {
                 double radius = Double.parseDouble(args[3]);
-                addCapturePoint(player.getLocation(), radius);
+                KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius), this.getUID());
                 player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", radius + "")));
                 return true;
             } catch (NumberFormatException e) {
@@ -424,7 +423,7 @@ public class KOTHArena extends PlaySpace {
             try {
                 double radius = Double.parseDouble(args[3]);
                 int pointsAwarding = Integer.parseInt(args[4]);
-                addCapturePoint(player.getLocation(), radius, pointsAwarding);
+                KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius, pointsAwarding), this.getUID());
                 player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points%")
                         .replace("%id%", points.size() + "")
                         .replace("%radius%", radius + "")
@@ -440,7 +439,7 @@ public class KOTHArena extends PlaySpace {
                 double radius = Double.parseDouble(args[3]);
                 int pointsAwarding = Integer.parseInt(args[4]);
                 int timeToCapture = Integer.parseInt(args[5]);
-                addCapturePoint(player.getLocation(), radius, pointsAwarding, timeToCapture);
+                KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius, pointsAwarding, timeToCapture), this.getUID());
                 player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points% and time to capture : %time%")
                         .replace("%id%", points.size() + "")
                         .replace("%radius%", radius + "")
@@ -466,7 +465,7 @@ public class KOTHArena extends PlaySpace {
             player.sendMessage(Messages.messageWithPrefix("team-amount-error-message", "&c&lTeam id must be between 1 and " + teamsAmount + "!"));
             return true;
         }
-        addSpawnLocation(player.getLocation(), team_id);
+        KOTHArenaUtils.saveSpawn(addSpawnLocation(player.getLocation(), team_id), this.getUID());
         player.sendMessage(Messages.messageWithPrefix("spawn-created-message", ("&aSuccessfully created spawn! With id : %id% and team id : %team_id%").replace("%id%", spawns.size() + "").replace("%team_id%", team_id + "")));
         return true;
     }
@@ -494,7 +493,6 @@ public class KOTHArena extends PlaySpace {
 
     public KOTHSpawn addSpawnLocation(Location location, int team_id) {
         KOTHSpawn temp = new KOTHSpawn(location, team_id, this);
-        KOTHArenaUtils.saveSpawn(temp, this.getUID());
         spawns.add(temp);
         return spawns.get(spawns.size() - 1);
     }
@@ -515,20 +513,17 @@ public class KOTHArena extends PlaySpace {
     }
 
     public void addCapturePoint(KOTHPoint point) {
-        KOTHArenaUtils.savePoint(point, this.getUID());
         points.add(point);
     }
 
     public KOTHPoint addCapturePoint(Location location) {
         KOTHPoint kothPoint =  new KOTHPoint(this, location, 2.5);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
 
     public KOTHPoint addCapturePoint(Location location, double radius) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
 
@@ -536,14 +531,12 @@ public class KOTHArena extends PlaySpace {
 
     public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
 
     public KOTHPoint addCapturePoint(Location location, double radius, int pointsAwarding, int timeToCapture) {
         KOTHPoint kothPoint = new KOTHPoint(this, location, radius, pointsAwarding, timeToCapture);
-        KOTHArenaUtils.savePoint(kothPoint, this.getUID());
         points.add(kothPoint);
         return kothPoint;
     }
@@ -570,7 +563,6 @@ public class KOTHArena extends PlaySpace {
 
     public void addSpawn(KOTHSpawn spawn) {
         spawns.add(spawn);
-        KOTHArenaUtils.saveSpawn(spawn, this.getUID());
     }
 
     public int getTeamsAmount() {
@@ -579,7 +571,7 @@ public class KOTHArena extends PlaySpace {
 
     public void setTeamsAmount(int readObject) {
         this.teamsAmount = readObject;
-        KOTHArenaUtils.updateArenas(this.getUID(), "games", "teams_amount", this.teamsAmount);
+        KOTHArenaUtils.updateArenas(this.getUID(), "koth", "teams_amount", this.teamsAmount);
     }
 
 
