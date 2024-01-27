@@ -88,11 +88,15 @@ public class UltimateUtilsX {
                 return setLobbyLock(player, args);
             case "tournament":
                 return setLobbyTournament(player, args);
+            case "testmode":
+                return setLobbyTestMode(player, args);
             default:
                 player.sendMessage("Unknown set command.");
                 return true;
         }
     }
+
+
 
     public static boolean addGameToLobby(Player player, String[] args) {
         if (args.length < 2) {
@@ -279,6 +283,24 @@ public class UltimateUtilsX {
         Lobby lobby = lobbySelector.get().lobby;
         lobby.setLock(lock);
         player.sendMessage(Messages.messageWithPrefix("set-lobby-lock-message", "&aSuccessful set Lobby Lock to %lock%&a!").replace("%lock%", "" + lock));
+        return true;
+    }
+
+    private static boolean setLobbyTestMode(Player player, String[] args) {
+        if (args.length < 3) {
+            return false;
+        }
+        boolean testMode = Boolean.parseBoolean(args[2]);
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!lobbySelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("lobby-missing-message", "&cLobby is not found!"));
+            return true;
+        }
+        Lobby lobby = lobbySelector.get().lobby;
+        lobby.setTestMode(testMode);
+        player.sendMessage(Messages.messageWithPrefix("set-lobby-test-mode-message", "&aSuccessful set Lobby Test Mode to %testmode%&a!").replace("%testmode%", "" + testMode));
         return true;
     }
 
@@ -1010,10 +1032,6 @@ public class UltimateUtilsX {
     }
 
     public static boolean startLobbyGame(Player player, String[] args) {
-        if (args.length < 2) {
-            return false;
-        }
-        int gameID = Integer.parseInt(args[1]);
         Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();

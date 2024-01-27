@@ -75,6 +75,8 @@ public class Lobby {
     // Saved
     private String name;
 
+    private boolean testMode = false;
+
     public Lobby() {
         players = new ArrayList<>();
         waitingPlayers = new ArrayList<>();
@@ -159,19 +161,23 @@ public class Lobby {
         if (playSpaces.size() == 0) return -1;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         for (PlaySpace playSpace : playSpaces) {
-            if (checkIfPlayspaceIsValid(playSpace) == "All Good") {
+            System.out.println(checkIfPlayspaceIsValid(playSpace));
+            if (checkIfPlayspaceIsValid(playSpace) == "All Done") {
                 possiblePlaySpaces.add(playSpace);
             }
         }
+        System.out.println(possiblePlaySpaces.size());
         if (possiblePlaySpaces.size() == 0) return -1;
 
         if (possiblePlaySpaces.size() > 1)
             possiblePlaySpaces.remove(playSpaces.get(lastGame));
-        return playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
+        int chosen = playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
+        System.out.println(chosen);
+        return chosen;
     }
 
     private String checkIfPlayspaceIsValid(PlaySpace playSpace) {
-        return playSpace.passesChecks();
+        return (testMode) ? "All Done" : playSpace.passesChecks();
 
     }
 
@@ -208,14 +214,22 @@ public class Lobby {
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
 
+        for (Player player : winner) {
+            System.out.println("Winner: " + player.getName());
+        }
+
         if (winner != null) {
+            for (Player player : winner){
 
-            for (Player player : winner)
                 PGUtils.getPlugin(PGUtils.class).rewardManager.giveRewards(getID(), player);
+            }
 
-            for (Player player : players) {
-                if (!winner.contains(player)) {
-                    kickPlayer(player);
+
+            if (tournamentMode) {
+                for (Player player : players) {
+                    if (!winner.contains(player)) {
+                        kickPlayer(player);
+                    }
                 }
             }
         }
@@ -350,7 +364,7 @@ public class Lobby {
     }
 
     public String setGame(int gameID) {
-        if (gameID < 1 || gameID >= playSpaces.size()) {
+        if (gameID < 1 || gameID > playSpaces.size()) {
             return "Invalid game ID!";
         }
         String check = checkIfPlayspaceIsValid(playSpaces.get(gameID - 1));
@@ -467,7 +481,14 @@ public class Lobby {
     }
 
     public boolean startGame() {
-        if (status != LobbyStatus.WAITING_FOR_HOST) {
+        if (status == LobbyStatus.WAITING_FOR_HOST) {
+            if (currentPlaySpace == null) {
+                if (playSpaces.size() == 0) {
+                    return false;
+                }
+                pickedGameID = 0;
+                currentPlaySpace = playSpaces.get(pickedGameID);
+            }
             startSequence();
             return true;
         }
@@ -478,5 +499,13 @@ public class Lobby {
 
     public boolean isTournament() {
         return tournamentMode;
+    }
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
+    public boolean isTestMode() {
+        return testMode;
     }
 }

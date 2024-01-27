@@ -33,12 +33,9 @@ import java.util.stream.Collectors;
 public class KOTHArena extends PlaySpace {
     // Convert all ChatColor colors to Color
 
-
     List<KOTHSpawn> spawns ;
 
     List<KOTHPoint> points ;
-
-    private int startingTime = 60;
 
     private int startingTick = 0;
 
@@ -68,6 +65,14 @@ public class KOTHArena extends PlaySpace {
 
     private KOTHTeam winner;
 
+    private int nameOfGameTime = 30;
+
+    private int teamRecognitionTime = 30;
+
+    private int infoTime = 30;
+
+    private int startingTime = nameOfGameTime + teamRecognitionTime + infoTime + 60;
+
     public KOTHArena() {
         super();
         type = "KOTH";
@@ -81,8 +86,6 @@ public class KOTHArena extends PlaySpace {
 
     @Override
     public void start() {
-        System.out.println("Starting game " + getID() + " of type " + getType() + " with " + players.size() + " players!");
-
         Collections.shuffle(players);
 
         List<String> availableColors = new ArrayList<>(KOTHTeam.colors);
@@ -114,13 +117,35 @@ public class KOTHArena extends PlaySpace {
     @Override
     public void onUpdate() {
         if (status == GameStatus.STARTING) {
-            if (startingTick % 20 == 0 && startingTick != startingTime) {
+            if (startingTick == 0) {
+                players.forEach(player -> {
+                    player.sendTitle(Messages.getMessage("game-koth-name", "§eKing of the Hill", false), "", 0, 20, 0);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    PlayerManager.disablePVP(player);
+                    PlayerManager.disableMove(player);
+                });
+            }
+            else if (startingTick == nameOfGameTime ) {
+                teams.forEach(team -> {
+                    team.getPlayers().forEach(player -> {
+                        player.sendTitle(Messages.getMessage("game-koth-team", GeneralUtils.hexToMinecraftColor(team.getColorString()) + "You are on team "+team.getID(), false), "", 0, 20, 0);
+                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    });
+                });
+            }
+            else if (startingTick == nameOfGameTime + teamRecognitionTime ) {
+                players.forEach(player -> {
+                    player.sendTitle(Messages.getMessage("game-koth-info", "§eCapture points", false), Messages.getMessage("game-koth-info-subtitle", "§eSneak to capture", false), 0, 20, 0);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                });
+            }
+            else if (startingTick % 20 == (nameOfGameTime + teamRecognitionTime + infoTime) % 20 && startingTick >= nameOfGameTime + teamRecognitionTime + infoTime && startingTick < startingTime) {
                 players.forEach(player -> {
                     player.sendTitle((startingTime / 20 - startingTick / 20) + "", "", 0, 20, 0);
                     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, (startingTime / 20 - startingTick / 20) + 1, 1);
                 });
             }
-            else if (startingTick >= startingTime) {
+            else if (startingTick == startingTime) {
                 status = GameStatus.IN_PROGRESS;
                 players.forEach(player -> {
                     player.sendTitle("GO!", "", 0, 20, 0);
@@ -132,13 +157,7 @@ public class KOTHArena extends PlaySpace {
             startingTick++;
 
         } else if (status == GameStatus.IN_PROGRESS) {
-            testMessageTick++;
-            if (testMessageTick >= testMessageTime) {
-                testMessageTick = 0;
-                players.stream()
-                        .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("game-progress", "&eGame is in progress!", false))));
-            }
+
             if (matchTime % 20 == 0 && (matchTime / 20 - tick / 20) >= 0) {
                 getSbManager().setTime(matchTime / 20 - tick / 20, getID());
             }
@@ -159,7 +178,7 @@ public class KOTHArena extends PlaySpace {
         } else if (status == GameStatus.IS_ENDING) {
             endingTick++;
             if (endingTick >= endingTime) {
-                List<Player> players = winner.getPlayers();
+                List<Player> players = new ArrayList<>(winner.getPlayers());
                 end(players);
             }
         }
@@ -208,19 +227,19 @@ public class KOTHArena extends PlaySpace {
     public String passesChecks() {
 
         if (points.size() < initial_points_active + 2) {
-            return "Not enough points! Currently : " + points.size() + " | Needed : " + (initial_points_active + 2);
+            return "&cNot enough points! Currently : " + points.size() + " | Needed : " + (initial_points_active + 2);
         }
 
         for (int i = 1; i <= teamsAmount; i++) {
             int finalI = i;
             if (spawns.stream().noneMatch(spawn -> spawn.getTeamID() == finalI)) {
-                return "No spawn for team " + i;
+                return "&cNo spawn for team " + i;
             }
         }
 
         if (getLobby() != null) {
             if (getLobby().getPlayers().size() % teamsAmount != 0) {
-                return "Players amount must be divisible by teams amount! Currently : " + getLobby().getPlayers().size() + " | Needed : " + (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount));
+                return "&cPlayers amount must be divisible by teams amount! Currently : " + getLobby().getPlayers().size() + " | Needed : " + (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount));
             }
         }
 
@@ -345,7 +364,9 @@ public class KOTHArena extends PlaySpace {
             player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
                     .replace("%option%", args[2])
                     .replace("%value%", args[3]));
+            KOTHArenaUtils.updateArenas(this.getUID(), "koth", "teams_amount", this.teamsAmount);
             return true;
+
         } catch (NumberFormatException e) {
             player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
             return true;
@@ -365,6 +386,7 @@ public class KOTHArena extends PlaySpace {
             }
             this.matchTime = matchTime;
             this.overtimeMAX = matchTime / 3;
+            KOTHArenaUtils.updateArenas(this.getUID(), "koth", "match_time", this.matchTime);
             player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
                     .replace("%option%", args[2])
                     .replace("%value%", args[3]));
@@ -390,6 +412,7 @@ public class KOTHArena extends PlaySpace {
             player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
                     .replace("%option%", args[2])
                     .replace("%value%", args[3]));
+            KOTHArenaUtils.updateArenas(this.getUID(), "koth", "initial_points_active", this.initial_points_active);
             return true;
         } catch (NumberFormatException e) {
             player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
@@ -578,4 +601,23 @@ public class KOTHArena extends PlaySpace {
     public List<KOTHTeam> getTeams() {
         return teams;
     }
+
+
+    public void setMatchTime(int readObject) {
+        this.matchTime = readObject;
+        this.overtimeMAX = matchTime / 3;
+    }
+
+    public int getMatchTime() {
+        return matchTime;
+    }
+
+    public void setInitialPointsActive(int readObject) {
+        this.initial_points_active = readObject;
+    }
+
+    public int getInitialPointsActive() {
+        return initial_points_active;
+    }
+
 }
