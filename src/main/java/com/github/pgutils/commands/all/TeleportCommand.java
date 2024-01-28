@@ -19,7 +19,7 @@ import java.util.List;
 public class TeleportCommand extends PGSubCommand {
     DatabaseManager sqlDB;
     public TeleportCommand(){
-        sqlDB = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        sqlDB = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
     }
     @Override
     public String getName() {

@@ -84,7 +84,7 @@ public class KOTHTeam extends Team {
 
         player.getInventory().setItem(player.getInventory().firstEmpty(), CustomItemRepository.createPartyStick());
 
-        System.out.println("Added player "+player.getName()+" to team "+getID());
+       // System.out.println("Added player "+player.getName()+" to team "+getID());
     }
 
 

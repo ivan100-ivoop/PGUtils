@@ -58,7 +58,7 @@ public class PGLobbyHook implements Listener {
 		}
 
 		Player player = e.getPlayer();
-		PGUtils.getPlugin(PGUtils.class).PM.teleportPlayer(player, e);
+		PGUtils.getPlugin(PGUtils.class).loader.PM.teleportPlayer(player, e);
 
 		if (PlayerManager.cannotMove.contains(player)) {
 			e.setCancelled(true);

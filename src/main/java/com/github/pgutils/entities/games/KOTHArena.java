@@ -312,7 +312,7 @@ public class KOTHArena extends PlaySpace {
         locations.addAll(spawns.stream().map(spawn -> spawn.getPos()).collect(Collectors.toList()));
         locations.addAll(points.stream().map(point -> point.getLocation()).collect(Collectors.toList()));
         Location closest = GeneralUtils.getClosestLocation(player.getLocation(), locations);
-        System.out.println("Hello");
+        //System.out.println("Hello");
         if (closest == null) {
             player.sendMessage(Messages.messageWithPrefix("no-closest-object-message", "&c&lOops &cThere are no objects!"));
             return true;

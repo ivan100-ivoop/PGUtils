@@ -95,7 +95,7 @@ public class LobbyMenu {
     public void getLobby(Player player) {
 
         if (Lobby.lobbies.size() < 1) {
-            player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+            player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).loader.prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
         } else {
             updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(PGUtils.getPlugin(PGUtils.class), new Runnable() {
                 @Override
@@ -118,7 +118,7 @@ public class LobbyMenu {
                             .findFirst()
                             .orElse(null);
                     if (lobby == null) {
-                        player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
+                        player.sendMessage(GeneralUtils.fixColors(PGUtils.getPlugin(PGUtils.class).loader.prefix + PGUtils.getPlugin(PGUtils.class).getConfig().getString("missing-lobby-message", "&cLobby is not found!")));
                     } else {
                         e.setCancelled(true);
                         lobby.addPlayer(player);

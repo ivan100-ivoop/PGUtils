@@ -125,7 +125,7 @@ public class CustomItemLibrary implements Listener {
                 checkIfCustomItemInMainHand(player, event);
                 checkIfCustomItemInOffHand(player, event);
             }
-        }.runTaskLater(PGUtils.instance, 1);
+        }.runTaskLater(PGUtils.loader.instance, 1);
     }
 
     @EventHandler
@@ -168,7 +168,7 @@ public class CustomItemLibrary implements Listener {
             if (event instanceof EntityShootBowEvent) {
                 EntityShootBowEvent shootEvent = (EntityShootBowEvent) event;
                 Arrow arrow = (Arrow) shootEvent.getProjectile();
-                arrow.setMetadata("GoldenHarpArrow", new FixedMetadataValue(PGUtils.instance, true));
+                arrow.setMetadata("GoldenHarpArrow", new FixedMetadataValue(PGUtils.loader.instance, true));
 
             }
         }

@@ -87,12 +87,12 @@ public abstract class PlaySpace {
             getLobby().removePlaySpace(this);
             setLobby(null);
         }
-        for (int i = PGUtils.selectedPlaySpace.size() - 1; i >= 0; i--) {
-            if (PGUtils.selectedPlaySpace.get(i).playSpace == this) {
-                PGUtils.selectedPlaySpace.remove(i);
+        for (int i = PGUtils.loader.selectedPlaySpace.size() - 1; i >= 0; i--) {
+            if (PGUtils.loader.selectedPlaySpace.get(i).playSpace == this) {
+                PGUtils.loader.selectedPlaySpace.remove(i);
             }
         }
-        System.out.println("Deleted PlaySpace " + ID + " playSpaces.size() = " + playSpaces.size());
+        //System.out.println("Deleted PlaySpace " + ID + " playSpaces.size() = " + playSpaces.size());
         return true;
     }
     public void end(List<Player> players) {
