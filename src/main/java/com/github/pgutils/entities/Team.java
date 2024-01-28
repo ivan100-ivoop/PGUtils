@@ -35,7 +35,7 @@ public class Team {
         team.addEntry(player.getName());
         placespace.getSbManager().addPlayer(placespace.getID(), id, player);
         //System.out.println("Added player " + player.getName() + " to team " + id);
-        player.sendMessage(Messages.messageWithPrefix("game-join-team", "%color%Joined team %id%!").replace("%color%", GeneralUtils.hexToMinecraftColor(colorString)).replace("%id%", id+""));
+        player.sendMessage(Messages.messageWithPrefix("team-join-team", "%color%Joined team %id%!").replace("%color%", GeneralUtils.hexToMinecraftColor(colorString)).replace("%id%", id+""));
     }
 
     public void removePlayer(Player player) {

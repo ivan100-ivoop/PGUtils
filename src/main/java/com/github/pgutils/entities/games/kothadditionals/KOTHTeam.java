@@ -40,7 +40,7 @@ public class KOTHTeam extends Team {
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
         meta.setColor(getColor());
-        meta.setDisplayName(Messages.getMessage("game-tools-helmet", "%color%Party Hat", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
+        meta.setDisplayName(Messages.getMessage("game-koth-tools-helmet", "%color%Party Hat", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
         meta.setDisplayName(GeneralUtils.fixColors(GeneralUtils.hexToMinecraftColor(getColorString())+"Party Hat"));
         meta.setUnbreakable(true);
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
@@ -51,7 +51,7 @@ public class KOTHTeam extends Team {
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta meta2 = (LeatherArmorMeta) chestplate.getItemMeta();
         meta2.setColor(getColor());
-        meta2.setDisplayName(Messages.getMessage("game-tools-chest-plate", "%color%Party Vest", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
+        meta2.setDisplayName(Messages.getMessage("game-koth-tools-chest-plate", "%color%Party Vest", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
         meta2.setDisplayName(GeneralUtils.fixColors(GeneralUtils.hexToMinecraftColor(getColorString())+"Party Vest"));
         meta2.setUnbreakable(true);
         meta2.addEnchant(Enchantment.BINDING_CURSE, 1, true);
@@ -63,7 +63,7 @@ public class KOTHTeam extends Team {
         ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
         LeatherArmorMeta meta3 = (LeatherArmorMeta) leggings.getItemMeta();
         meta3.setColor(getColor());
-        meta3.setDisplayName(Messages.getMessage("game-tools-leggings", "%color%Party Pants", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
+        meta3.setDisplayName(Messages.getMessage("game-koth-tools-leggings", "%color%Party Pants", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
         meta3.setDisplayName(GeneralUtils.fixColors(GeneralUtils.hexToMinecraftColor(getColorString())+"Party Pants"));
         meta3.setUnbreakable(true);
         meta3.addEnchant(Enchantment.BINDING_CURSE, 1, true);
@@ -74,7 +74,7 @@ public class KOTHTeam extends Team {
         ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
         LeatherArmorMeta meta4 = (LeatherArmorMeta) boots.getItemMeta();
         meta4.setColor(getColor());
-        meta4.setDisplayName(Messages.getMessage("game-tools-boots", "%color%Party Shoes", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
+        meta4.setDisplayName(Messages.getMessage("game-koth-tools-boots", "%color%Party Shoes", false).replace("%color%", GeneralUtils.hexToMinecraftColor(getColorString())));
         meta4.setDisplayName(GeneralUtils.fixColors(GeneralUtils.hexToMinecraftColor(getColorString())+"Party Shoes"));
         meta4.setUnbreakable(true);
         meta4.addEnchant(Enchantment.BINDING_CURSE, 1, true);

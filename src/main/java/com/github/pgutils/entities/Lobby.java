@@ -101,7 +101,7 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("waiting-players", "&eWaiting for players &b%players%/%min_players% &e!", false).replace("%players%", String.valueOf(players.size())).replace("%min_players%", String.valueOf(minPlayers)))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-waiting-players", "&eWaiting for players &b%players%/%min_players% &e!", false).replace("%players%", String.valueOf(players.size())).replace("%min_players%", String.valueOf(minPlayers)))));
             }
         }
         else if (status == LobbyStatus.WAITING_FOR_HOST) {
@@ -111,14 +111,14 @@ public class Lobby {
                 showPlayersMessageTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("waiting-host", "&eWaiting for a host to start the game!", false))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-waiting-host", "&eWaiting for a host to start the game!", false))));
             }
             if (players.size() < minPlayers) {
                 status = LobbyStatus.WAITING_FOR_PLAYERS;
                 lobbyStartingTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
             }
 
             if (mode == LobbyMode.AUTO)
@@ -132,13 +132,13 @@ public class Lobby {
             if (lobbyStartingTick % 20 == 0)
                 players.stream()
                     .forEach(player -> player.spigot()
-                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("start-timer", "&eThe game will start in &b%time%&e seconds!", false).replace("%time%", String.valueOf((lobbyStartingTime - lobbyStartingTick) / 20)))));
+                            .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-start-timer", "&eThe game will start in &b%time%&e seconds!", false).replace("%time%", String.valueOf((lobbyStartingTime - lobbyStartingTick) / 20)))));
             if (players.size() < minPlayers) {
                 status = LobbyStatus.WAITING_FOR_PLAYERS;
                 lobbyStartingTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-filed-start-game-players", "&4Game starting failed due to not enough players!", false))));
             }
         }
         else if (status == LobbyStatus.IN_PROGRESS) {
@@ -198,7 +198,7 @@ public class Lobby {
                 lobbyStartingTick = 0;
                 players.stream()
                         .forEach(player -> player.spigot()
-                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("filed-start-game", "&eGame starting failed due to no suitable gamemodes!", false))));
+                                .sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.getMessage("lobby-filed-start-game", "&eGame starting failed due to no suitable gamemodes!", false))));
                 return;
             }
         }
@@ -232,7 +232,7 @@ public class Lobby {
                 .forEach(player -> {
                     player.spigot()
                         .sendMessage(ChatMessageType.ACTION_BAR,
-                                new TextComponent(Messages.getMessage("game-end-message", "&eThe game has been ended!", false)));
+                                new TextComponent(Messages.getMessage("lobby-game-end-message", "&eThe game has been ended!", false)));
                     player.teleport(pos);
                     PlayerManager.disablePVP(player);
                     PlayerManager.enableMove(player);
@@ -246,19 +246,19 @@ public class Lobby {
 
     public boolean addPlayer(Player player) {
         if (isLocked) {
-            player.sendMessage(Messages.messageWithPrefix("error-lobby-locked", "&cLobby is locked!"));
+            player.sendMessage(Messages.messageWithPrefix("lobby-error-lobby-locked", "&cLobby is locked!"));
             return false;
         }
         if (players.size() >= maxPlayers){
-            player.sendMessage(Messages.messageWithPrefix("error-lobby-full", "&cLobby is full!"));
+            player.sendMessage(Messages.messageWithPrefix("lobby-error-lobby-full", "&cLobby is full!"));
             return false;
         }
         if (players.contains(player)) {
-            player.sendMessage(Messages.messageWithPrefix("error-already-in-lobby", "&cYou are already in the lobby!"));
+            player.sendMessage(Messages.messageWithPrefix("lobby-error-already-in-lobby", "&cYou are already in the lobby!"));
             return false;
         }
         GeneralUtils.kickPlayerGlobal(player);
-        player.sendMessage(Messages.messageWithPrefix("success-joined-lobby", "&aYou have joined lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
+        player.sendMessage(Messages.messageWithPrefix("lobby-success-joined-lobby", "&aYou have joined lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
         PlayerManager.disablePVP(player);
@@ -275,7 +275,7 @@ public class Lobby {
 
     public boolean removePlayer(Player player) {
         if (!players.contains(player)) {
-            player.sendMessage(Messages.messageWithPrefix("error-not-in-lobby", "&cYou are not in the lobby!"));
+            player.sendMessage(Messages.messageWithPrefix("lobby-error-not-in-lobby", "&cYou are not in the lobby!"));
             return false;
         }
         if (currentPlaySpace != null) {
@@ -283,7 +283,7 @@ public class Lobby {
                 currentPlaySpace.removePlayer(player);
             }
         }
-        player.sendMessage(Messages.messageWithPrefix("success-left-lobby", "&aYou have left lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
+        player.sendMessage(Messages.messageWithPrefix("lobby-success-left-lobby", "&aYou have left lobby &6%id% &a!").replace("%id%", String.valueOf(ID)));
         PlayerChestReward.restoreInv(player);
 
         Location leaveLocation = GeneralUtils.getRespawnPoint();
@@ -407,7 +407,7 @@ public class Lobby {
     public void kickPlayer(Player player) {
         if (players.contains(player)) {
             removePlayer(player);
-            player.sendMessage(Messages.messageWithPrefix("success-kicked-from-lobby", "&4You have been kicked from lobby &6%id% &4!").replace("%id%", String.valueOf(ID)));
+            player.sendMessage(Messages.messageWithPrefix("lobby-success-kicked-from-lobby", "&4You have been kicked from lobby &6%id% &4!").replace("%id%", String.valueOf(ID)));
         }
     }
 
@@ -488,8 +488,6 @@ public class Lobby {
                 return true;
             }
         }
-
-
         return false;
     }
 

@@ -8,6 +8,7 @@ import com.github.pgutils.particles.variants.RandomisedDirCylinderParticle;
 import com.github.pgutils.particles.variants.SwirlingParticle;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Keys;
+import com.github.pgutils.utils.Messages;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -219,7 +220,7 @@ public class KOTHPoint {
                     team_capture_time.put(playerTeam, team_capture_time.getOrDefault(playerTeam, 0) + 1);
                     status = KOTHPointStatus.CAPTURING;
                     int percentage = (int) ((double)team_capture_time.get(playerTeam) / (double) captureTime * 100.0);
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors("&eCapturing point [" + GeneralUtils.generateLoadingBar(percentage, "§a", "§7") + "&e]")));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors(Messages.messageWithPrefix("koth-game-capturing-point","&eCapturing point")  + GeneralUtils.generateLoadingBar(percentage, "§a", "§7") + "&e]")));
                     if (team_capture_time.get(playerTeam) >= captureTime) {
                         capturePoint(playerTeam);
                         break;

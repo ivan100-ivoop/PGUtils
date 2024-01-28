@@ -124,7 +124,7 @@ public class KOTHArena extends PlaySpace {
             else if (startingTick == nameOfGameTime ) {
                 teams.forEach(team -> {
                     team.getPlayers().forEach(player -> {
-                        player.sendTitle(Messages.getMessage("game-koth-team", GeneralUtils.hexToMinecraftColor(team.getColorString()) + "You are on team "+team.getID(), false), "", 0, 20, 0);
+                        player.sendTitle(Messages.getMessage("game-koth-team", GeneralUtils.hexToMinecraftColor(team.getColorString()) + Messages.messageWithPrefix("game-koth-team-announce","You are on team ")+team.getID(), false), "", 0, 20, 0);
                         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                     });
                 });
@@ -162,7 +162,7 @@ public class KOTHArena extends PlaySpace {
             }
             if (tick - 30 == matchTime + 1) {
                 players.forEach(player -> {
-                    player.sendTitle(Messages.getMessage("game-overtime", "§4OVERTIME!", false), "", 0, 40, 0);
+                    player.sendTitle(Messages.getMessage("game-koth-overtime", "§4OVERTIME!", false), "", 0, 40, 0);
                     player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 });
                 overtime = true;
@@ -223,19 +223,19 @@ public class KOTHArena extends PlaySpace {
     public String passesChecks() {
 
         if (points.size() < initial_points_active + 2) {
-            return "&cNot enough points! Currently : " + points.size() + " | Needed : " + (initial_points_active + 2);
+            return Messages.messageWithPrefix("game-koth-points-amount-error-message", "&c&lThere must be at least %points% points! Currently : %current%").replace("%points%", initial_points_active + 2 + "").replace("%current%", points.size() + "");
         }
 
         for (int i = 1; i <= teamsAmount; i++) {
             int finalI = i;
             if (spawns.stream().noneMatch(spawn -> spawn.getTeamID() == finalI)) {
-                return "&cNo spawn for team " + i;
+                return Messages.messageWithPrefix("game-koth-spawn-amount-error-message", "&c&lThere must be a spawn for team %id%").replace("%id%", i + "");
             }
         }
 
         if (getLobby() != null) {
             if (getLobby().getPlayers().size() % teamsAmount != 0) {
-                return "&cPlayers amount must be divisible by teams amount! Currently : " + getLobby().getPlayers().size() + " | Needed : " + (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount));
+                return Messages.messageWithPrefix("game-koth-players-amount-error-message", "&c&lPlayers amount must be divisible by teams amount! Currently : %current% | Needed : %needed%").replace("%current%", getLobby().getPlayers().size() + "").replace("%needed%", (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount)) + "");
             }
         }
 
@@ -285,19 +285,19 @@ public class KOTHArena extends PlaySpace {
         locations.addAll(points.stream().map(point -> point.getLocation()).collect(Collectors.toList()));
         Location closest = GeneralUtils.getClosestLocation(player.getLocation(), locations);
         if (closest == null) {
-            player.sendMessage(Messages.messageWithPrefix("no-closest-object-message", "&c&lOops &cThere are no objects!"));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-no-closest-object-message", "&c&lOops &cThere are no objects!"));
             return true;
         }
 
         if (spawns.stream().anyMatch(spawn -> spawn.getPos().equals(closest))) {
             removeSpawnLocation(spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getID());
-            player.sendMessage(Messages.messageWithPrefix("spawn-deleted-message", "&aSuccessfully deleted spawn!"));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-spawn-deleted-message", "&aSuccessfully deleted spawn!"));
             return true;
         }
 
         if (points.stream().anyMatch(point -> point.getLocation().equals(closest))) {
             removePoint(points.stream().filter(point -> point.getLocation().equals(closest)).findFirst().get().getID());
-            player.sendMessage(Messages.messageWithPrefix("point-deleted-message", "&aSuccessfully deleted point!"));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-point-deleted-message", "&aSuccessfully deleted point!"));
             return true;
         }
 
@@ -308,14 +308,13 @@ public class KOTHArena extends PlaySpace {
         locations.addAll(spawns.stream().map(spawn -> spawn.getPos()).collect(Collectors.toList()));
         locations.addAll(points.stream().map(point -> point.getLocation()).collect(Collectors.toList()));
         Location closest = GeneralUtils.getClosestLocation(player.getLocation(), locations);
-        //System.out.println("Hello");
         if (closest == null) {
-            player.sendMessage(Messages.messageWithPrefix("no-closest-object-message", "&c&lOops &cThere are no objects!"));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-no-closest-object-message", "&c&lOops &cThere are no objects!"));
             return true;
         }
 
         if (spawns.stream().anyMatch(spawn -> spawn.getPos().equals(closest))) {
-            player.sendMessage(Messages.messageWithPrefix("spawn-selected-message", "&a" +
+            player.sendMessage(Messages.messageWithPrefix("game-koth-spawn-selected-message", "&a" +
                     "Selected spawn! &6%id% &awith team id : %team_id%").replace("%id%", spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getID() + "").replace("%team_id%", spawns.stream().filter(spawn -> spawn.getPos().equals(closest)).findFirst().get().getTeamID() + ""));
 
             return true;
@@ -353,7 +352,7 @@ public class KOTHArena extends PlaySpace {
         try {
             int teamsAmount = Integer.parseInt(args[3]);
             if (teamsAmount < 2) {
-                player.sendMessage(Messages.messageWithPrefix("team-amount-error-message", "&c&lTeams must be above 2!"));
+                player.sendMessage(Messages.messageWithPrefix("game-koth-team-amount-error-message", "&c&lTeams must be above 2!"));
                 return true;
             }
             this.teamsAmount = teamsAmount;
@@ -377,7 +376,7 @@ public class KOTHArena extends PlaySpace {
         try {
             int matchTime = Integer.parseInt(args[3]);
             if (matchTime < 5) {
-                player.sendMessage(Messages.messageWithPrefix("match-time-error-message", "&c&lMatch time must be above 5 seconds!"));
+                player.sendMessage(Messages.messageWithPrefix("game-koth-match-time-error-message", "&c&lMatch time must be above 5 seconds!"));
                 return true;
             }
             this.matchTime = matchTime;
@@ -401,7 +400,7 @@ public class KOTHArena extends PlaySpace {
         try {
             int initial_points_active = Integer.parseInt(args[3]);
             if (initial_points_active < 1) {
-                player.sendMessage(Messages.messageWithPrefix("initial-points-active-error-message", "&c&lInitial points active must be above 1!"));
+                player.sendMessage(Messages.messageWithPrefix("game-koth-initial-points-active-error-message", "&c&lInitial points active must be above 1!"));
                 return true;
             }
             this.initial_points_active = initial_points_active;
@@ -424,14 +423,14 @@ public class KOTHArena extends PlaySpace {
         }
         if (args.length == 3) {
             KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), 2.5), this.getUID());
-            player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", "2.5")));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", "2.5")));
             return true;
         }
         if (args.length == 4) {
             try {
                 double radius = Double.parseDouble(args[3]);
                 KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius), this.getUID());
-                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", radius + "")));
+                player.sendMessage(Messages.messageWithPrefix("game-koth-point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius%").replace("%id%", points.size() + "").replace("%radius%", radius + "")));
                 return true;
             } catch (NumberFormatException e) {
                 player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
@@ -443,7 +442,7 @@ public class KOTHArena extends PlaySpace {
                 double radius = Double.parseDouble(args[3]);
                 int pointsAwarding = Integer.parseInt(args[4]);
                 KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius, pointsAwarding), this.getUID());
-                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points%")
+                player.sendMessage(Messages.messageWithPrefix("game-koth-point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points%")
                         .replace("%id%", points.size() + "")
                         .replace("%radius%", radius + "")
                         .replace("%points%", pointsAwarding + "")));
@@ -459,7 +458,7 @@ public class KOTHArena extends PlaySpace {
                 int pointsAwarding = Integer.parseInt(args[4]);
                 int timeToCapture = Integer.parseInt(args[5]);
                 KOTHArenaUtils.savePoint(addCapturePoint(player.getLocation(), radius, pointsAwarding, timeToCapture), this.getUID());
-                player.sendMessage(Messages.messageWithPrefix("point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points% and time to capture : %time%")
+                player.sendMessage(Messages.messageWithPrefix("game-koth-point-created-message", ("&aSuccessfully created point! With id : %id% and radius : %radius% and points : %points% and time to capture : %time%")
                         .replace("%id%", points.size() + "")
                         .replace("%radius%", radius + "")
                         .replace("%points%", pointsAwarding + "")
@@ -481,7 +480,7 @@ public class KOTHArena extends PlaySpace {
 
         int team_id = Integer.parseInt(args[3]);
         if (team_id < 1 || team_id > teamsAmount) {
-            player.sendMessage(Messages.messageWithPrefix("team-amount-error-message", "&c&lTeam id must be between 1 and " + teamsAmount + "!"));
+            player.sendMessage(Messages.messageWithPrefix("game-koth-team-amount-error-message", "&c&lTeam id must be between 1 and " + teamsAmount + "!"));
             return true;
         }
         KOTHArenaUtils.saveSpawn(addSpawnLocation(player.getLocation(), team_id), this.getUID());
