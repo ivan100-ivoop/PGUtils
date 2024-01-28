@@ -14,7 +14,9 @@ import com.github.pgutils.utils.UltimateUtilsX;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class GameCommand extends PGSubCommand {
     @Override
@@ -82,16 +84,86 @@ public class GameCommand extends PGSubCommand {
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("koth", "set", "select", "delete");
+            return Arrays.asList(
+                    "create",
+                    "set",
+                    "select",
+                    "select-name",
+                    "delete",
+                    "validate",
+                    "set-objects",
+                    "info",
+                    "delete");
         }
 
-        if (args.length == 2 && args[0].equals("koth")) {
-            return Arrays.asList("create", "set");
+        if (args.length == 2 && args[0].equals("create")) {
+            return new ArrayList<>(PlaySpace.playSpaceTypes.keySet());
         }
 
-        if (args.length >= 3 && args[1].equals("create")) {
-            return Arrays.asList("spawn", "point");
+        if (args.length == 3 && args[0].equals("create")) {
+            String type = args[1];
+            Class<? extends PlaySpace> playSpaceType = PlaySpace.playSpaceTypes.computeIfPresent(type, (key, value) -> value);
+            if (playSpaceType == null) {
+                return Collections.emptyList();
+            }
+            // Get a static list from the specific class
+            Field addGameObjectsField = null;
+            try {
+                addGameObjectsField = playSpaceType.getDeclaredField("addGameObjects");
+                return (List<String>) addGameObjectsField.get(null);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+
         }
+
+        if (args.length == 2 && args[0].equals("set")) {
+            return Arrays.asList("location", "name", "options");
+
+        }
+
+        if (args.length == 3 && args[1].equals("options")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                        .filter(selector -> selector.player.equals(player))
+                        .findFirst();
+
+                if (!playSpaceSelector.isPresent()) {
+                    return Collections.emptyList();
+                }
+                PlaySpace playSpace = playSpaceSelector.get().playSpace;
+
+                return new ArrayList<>(playSpace.setMap.keySet());
+            }
+        }
+
+        if (args.length == 2 && args[0].equals("set-objects")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                        .filter(selector -> selector.player.equals(player))
+                        .findFirst();
+
+                if (!playSpaceSelector.isPresent()) {
+                    return Collections.emptyList();
+                }
+                PlaySpace playSpace = playSpaceSelector.get().playSpace;
+                Field addGameObjectsField = null;
+                try {
+                    addGameObjectsField = playSpace.getClass().getDeclaredField("setGameObjects");
+                    return (List<String>) addGameObjectsField.get(null);
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
 
         if (args.length == 2 && (args[0].equals("delete") || args[0].equals("select"))) {
             List<String> all = new ArrayList<>();

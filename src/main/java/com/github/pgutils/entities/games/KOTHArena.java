@@ -1,30 +1,23 @@
 package com.github.pgutils.entities.games;
 
-import java.util.*;
-
-import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
 import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.kothadditionals.KOTHTeam;
-import com.github.pgutils.hooks.PGLobbyHook;
-import com.github.pgutils.utils.*;
 
 import com.github.pgutils.enums.GameStatus;
-import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerManager;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -55,7 +48,6 @@ public class KOTHArena extends PlaySpace {
     // Saved
     private int matchTime = 3000;
 
-
     private boolean overtime = false;
 
     private int overtimeMAX = 1000;
@@ -73,12 +65,16 @@ public class KOTHArena extends PlaySpace {
 
     private int startingTime = nameOfGameTime + teamRecognitionTime + infoTime + 60;
 
+    public static List<String> addGameObjects = Arrays.asList("point", "spawn");
+
+    public static List<String> setGameObjects = Arrays.asList("select-closest", "delete-closest");
+
     public KOTHArena() {
         super();
         type = "KOTH";
-        getCommandMap().put("teams_amount", this::setTeamsAmount);
-        getCommandMap().put("match_time", this::setMatchTime);
-        getCommandMap().put("initial_points_active", this::setInitialPointsActive);
+        getSetMap().put("teams_amount", this::setTeamsAmount);
+        getSetMap().put("match_time", this::setMatchTime);
+        getSetMap().put("initial_points_active", this::setInitialPointsActive);
         points = new ArrayList<>();
         spawns = new ArrayList<>();
         teams = new ArrayList<>();
@@ -341,7 +337,7 @@ public class KOTHArena extends PlaySpace {
             player.sendMessage(Messages.messageWithPrefix("command-error-message", "&c&lOops &cthere is an error with the command"));
             return true;
         }
-        BiFunction<Player, String[], Boolean> function = getCommandMap().get(args[2].toLowerCase());
+        BiFunction<Player, String[], Boolean> function = getSetMap().get(args[2].toLowerCase());
         if (function != null) {
             return function.apply(player, args);
         }

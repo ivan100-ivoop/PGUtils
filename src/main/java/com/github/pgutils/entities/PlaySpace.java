@@ -27,7 +27,7 @@ public abstract class PlaySpace {
 
     public static Map<String, Class<? extends PlaySpace>> playSpaceTypes = new HashMap<>();
 
-    public Map<String, BiFunction<Player, String[], Boolean>> commandMap = new HashMap<>();
+    public Map<String, BiFunction<Player, String[], Boolean>> setMap = new HashMap<>();
 
     private Location pos;
 
@@ -38,6 +38,10 @@ public abstract class PlaySpace {
     protected GameStatus status = GameStatus.INACTIVE;
 
     private GameScoreboardManager scoreboardManager;
+
+    public static List<String> addGameObjects;
+
+    public static List<String> setGameObjects;
 
     protected int tick = 0;
 
@@ -92,7 +96,6 @@ public abstract class PlaySpace {
                 PGUtils.selectedPlaySpace.remove(i);
             }
         }
-        System.out.println("Deleted PlaySpace " + ID + " playSpaces.size() = " + playSpaces.size());
         return true;
     }
     public void end(List<Player> players) {
@@ -209,7 +212,7 @@ public abstract class PlaySpace {
     }
 
     // return the commandmap
-    public Map<String, BiFunction<Player, String[], Boolean>> getCommandMap() {
-        return commandMap;
+    public Map<String, BiFunction<Player, String[], Boolean>> getSetMap() {
+        return setMap;
     }
 }

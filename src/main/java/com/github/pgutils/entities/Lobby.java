@@ -214,10 +214,6 @@ public class Lobby {
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
 
-        for (Player player : winner) {
-            System.out.println("Winner: " + player.getName());
-        }
-
         if (winner != null) {
             for (Player player : winner){
 
@@ -489,8 +485,10 @@ public class Lobby {
                 pickedGameID = 0;
                 currentPlaySpace = playSpaces.get(pickedGameID);
             }
-            startSequence();
-            return true;
+            if (currentPlaySpace.passesChecks() == "All Good") {
+                startSequence();
+                return true;
+            }
         }
 
 

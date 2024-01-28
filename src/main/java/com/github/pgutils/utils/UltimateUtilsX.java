@@ -91,7 +91,7 @@ public class UltimateUtilsX {
             case "testmode":
                 return setLobbyTestMode(player, args);
             default:
-                player.sendMessage("Unknown set command.");
+                player.sendMessage(Messages.messageWithPrefix("missing-lobby-set-message", "&cMissing Lobby Set!"));
                 return true;
         }
     }

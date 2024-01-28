@@ -149,9 +149,8 @@ public class LobbyCommand extends PGSubCommand {
                     "info",
                     "info-id",
                     "info-games",
-                    "info-games-id"
-
-
+                    "info-games-id",
+                    "start"
             );
         }
         if (args.length == 2 && args[0].equals("kick-player")) {
@@ -195,7 +194,7 @@ public class LobbyCommand extends PGSubCommand {
         }
 
         if (args.length == 2 && args[0].equals("set")) {
-            return Arrays.asList("location", "min-players", "max-players", "mode");
+            return Arrays.asList("location", "min-players", "max-players", "mode", "name", "lock", "tournament", "testmode");
         }
 
         if (args.length == 2 && args[0].equals("join")) {
@@ -207,7 +206,7 @@ public class LobbyCommand extends PGSubCommand {
         }
 
         if (args.length == 3 && args[0].equals("set") && args[1].equals("mode")) {
-            return Arrays.asList("auto", "manual", "choose");
+            return Arrays.asList("AUTO", "MANUAL");
         }
 
         return Collections.emptyList();
