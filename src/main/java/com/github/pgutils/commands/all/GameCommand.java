@@ -3,11 +3,7 @@ package com.github.pgutils.commands.all;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.entities.games.KOTHArena;
-import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
-import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PGSubCommand;
 import com.github.pgutils.utils.UltimateUtilsX;
@@ -16,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiFunction;
 
 public class GameCommand extends PGSubCommand {
     @Override
@@ -75,7 +70,7 @@ public class GameCommand extends PGSubCommand {
                     return UltimateUtilsX.deleteGame(player, args);
 
                 case "deselect":
-                    return UltimateUtilsX.deSelestGame(player, args);
+                    return UltimateUtilsX.deSelectGame(player, args);
 
 
             }
@@ -132,7 +127,7 @@ public class GameCommand extends PGSubCommand {
         if (args.length == 3 && args[1].equals("options")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                         .filter(selector -> selector.player.equals(player))
                         .findFirst();
 
@@ -148,7 +143,7 @@ public class GameCommand extends PGSubCommand {
         if (args.length == 2 && args[0].equals("set-objects")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                         .filter(selector -> selector.player.equals(player))
                         .findFirst();
 

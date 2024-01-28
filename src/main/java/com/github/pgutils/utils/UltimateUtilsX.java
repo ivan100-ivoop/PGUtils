@@ -771,7 +771,7 @@ public class UltimateUtilsX {
 
 
     public static boolean lobbyInfo(Player player, String[] args) {
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -1049,15 +1049,15 @@ public class UltimateUtilsX {
         return true;
     }
 
-    public static boolean deSelestGame(Player player, String[] args) {
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+    public static boolean deSelectGame(Player player, String[] args) {
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!playSpaceSelector.isPresent()) {
             player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
             return true;
         }
-        PGUtils.selectedPlaySpace.remove(playSpaceSelector.get());
+        PGUtils.loader.selectedPlaySpace.remove(playSpaceSelector.get());
         player.sendMessage(Messages.messageWithPrefix("deselect-playspace-message", "&aSuccessfully deselected PlaySpace!"));
         return true;
     }
