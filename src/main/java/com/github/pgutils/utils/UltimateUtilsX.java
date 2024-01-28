@@ -1049,6 +1049,18 @@ public class UltimateUtilsX {
         return true;
     }
 
+    public static boolean deSelestGame(Player player, String[] args) {
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+                .filter(selector -> selector.player.equals(player))
+                .findFirst();
+        if (!playSpaceSelector.isPresent()) {
+            player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
+            return true;
+        }
+        PGUtils.selectedPlaySpace.remove(playSpaceSelector.get());
+        player.sendMessage(Messages.messageWithPrefix("deselect-playspace-message", "&aSuccessfully deselected PlaySpace!"));
+        return true;
+    }
 
 
 }

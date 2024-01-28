@@ -74,6 +74,9 @@ public class GameCommand extends PGSubCommand {
                 case "delete":
                     return UltimateUtilsX.deleteGame(player, args);
 
+                case "deselect":
+                    return UltimateUtilsX.deSelestGame(player, args);
+
 
             }
         }
@@ -88,6 +91,7 @@ public class GameCommand extends PGSubCommand {
                     "create",
                     "set",
                     "select",
+                    "deselect",
                     "select-name",
                     "delete",
                     "validate",
