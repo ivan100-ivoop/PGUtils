@@ -161,18 +161,18 @@ public class Lobby {
         if (playSpaces.size() == 0) return -1;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         for (PlaySpace playSpace : playSpaces) {
-            System.out.println(checkIfPlayspaceIsValid(playSpace));
+            //System.out.println(checkIfPlayspaceIsValid(playSpace));
             if (checkIfPlayspaceIsValid(playSpace) == "All Done") {
                 possiblePlaySpaces.add(playSpace);
             }
         }
-        System.out.println(possiblePlaySpaces.size());
+        //System.out.println(possiblePlaySpaces.size());
         if (possiblePlaySpaces.size() == 0) return -1;
 
         if (possiblePlaySpaces.size() > 1)
             possiblePlaySpaces.remove(playSpaces.get(lastGame));
         int chosen = playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
-        System.out.println(chosen);
+        //System.out.println(chosen);
         return chosen;
     }
 
@@ -203,21 +203,19 @@ public class Lobby {
             }
         }
         status = LobbyStatus.IN_PROGRESS;
-        System.out.println("Starting game " + pickedGameID);
+        //System.out.println("Starting game " + pickedGameID);
         currentPlaySpace = playSpaces.get(pickedGameID);
         currentPlaySpace.setup(players);
     }
 
     public void reset(List<Player> winner) {
-        System.out.println("Resetting lobby " + ID);
         status = LobbyStatus.RESETTING;
         lobbyResettingTick = 0;
         pickedGameID = lastGame;
 
         if (winner != null) {
             for (Player player : winner){
-
-                PGUtils.getPlugin(PGUtils.class).rewardManager.giveRewards(getID(), player);
+                PGUtils.getPlugin(PGUtils.class).loader.rewardManager.giveRewards(getID(), player);
             }
 
 
@@ -328,12 +326,12 @@ public class Lobby {
                     playSpace.setLobby(null);
                 });
         lobbies.remove(this);
-        for (int i = PGUtils.selectedLobby.size() - 1; i >= 0; i--) {
-            if (PGUtils.selectedLobby.get(i).lobby == this) {
-                PGUtils.selectedLobby.remove(i);
+        for (int i = PGUtils.loader.selectedLobby.size() - 1; i >= 0; i--) {
+            if (PGUtils.loader.selectedLobby.get(i).lobby == this) {
+                PGUtils.loader.selectedLobby.remove(i);
             }
         }
-        System.out.println("Deleted lobby " + ID + " Lobbies left: " + lobbies.size());
+        //System.out.println("Deleted lobby " + ID + " Lobbies left: " + lobbies.size());
         return true;
     }
 

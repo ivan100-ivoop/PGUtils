@@ -64,22 +64,22 @@ public class GeneralUtils {
     }
 
     public static void playerSelectPlaySpace(Player sender, PlaySpace playSpace) {
-        if (PGUtils.selectedPlaySpace.stream().anyMatch(selector -> selector.player.equals(sender))) {
-            PGUtils.selectedPlaySpace.stream()
+        if (PGUtils.loader.selectedPlaySpace.stream().anyMatch(selector -> selector.player.equals(sender))) {
+            PGUtils.loader.selectedPlaySpace.stream()
                     .filter(selector -> selector.player.equals(sender))
                     .forEach(selector -> selector.playSpace = playSpace);
         } else {
-            PGUtils.selectedPlaySpace.add(new PlayerPlaySpaceSelector(sender, playSpace));
+            PGUtils.loader.selectedPlaySpace.add(new PlayerPlaySpaceSelector(sender, playSpace));
         }
     }
 
     public static void playerSelectLobby(Player sender, Lobby lobby) {
-        if (PGUtils.selectedLobby.stream().anyMatch(selector -> selector.player.equals(sender))) {
-            PGUtils.selectedLobby.stream()
+        if (PGUtils.loader.selectedLobby.stream().anyMatch(selector -> selector.player.equals(sender))) {
+            PGUtils.loader.selectedLobby.stream()
                     .filter(selector -> selector.player.equals(sender))
                     .forEach(selector -> selector.lobby = lobby);
         } else {
-            PGUtils.selectedLobby.add(new PlayerLobbySelector(sender, lobby));
+            PGUtils.loader.selectedLobby.add(new PlayerLobbySelector(sender, lobby));
         }
 
     }
@@ -116,7 +116,7 @@ public class GeneralUtils {
     }
 
     public static boolean setRespawnPoint(Location loc1) {
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
         if(db.isMysql()){
             db.execute("CREATE TABLE IF NOT EXISTS " + db.fixName("respawn") + " (" +
@@ -145,7 +145,7 @@ public class GeneralUtils {
     }
 
     public static Location getRespawnPoint() {
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
 
         if (db.tableExists(db.fixName("respawn"))) {

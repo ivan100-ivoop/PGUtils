@@ -106,7 +106,7 @@ public class GoldenHarpGroundEffect extends CustomEffect {
             double speed = 3.0;
             arrow.setVelocity(direction.multiply(speed));
             arrow.setGravity(false);
-            arrow.setMetadata("GoldenHarpArrowSmall", new FixedMetadataValue(PGUtils.instance, true));
+            arrow.setMetadata("GoldenHarpArrowSmall", new FixedMetadataValue(PGUtils.loader.instance, true));
             arrows.add(arrow);
         }
     }

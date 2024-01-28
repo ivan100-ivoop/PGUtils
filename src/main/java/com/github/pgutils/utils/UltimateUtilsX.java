@@ -30,7 +30,7 @@ public class UltimateUtilsX {
     }
 
     public static boolean removeLobby(Player player) {
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -56,7 +56,7 @@ public class UltimateUtilsX {
                 return true;
             }
         } else {
-            Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+            Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                     .filter(selector -> selector.player.equals(player))
                     .findFirst();
             if (!lobbySelector.isPresent()) {
@@ -91,7 +91,7 @@ public class UltimateUtilsX {
             case "testmode":
                 return setLobbyTestMode(player, args);
             default:
-                player.sendMessage(Messages.messageWithPrefix("missing-lobby-set-message", "&cMissing Lobby Set!"));
+                player.sendMessage("Unknown set command.");
                 return true;
         }
     }
@@ -103,7 +103,7 @@ public class UltimateUtilsX {
             return false;
         }
         int id = Integer.parseInt(args[1]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -139,7 +139,7 @@ public class UltimateUtilsX {
             return false;
         }
         int id = Integer.parseInt(args[1]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -173,7 +173,7 @@ public class UltimateUtilsX {
     }
     
     public static boolean setLobbyLocation(Player player) {
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -191,7 +191,7 @@ public class UltimateUtilsX {
             return false;
         }
         int minPlayers = Integer.parseInt(args[2]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -209,7 +209,7 @@ public class UltimateUtilsX {
             return false;
         }
         int maxPlayers = Integer.parseInt(args[2]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -227,7 +227,7 @@ public class UltimateUtilsX {
             return false;
         }
         String mode = args[2];
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -249,7 +249,7 @@ public class UltimateUtilsX {
         for (int i = 2; i < args.length; i++) {
             name += args[i] + " ";
         }
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -273,7 +273,7 @@ public class UltimateUtilsX {
             return false;
         }
         boolean lock = Boolean.parseBoolean(args[2]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -291,7 +291,7 @@ public class UltimateUtilsX {
             return false;
         }
         boolean testMode = Boolean.parseBoolean(args[2]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -309,7 +309,7 @@ public class UltimateUtilsX {
             return false;
         }
         boolean tournament = Boolean.parseBoolean(args[2]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -535,7 +535,7 @@ public class UltimateUtilsX {
         }
 
         if (args.length >= 3) {
-            Optional<PlayerPlaySpaceSelector> playSpace = PGUtils.selectedPlaySpace.stream()
+            Optional<PlayerPlaySpaceSelector> playSpace = PGUtils.loader.selectedPlaySpace.stream()
                     .filter(selector -> selector.player.equals(player))
                     .findFirst();
 
@@ -570,7 +570,7 @@ public class UltimateUtilsX {
         if (args.length < 2) {
             return false;
         }
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
 
@@ -591,7 +591,7 @@ public class UltimateUtilsX {
 
     public static boolean deleteGame(Player player, String[] args) {
         if (args.length <= 2) {
-            Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+            Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                     .filter(selector -> selector.player.equals(player))
                     .findFirst();
 
@@ -619,7 +619,7 @@ public class UltimateUtilsX {
                 return true;
             }
 
-            Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+            Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                     .filter(selector -> selector.player.equals(player))
                     .findFirst();
 
@@ -658,7 +658,7 @@ public class UltimateUtilsX {
         if (args.length < 3) {
             return false;
         }
-        Optional<PlayerPlaySpaceSelector> playSpace_ = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpace_ = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!playSpace_.isPresent()) {
@@ -681,7 +681,7 @@ public class UltimateUtilsX {
         for (int i = 2; i < args.length; i++) {
             name += args[i] + " ";
         }
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
 
@@ -702,7 +702,7 @@ public class UltimateUtilsX {
     }
 
     private static boolean setGameLocation(Player player, String[] args) {
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
 
@@ -832,7 +832,7 @@ public class UltimateUtilsX {
     }
 
     public static boolean lobbyGamesInfo(Player player, String[] args) {
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -944,7 +944,7 @@ public class UltimateUtilsX {
     }
 
     public static boolean gameInfo(Player player, String[] args) {
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!playSpaceSelector.isPresent()) {
@@ -993,7 +993,7 @@ public class UltimateUtilsX {
     }
 
     public static boolean checkValid(Player player, String[] args) {
-        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.selectedPlaySpace.stream()
+        Optional<PlayerPlaySpaceSelector> playSpaceSelector = PGUtils.loader.selectedPlaySpace.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!playSpaceSelector.isPresent()) {
@@ -1012,7 +1012,7 @@ public class UltimateUtilsX {
             return false;
         }
         int gameID = Integer.parseInt(args[1]);
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {
@@ -1032,7 +1032,7 @@ public class UltimateUtilsX {
     }
 
     public static boolean startLobbyGame(Player player, String[] args) {
-        Optional<PlayerLobbySelector> lobbySelector = PGUtils.selectedLobby.stream()
+        Optional<PlayerLobbySelector> lobbySelector = PGUtils.loader.selectedLobby.stream()
                 .filter(selector -> selector.player.equals(player))
                 .findFirst();
         if (!lobbySelector.isPresent()) {

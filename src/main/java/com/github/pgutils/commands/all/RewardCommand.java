@@ -38,7 +38,7 @@ public class RewardCommand extends PGSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        RewardManager rewards = PGUtils.getPlugin(PGUtils.class).rewardManager;
+        RewardManager rewards = PGUtils.getPlugin(PGUtils.class).loader.rewardManager;
 
         if (args.length < 1) {
             return false;
@@ -155,7 +155,7 @@ public class RewardCommand extends PGSubCommand {
         }
 
         if (args.length == 3 && args[1].equals("remove")) {
-            return PGUtils.getPlugin(PGUtils.class).rewardManager.getRewards(Integer.parseInt(args[0]));
+            return PGUtils.getPlugin(PGUtils.class).loader.rewardManager.getRewards(Integer.parseInt(args[0]));
         }
 
         if (args.length == 3 && args[1].equals("give")) {

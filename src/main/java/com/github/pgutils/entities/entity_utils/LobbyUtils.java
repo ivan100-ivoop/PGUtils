@@ -13,7 +13,7 @@ public class LobbyUtils {
 
     public static void deleteAllLobbies() {
         LobbyUtils.createTables();
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
         db.execute("DELETE FROM " + db.fixName("lobby"));
         db.disconnect();
@@ -21,7 +21,7 @@ public class LobbyUtils {
 
     public static void deleteLobby(String lobbyUID) {
         LobbyUtils.createTables();
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
         db.execute("DELETE FROM " + db.fixName("lobby") + " WHERE lobbyUID=?", lobbyUID);
         db.disconnect();
@@ -29,7 +29,7 @@ public class LobbyUtils {
 
     public static void loadLobbies() {
         LobbyUtils.createTables();
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
         if (db.tableExists(db.fixName("lobby"))) {
             String selectAllQuery = "SELECT name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked, tournament FROM " + db.fixName("lobby");
@@ -71,7 +71,7 @@ public class LobbyUtils {
     public static boolean updateLobby(String key, Object value, String lobbyUID) {
         boolean isUpdated = false;
         LobbyUtils.createTables();
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
         String selectSQL = "SELECT name, lobbyUID FROM " + db.fixName("lobby") + " WHERE lobbyUID=?";
         String updateSQL = "UPDATE " + db.fixName("lobby") + " SET " + key + "=? WHERE lobbyUID=?";
@@ -85,7 +85,7 @@ public class LobbyUtils {
 
     public static void saveLobbies() {
         LobbyUtils.createTables();
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
 
         String insertSQL = "INSERT INTO " + db.fixName("lobby") + " (name, lobbyUID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, max_players, min_players, mode, locked, tournament) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -124,7 +124,7 @@ public class LobbyUtils {
     }
 
     public static void createTables() {
-        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
         db.connect();
 
         if (!db.tableExists(db.fixName("lobby"))) {

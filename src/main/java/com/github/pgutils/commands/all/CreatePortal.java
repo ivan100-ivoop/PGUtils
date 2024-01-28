@@ -19,7 +19,7 @@ import java.util.List;
 public class CreatePortal extends PGSubCommand {
     DatabaseManager sqlDB;
     public CreatePortal(){
-        sqlDB = PGUtils.getPlugin(PGUtils.class).sqlDB;
+        sqlDB = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
     }
     @Override
     public String getName() {
@@ -108,7 +108,7 @@ public class CreatePortal extends PGSubCommand {
     }
 
     private boolean removePortal(int portalID, Player player) {
-        return PGUtils.getPlugin(PGUtils.class).PM.removePortal(portalID, player);
+        return PGUtils.getPlugin(PGUtils.class).loader.PM.removePortal(portalID, player);
     }
 
     private boolean hookPortal(Player player, int portalID, int lobbyID) {
@@ -125,11 +125,11 @@ public class CreatePortal extends PGSubCommand {
     }
 
     private boolean createPortal(Location pos1, Location pos2, Location respawn, String name) {
-        return PGUtils.getPlugin(PGUtils.class).PM.savePortalLocations(name, pos1, pos2, respawn);
+        return PGUtils.getPlugin(PGUtils.class).loader.PM.savePortalLocations(name, pos1, pos2, respawn);
     }
 
     private boolean createPortalWithHook(Location pos1, Location pos2, Location respawn, String name, int loobyID) {
-        return PGUtils.getPlugin(PGUtils.class).PM.savePortalLocations(name, pos1, pos2, respawn, loobyID);
+        return PGUtils.getPlugin(PGUtils.class).loader.PM.savePortalLocations(name, pos1, pos2, respawn, loobyID);
     }
 
     private List<String> getPortalsID(){

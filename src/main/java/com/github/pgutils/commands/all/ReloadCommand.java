@@ -32,7 +32,7 @@ public class ReloadCommand extends PGSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        PGUtils.getPlugin(PGUtils.class).reloadConfig();
+        PGUtils.getPlugin(PGUtils.class).loader.restart();
         if (sender instanceof Player) {
             Player player = (Player) sender;
             player.sendMessage(Messages.messageWithPrefix("reload-message", "&aSuccessful reload!"));

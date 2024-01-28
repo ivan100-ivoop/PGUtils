@@ -303,13 +303,13 @@ public class KOTHPoint {
 
         meta.addEffect(effect);
         firework.setFireworkMeta(meta);
-        firework.setMetadata("nodamage", new FixedMetadataValue(PGUtils.instance, true));
+        firework.setMetadata("nodamage", new FixedMetadataValue(PGUtils.loader.instance, true));
         new BukkitRunnable() {
             @Override
             public void run() {
                 firework.detonate();
             }
-        }.runTaskLater(PGUtils.instance, 1L);
+        }.runTaskLater(PGUtils.loader.instance, 1L);
         status = KOTHPointStatus.CAPTURED;
         team_capture_time.clear();
         capturedBy = team;
@@ -320,7 +320,6 @@ public class KOTHPoint {
 
     public boolean startActivatingPoint() {
         if (!isActivitable()) return false;
-        System.out.println("Activating point " + uid);
         status = KOTHPointStatus.ACTIVATING;
         spawnBanner();
         return true;
