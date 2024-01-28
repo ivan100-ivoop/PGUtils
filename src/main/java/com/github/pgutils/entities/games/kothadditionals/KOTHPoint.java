@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class KOTHPoint {
 
-    private String id;
+    private String uid;
 
     // Saved
     private Location pos;
@@ -83,7 +83,7 @@ public class KOTHPoint {
         this.arena = arena;
         this.pos = pos;
         this.radius = radius;
-        id = GeneralUtils.generateUniqueID();
+        uid = GeneralUtils.generateUniqueID();
         activateParticles();
     }
 
@@ -92,7 +92,7 @@ public class KOTHPoint {
         this.pos = pos;
         this.radius = radius;
         this.pointsAwarding = pointsAwarding;
-        id = GeneralUtils.generateUniqueID();
+        uid = GeneralUtils.generateUniqueID();
         activateParticles();
     }
 
@@ -102,7 +102,7 @@ public class KOTHPoint {
         this.radius = radius;
         this.pointsAwarding = pointsAwarding;
         this.captureTime = capturetime;
-        id = GeneralUtils.generateUniqueID();
+        uid = GeneralUtils.generateUniqueID();
         activateParticles();
     }
 
@@ -110,7 +110,6 @@ public class KOTHPoint {
 
     public void setup()
     {
-        id = GeneralUtils.generateUniqueID();
         activateParticles();
     }
 
@@ -321,7 +320,7 @@ public class KOTHPoint {
 
     public boolean startActivatingPoint() {
         if (!isActivitable()) return false;
-        System.out.println("Activating point " + id);
+        System.out.println("Activating point " + uid);
         status = KOTHPointStatus.ACTIVATING;
         spawnBanner();
         return true;
@@ -425,11 +424,14 @@ public class KOTHPoint {
     }
 
     public String getID() {
-        return id;
+        return uid;
     }
 
     public void resetDownTime () {
         inactiveTick = 0;
     }
 
+    public void setID(String uid) {
+        this.uid = uid;
+    }
 }

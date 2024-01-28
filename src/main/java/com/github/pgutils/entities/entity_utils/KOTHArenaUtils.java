@@ -19,9 +19,9 @@ public class KOTHArenaUtils {
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
 
-        String pointsSelectSQL = "SELECT gameUID, radius, capture_time, location_x, location_y, location_z, location_pitch, location_yaw, location_world FROM " + db.fixName("koth_point") + " WHERE gameUID=?";
         String arenaSelectSQL = "SELECT name, gameUID, teams_amount, location_x, location_y, location_z, location_pitch, location_yaw, location_world, lobbyUID, match_time, initial_points_active FROM " + db.fixName("koth");
-        String selectSpawnSQL = "SELECT gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world FROM " + db.fixName("koth_spawn") + " WHERE gameUID=?";
+        String spawnSelectSQL = "SELECT gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid FROM " + db.fixName("koth_spawn") + " WHERE gameUID=?";
+        String pointsSelectSQL = "SELECT gameUID, radius, capture_time, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid FROM " + db.fixName("koth_point") + " WHERE gameUID=?";
 
         if (db.tableExists(db.fixName("koth"))) {
             List<Object[]> results = db.executeQuery(arenaSelectSQL);
@@ -66,8 +66,10 @@ public class KOTHArenaUtils {
                                     double pointPitch = (double) point[6];
                                     double pointYaw = (double) point[7];
                                     String pointWorld = (String) point[8];
+                                    String pointUID = (String) point[9];
 
                                     KOTHPoint _point = new KOTHPoint();
+                                    _point.setID(pointUID);
                                     _point.setRadius(radius);
                                     _point.setCaptureTime(capture_time);
                                     _point.setLocation(new Location(Bukkit.getWorld(pointWorld), pointX, pointY, pointZ, new Double(pointYaw).floatValue(), new Double(pointPitch).floatValue()));
@@ -79,7 +81,7 @@ public class KOTHArenaUtils {
                         }
 
                         if (db.tableExists(db.fixName("koth_spawn"))) {
-                            List<Object[]> spawns = db.executeQuery(selectSpawnSQL, UID);
+                            List<Object[]> spawns = db.executeQuery(spawnSelectSQL, UID);
 
                             if (spawns != null) {
                                 for (Object[] spawn : spawns) {
@@ -91,8 +93,11 @@ public class KOTHArenaUtils {
                                     double spawnPitch = (double) spawn[5];
                                     double spawnYaw = (double) spawn[6];
                                     String spawnWorld = (String) spawn[7];
+                                    String spawnUID = (String) spawn[8];
+
 
                                     KOTHSpawn _spawn = new KOTHSpawn();
+                                    _spawn.setID(spawnUID);
                                     _spawn.setTeamID(teamID);
                                     _spawn.setArena(kotharena);
                                     _spawn.setPos(new Location(Bukkit.getWorld(spawnWorld), spawnX, spawnY, spawnZ, new Double(spawnYaw).floatValue(), new Double(spawnPitch).floatValue()));
@@ -191,7 +196,7 @@ public class KOTHArenaUtils {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
-        String insertSQL = "INSERT INTO " + db.fixName("koth_point") + " (gameUID, UUID, radius, capture_time, points_awarding, location_x, location_y, location_z, location_pitch, location_yaw, location_world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO " + db.fixName("koth_point") + " (gameUID, UUID, radius, capture_time, points_awarding, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         for (KOTHPoint point : points) {
             Location loc = point.getLocation();
             db.execute(
@@ -205,7 +210,8 @@ public class KOTHArenaUtils {
                     loc.getZ(),
                     loc.getPitch(),
                     loc.getYaw(),
-                    loc.getWorld().getName()
+                    loc.getWorld().getName(),
+                    point.getID()
             );
         }
         db.disconnect();
@@ -215,7 +221,7 @@ public class KOTHArenaUtils {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
-        String insertSQL = "INSERT INTO " + db.fixName("koth_point") + " (gameUID, radius, capture_time, points_awarding, location_x, location_y, location_z, location_pitch, location_yaw, location_world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO " + db.fixName("koth_point") + " (gameUID, radius, capture_time, points_awarding, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Location loc = point.getLocation();
         db.execute(
                 insertSQL,
@@ -228,7 +234,8 @@ public class KOTHArenaUtils {
                 loc.getZ(),
                 loc.getPitch(),
                 loc.getYaw(),
-                loc.getWorld().getName()
+                loc.getWorld().getName(),
+                point.getID()
         );
         db.disconnect();
     }
@@ -237,7 +244,7 @@ public class KOTHArenaUtils {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
-        String insertSQL = "INSERT INTO " + db.fixName("koth_spawn") + " (gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO " + db.fixName("koth_spawn") + " (gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         for (KOTHSpawn spawn : spawns) {
             Location loc = spawn.getLocation();
             db.execute(
@@ -249,7 +256,8 @@ public class KOTHArenaUtils {
                     loc.getZ(),
                     loc.getPitch(),
                     loc.getYaw(),
-                    loc.getWorld().getName()
+                    loc.getWorld().getName(),
+                    spawn.getID()
             );
         }
         db.disconnect();
@@ -259,7 +267,7 @@ public class KOTHArenaUtils {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
-        String insertSQL = "INSERT INTO " + db.fixName("koth_spawn") + " (gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO " + db.fixName("koth_spawn") + " (gameUID, teamID, location_x, location_y, location_z, location_pitch, location_yaw, location_world, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Location loc = spawn.getLocation();
         db.execute(
                 insertSQL,
@@ -270,7 +278,8 @@ public class KOTHArenaUtils {
                 loc.getZ(),
                 loc.getPitch(),
                 loc.getYaw(),
-                loc.getWorld().getName()
+                loc.getWorld().getName(),
+                spawn.getID()
         );
         db.disconnect();
     }
@@ -310,6 +319,7 @@ public class KOTHArenaUtils {
                         "location_pitch DOUBLE," +
                         "location_yaw DOUBLE," +
                         "location_world VARCHAR(255)," +
+                        "uid VARCHAR(255)," +
                         "UNIQUE (id)" +
                         ");");
 
@@ -323,6 +333,7 @@ public class KOTHArenaUtils {
                         "location_pitch DOUBLE," +
                         "location_yaw DOUBLE," +
                         "location_world VARCHAR(255)," +
+                        "uid VARCHAR(255)," +
                         "UNIQUE (id)" +
                         ");");
 
@@ -356,6 +367,7 @@ public class KOTHArenaUtils {
                         "  `location_pitch` double NOT NULL," +
                         "  `location_yaw` double NOT NULL," +
                         "  `location_world` varchar(255) NOT NULL," +
+                        "  `uid` varchar(255) NOT NULL," +
                         "  PRIMARY KEY (`id`)" +
                         ");");
 
@@ -369,6 +381,7 @@ public class KOTHArenaUtils {
                         "  `location_pitch` double NOT NULL," +
                         "  `location_yaw` double NOT NULL," +
                         "  `location_world` varchar(255) NOT NULL," +
+                        "  `uid` varchar(255) NOT NULL," +
                         "  PRIMARY KEY (`id`)" +
                         ");");
 
@@ -380,23 +393,22 @@ public class KOTHArenaUtils {
         db.disconnect();
     }
 
-    public static void delSpawn(String uid, int teamID) {
+    public static void delSpawn(String uid) {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
 
-        db.execute("DELETE FROM " + db.fixName("game_spawn") + " WHERE gameUID=? AND teamID=?", uid, teamID);
+        db.execute("DELETE FROM " + db.fixName("koth_spawn") + " WHERE uid=?", uid);
 
         db.disconnect();
 
     }
-
-    public static void delPoint(String uid, double radius) {
+    public static void delPoint(String uid) {
         KOTHArenaUtils.createTables();
         DatabaseManager db = PGUtils.getPlugin(PGUtils.class).sqlDB;
         db.connect();
 
-        db.execute("DELETE FROM " + db.fixName("game_points") + " WHERE gameUID=? AND radius=?", uid, radius);
+        db.execute("DELETE FROM " + db.fixName("koth_point") + " WHERE uid=?", uid);
 
         db.disconnect();
 

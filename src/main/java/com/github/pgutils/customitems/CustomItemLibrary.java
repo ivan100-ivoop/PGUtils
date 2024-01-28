@@ -41,9 +41,11 @@ public class CustomItemLibrary implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             checkIfCustomItemInMainHandUsedRight(player,  event);
+            checkIfCustomItemInArmor(player, event);
         }
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             checkIfCustomItemInMainHandUsedLeft(player, event);
+            checkIfCustomItemInArmor(player, event);
         }
     }
 

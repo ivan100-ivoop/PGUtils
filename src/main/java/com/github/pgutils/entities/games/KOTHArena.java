@@ -163,9 +163,9 @@ public class KOTHArena extends PlaySpace {
             if (tick - 30 == matchTime + 1) {
                 players.forEach(player -> {
                     player.sendTitle(Messages.getMessage("game-overtime", "§4OVERTIME!", false), "", 0, 40, 0);
-                    overtime = true;
                     player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 });
+                overtime = true;
             }
             if (overtime && tick - 30 >= matchTime + overtimeMAX) {
                 end(null);
@@ -517,18 +517,13 @@ public class KOTHArena extends PlaySpace {
     }
 
     public void removeSpawnLocation(String id) {
-        spawns.removeIf(spawn -> spawn.getID().equals(id));
+        spawns.removeIf(spawn -> spawn.getID() == id);
+        KOTHArenaUtils.delSpawn(id);
     }
 
     private void removePoint(String id) {
-        points.removeIf(point -> point.getID().equals(id));
-    }
-
-    public int removeSpawnLocation(int id) {
-        KOTHSpawn temp = spawns.get(id);
-        KOTHArenaUtils.delSpawn(this.getUID(), temp.getTeamID());
-        spawns.remove(id);
-        return id;
+        points.removeIf(point -> point.getID() == id);
+        KOTHArenaUtils.delPoint(id);
     }
 
     public void addCapturePoint(KOTHPoint point) {

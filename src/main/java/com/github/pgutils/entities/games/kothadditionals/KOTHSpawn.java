@@ -6,7 +6,7 @@ import org.bukkit.Location;
 
 public class KOTHSpawn{
 
-    private String id;
+    private String uid;
 
     private Location pos;
 
@@ -15,14 +15,13 @@ public class KOTHSpawn{
     private KOTHArena arena;
 
     public KOTHSpawn() {
-        this.id = GeneralUtils.generateUniqueID();
     }
 
 
     public KOTHSpawn(Location pos, int team_id, KOTHArena arena) {
         this.pos = pos;
         this.team_id = team_id;
-        this.id = GeneralUtils.generateUniqueID();
+        this.uid = GeneralUtils.generateUniqueID();
     }
 
     public Location getPos(){
@@ -55,6 +54,10 @@ public class KOTHSpawn{
     }
 
     public String getID() {
-        return id;
+        return uid;
+    }
+
+    public void setID(String uid) {
+        this.uid = uid;
     }
 }

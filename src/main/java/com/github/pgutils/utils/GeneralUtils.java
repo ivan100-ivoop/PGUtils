@@ -178,6 +178,10 @@ public class GeneralUtils {
         return id;
     }
 
+    public static int generateID(int length) {
+        return (int) (Math.random() * length);
+    }
+
     public static String generateLoadingBar(int percentage, String barColor, String backgroundColor) {
         String bar = "";
         for (int i = 1; i < 11; i++) {
