@@ -189,7 +189,7 @@ public class GodlessEffect extends CustomEffect {
         armorStand.getPersistentDataContainer().set(Keys.godLess, PersistentDataType.BOOLEAN, true);
         armorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
         armorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
-
+        new DynamicEffect(armorStand);
         // Set right arm pose
         armorStand.setRightArmPose(new EulerAngle(Math.toRadians(80), 0, 0)); // Adjust angle as needed
 
@@ -273,7 +273,8 @@ public class GodlessEffect extends CustomEffect {
         attackArmorStand.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
         attackArmorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
         attackArmorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
-
+        attackArmorStand.setRemoveWhenFarAway(false);
+        new DynamicEffect(attackArmorStand);
         animationIndex = random.nextInt(3);
 
     }

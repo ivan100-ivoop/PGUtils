@@ -41,6 +41,8 @@ public class RandomCommand extends PGSubCommand {
         switch (args[0].toLowerCase()) {
             case "item":
                 return UltimateUtilsX.getItem(player, args);
+            case "test":
+                return UltimateUtilsX.test(player, args);
         }
 
         return true;
@@ -62,6 +64,7 @@ public class RandomCommand extends PGSubCommand {
             return list;
 
         }
+
         return null;
     }
 }

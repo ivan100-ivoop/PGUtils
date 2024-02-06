@@ -31,7 +31,7 @@ public abstract class CustomEffect {
         }
     }
 
-    public static CustomEffect getEffect(Player e, Class<? extends CustomEffect> partyEffectClass) {
+    public static CustomEffect getEffect(Entity e, Class<? extends CustomEffect> partyEffectClass) {
         for (CustomEffect effect : customEffects) {
             if (effect.getEffectedEntity() == null)
                 continue;

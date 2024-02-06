@@ -1,4 +1,4 @@
-package com.github.pgutils;
+package com.github.pgutils.utils.updaters;
 
 import com.github.pgutils.entities.Lobby;
 import org.bukkit.scheduler.BukkitRunnable;

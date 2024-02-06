@@ -1,6 +1,7 @@
 package com.github.pgutils.entities.games.kothadditionals;
 
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.customitems.effects.DynamicEffect;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.particles.EnhancedParticle;
 import com.github.pgutils.particles.variants.HollowCircleParticle;
@@ -220,7 +221,7 @@ public class KOTHPoint {
                     team_capture_time.put(playerTeam, team_capture_time.getOrDefault(playerTeam, 0) + 1);
                     status = KOTHPointStatus.CAPTURING;
                     int percentage = (int) ((double)team_capture_time.get(playerTeam) / (double) captureTime * 100.0);
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors(Messages.messageWithPrefix("koth-game-capturing-point","&eCapturing point")  + GeneralUtils.generateLoadingBar(percentage, "§a", "§7") + "&e]")));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(GeneralUtils.fixColors(Messages.getMessage("koth-game-capturing-point","&eCapturing point [", false)  + GeneralUtils.generateLoadingBar(percentage, "§a", "§7") + "&e]")));
                     if (team_capture_time.get(playerTeam) >= captureTime) {
                         capturePoint(playerTeam);
                         break;
@@ -365,7 +366,8 @@ public class KOTHPoint {
         bannerStand.setBasePlate(false);
         bannerStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
         bannerStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
-
+        bannerStand.setRemoveWhenFarAway(false);
+        new DynamicEffect(bannerStand);
         ItemStack helmet = new ItemStack(Material.IRON_HELMET);
         bannerStand.setHelmet(helmet);
     }

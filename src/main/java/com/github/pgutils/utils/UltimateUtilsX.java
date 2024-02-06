@@ -6,6 +6,7 @@ import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
+import com.github.pgutils.entities.helpfulutils.FloatingTextClientbound;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -549,6 +550,11 @@ public class UltimateUtilsX {
                 player.sendMessage(Messages.messageWithPrefix("no-select-playspace-message", "&cPlaySpace is not selected!"));
                 return true;
             }
+
+            if (playSpace_.getClass() != playSpaceType) {
+                player.sendMessage(Messages.messageWithPrefix("wrong-playspace-type-message", "&cPlaySpace is not the same type as the selected one!"));
+                return true;
+            }
             return playSpace_.addGameObjects(player, args);
 
         }
@@ -556,7 +562,7 @@ public class UltimateUtilsX {
             PlaySpace playSpace = playSpaceType.getConstructor().newInstance();
             playSpace.setPos(player.getLocation());
             GeneralUtils.playerSelectPlaySpace(player, playSpace);
-            KOTHArenaUtils.saveArenas();
+            playSpace.savePlaySpace();
             player.sendMessage(Messages.messageWithPrefix("create-playspace-message", "&aSuccessful created PlaySpace %id%&a!").replace("%id%", "" + playSpace.getID()));
             return true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -1063,4 +1069,8 @@ public class UltimateUtilsX {
     }
 
 
+    public static boolean test(Player player, String[] args) {
+        FloatingTextClientbound floatingText = new FloatingTextClientbound(player, player.getLocation(), "Test");
+        return true;
+    }
 }

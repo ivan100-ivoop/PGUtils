@@ -1,6 +1,8 @@
 package com.github.pgutils.utils;
 
 import com.github.pgutils.PGUtils;
+import com.github.pgutils.customitems.CustomEffect;
+import com.github.pgutils.customitems.effects.DynamicEffect;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.selections.PlayerLobbySelector;
@@ -10,15 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -240,11 +238,11 @@ public class GeneralUtils {
 
     }
 
-    public static void cleanupArmorStands() { // Will be executed onEnable
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getEntities()) {
-                if (entity instanceof ArmorStand && entity.getPersistentDataContainer().has(Keys.dynamicObject, PersistentDataType.BOOLEAN)) {
-                    entity.teleport(new Location(world, 0, -100000, 0));
+    public static void cleanupArmorStands() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Entity entity : player.getNearbyEntities(100, 100, 100)) {
+                if (entity instanceof ArmorStand && entity.getPersistentDataContainer().has(Keys.dynamicObject, PersistentDataType.BOOLEAN) && !CustomEffect.hasEffect(entity, DynamicEffect.class)) {
+                    entity.teleport(new Location(player.getWorld(), 0, -100000, 0));
                 }
             }
         }

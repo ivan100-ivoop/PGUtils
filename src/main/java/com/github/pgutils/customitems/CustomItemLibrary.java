@@ -3,6 +3,7 @@ package com.github.pgutils.customitems;
 import com.github.pgutils.PGUtils;
 import com.github.pgutils.customitems.effects.*;
 import com.github.pgutils.utils.Keys;
+import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -29,8 +31,16 @@ public class CustomItemLibrary implements Listener {
 
     @EventHandler
     public static void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        checkIfCustomItemInMainHand(event.getPlayer(), event);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                checkIfCustomItemInMainHand(event.getPlayer(), event);
+            }
+        }.runTaskLater(PGUtils.loader.instance, 1);
     }
+
+    // When player sneaks
+
 
 
 
@@ -65,6 +75,11 @@ public class CustomItemLibrary implements Listener {
             checkIfCustomItemInOffHand(victim, event);
             checkIfCustomItemInInventory(victim, event);
 
+            checkIfCustomItemInArmor(attacker, event);
+            checkIfCustomItemInMainHand(attacker, event);
+            checkIfCustomItemInOffHand(attacker, event);
+            checkIfCustomItemInInventory(attacker, event);
+
         }
         if (event.getDamager() instanceof Firework) {
             Firework fw = (Firework) event.getDamager();
@@ -88,14 +103,22 @@ public class CustomItemLibrary implements Listener {
 
             if (arrow.hasMetadata("GoldenHarpArrowSmall")) {
                 if (event.getEntity() instanceof LivingEntity) {
-                    LivingEntity entity = (LivingEntity) event.getEntity();
-
-                    entity.damage(1, (Player) arrow.getShooter());
-                    entity.setNoDamageTicks(1);
-
-                    event.setCancelled(true);
-                    arrow.remove();
+                    if (arrow.getShooter() instanceof Player) {
+                        LivingEntity entity = (LivingEntity) event.getEntity();
+                        entity.damage(1, (Player) arrow.getShooter());
+                        entity.setNoDamageTicks(1);
+                        event.setCancelled(true);
+                        arrow.remove();
+                    }
                 }
+            }
+
+
+            if (CustomEffect.hasEffect(arrow, QuantumLTFArrowEffect.class)) {
+                QuantumLTFArrowEffect effect = (QuantumLTFArrowEffect) CustomEffect.getEffect(arrow, QuantumLTFArrowEffect.class);
+                effect.activate();
+                event.setCancelled(true);
+                arrow.remove();
 
             }
         }
@@ -160,6 +183,7 @@ public class CustomItemLibrary implements Listener {
 
         if (item == null)
             return;
+
         if (item.getItemMeta() == null)
             return;
 
@@ -171,8 +195,81 @@ public class CustomItemLibrary implements Listener {
                 EntityShootBowEvent shootEvent = (EntityShootBowEvent) event;
                 Arrow arrow = (Arrow) shootEvent.getProjectile();
                 arrow.setMetadata("GoldenHarpArrow", new FixedMetadataValue(PGUtils.loader.instance, true));
+            }
+        }
+
+        if (container.has(Keys.quantumLTF, PersistentDataType.BOOLEAN)) {
+            if (event instanceof EntityShootBowEvent) {
+                EntityShootBowEvent shootEvent = (EntityShootBowEvent) event;
+                if (CustomEffect.hasEffect(player, QuantumLTFHoldEffect.class)) {
+                    QuantumLTFHoldEffect effect = (QuantumLTFHoldEffect) CustomEffect.getEffect(player, QuantumLTFHoldEffect.class);
+                    effect.shoot(shootEvent);
+                }
+            }
+        }
+
+        if (container.has(Keys.bombHead, PersistentDataType.BOOLEAN)) {
+            if (event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
+                if (damageEvent.getEntity() instanceof Player) {
+                    Player attacker = (Player) damageEvent.getDamager();
+                    Player victim = (Player) damageEvent.getEntity();
+                    if (CustomEffect.hasEffect(attacker, HumanBombEffect.class)) {
+                       if (!CustomEffect.hasEffect(victim, HumanBombEffect.class)) {
+                           HumanBombEffect effect = (HumanBombEffect) CustomEffect.getEffect(attacker, HumanBombEffect.class);
+                           new HumanBombEffect(victim, effect.getBombTicks());
+                           CustomEffect.removeEffect(effect);
+                       }
+                       else {
+                           attacker.sendMessage(Messages.getMessage("human-bomb-already-active", "That player already has a bomb on their head!", false));
+                           damageEvent.setCancelled(true);
+                       }
+                    }
+                }
 
             }
+        }
+
+        if (container.has(Keys.quantumLTF, PersistentDataType.BOOLEAN)) {
+            if (!CustomEffect.hasEffect(player, QuantumLTFHoldEffect.class))
+                new QuantumLTFHoldEffect(player);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        ItemStack droppedItem = event.getItemDrop().getItemStack();
+
+        if (droppedItem == null)
+            return;
+
+        if (droppedItem.getItemMeta() == null)
+            return;
+
+        if (droppedItem.getItemMeta().getPersistentDataContainer() == null)
+            return;
+        if (droppedItem.getItemMeta().getPersistentDataContainer().has(Keys.undroppable, PersistentDataType.BOOLEAN)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Messages.getMessage("undroppable-item", "You cannot drop this item!", false));
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        ItemStack placedBlock = event.getItemInHand();
+
+        if (placedBlock == null)
+            return;
+
+        if (placedBlock.getItemMeta() == null)
+            return;
+
+        if (placedBlock.getItemMeta().getPersistentDataContainer() == null)
+            return;
+
+        if (placedBlock.getItemMeta().getPersistentDataContainer().has(Keys.unplaceable, PersistentDataType.BOOLEAN)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Messages.getMessage("unplaceable-item", "You cannot place this item!", false));
         }
     }
 
@@ -197,6 +294,21 @@ public class CustomItemLibrary implements Listener {
                 player.setVelocity(direction);
                 new PartyEffectCooldown(player);
                 player.getLocation().getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 50, 0.5, 0.2, 0.5, 0.01);
+            }
+        }
+
+        if (container.has(Keys.quantumLTF, PersistentDataType.BOOLEAN)) {
+            if (event instanceof PlayerInteractEvent) {
+                if (CustomEffect.hasEffect(player, QuantumLTFHoldEffect.class)) {
+                    // Check if player is sneaking
+                    if (player.isSneaking()) {
+                        QuantumLTFHoldEffect effect = (QuantumLTFHoldEffect) CustomEffect.getEffect(player, QuantumLTFHoldEffect.class);
+                        effect.holding();
+                    } else {
+                        QuantumLTFHoldEffect effect = (QuantumLTFHoldEffect) CustomEffect.getEffect(player, QuantumLTFHoldEffect.class);
+                        effect.notHolding();
+                    }
+                }
             }
         }
 
@@ -315,6 +427,12 @@ public class CustomItemLibrary implements Listener {
                     new GoldenHarpGroundEffect(event.getHitBlock().getLocation(), shooterLocation.clone().add(0, 10, 0));
                     arrow.remove();
                 }
+            }
+
+            if (CustomEffect.hasEffect(arrow, QuantumLTFArrowEffect.class)) {
+                QuantumLTFArrowEffect effect = (QuantumLTFArrowEffect) CustomEffect.getEffect(arrow, QuantumLTFArrowEffect.class);
+                effect.activate();
+                arrow.remove();
             }
         }
     }

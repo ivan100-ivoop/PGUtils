@@ -1,10 +1,11 @@
 package com.github.pgutils.entities;
 
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
+import com.github.pgutils.customitems.CustomEffect;
 import com.github.pgutils.enums.GameStatus;
 import com.github.pgutils.utils.GameScoreboardManager;
 import com.github.pgutils.utils.GeneralUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -18,9 +19,9 @@ import java.util.function.BiFunction;
 
 public abstract class PlaySpace {
 
-
     private int ID;
 
+    // Save
     private String UID;
 
     public static List<PlaySpace> playSpaces = new ArrayList<>();
@@ -29,10 +30,12 @@ public abstract class PlaySpace {
 
     public Map<String, BiFunction<Player, String[], Boolean>> setMap = new HashMap<>();
 
+    // Save
     private Location pos;
 
     protected List<Player> players = new ArrayList<>();
 
+    // Save
     private Lobby currentLobby = null;
 
     protected GameStatus status = GameStatus.INACTIVE;
@@ -43,10 +46,12 @@ public abstract class PlaySpace {
 
     public static List<String> setGameObjects;
 
+
     protected int tick = 0;
 
     protected String type = "Typeless";
 
+    // Save
     private String name;
 
     public PlaySpace() {
@@ -84,7 +89,7 @@ public abstract class PlaySpace {
     abstract public void endProcedure();
 
     public boolean delete() {
-        KOTHArenaUtils.deleteArena(getUID());
+        deletePlaySpace();
         playSpaces.remove(this);
         if (getLobby() != null) {
             end(null);
@@ -98,6 +103,9 @@ public abstract class PlaySpace {
         }
         return true;
     }
+
+    public abstract void deletePlaySpace();
+
     public void end(List<Player> players) {
         endProcedure();
         reset();
@@ -113,7 +121,9 @@ public abstract class PlaySpace {
         if (getSbManager() != null && getSbManager().hasGame(getID())) {
             getSbManager().removeGameScore(getID());
         }
-        players = new ArrayList<>();
+        for (int i = players.size() - 1; i >= 0; i--) {
+            removePlayer(players.get(i));
+        }
     }
 
     public void setPos(Location pos) {
@@ -145,7 +155,6 @@ public abstract class PlaySpace {
 
     public void setLobby(Lobby lobby) {
         currentLobby = lobby;
-        KOTHArenaUtils.updateGameLobby(getUID(), lobby);
     }
 
     public Lobby getLobby() {
@@ -156,7 +165,14 @@ public abstract class PlaySpace {
         this.players = players;
     }
 
-    public abstract void removePlayer(Player player);
+    public void removePlayer(Player player) {
+        CustomEffect.removeAllEffects(player);
+        player.setGameMode(GameMode.SURVIVAL);
+        players.remove(player);
+        onRemovePlayer(player);
+    }
+
+    public abstract void onRemovePlayer(Player player);
 
     public abstract String passesChecks();
 
@@ -215,4 +231,6 @@ public abstract class PlaySpace {
     public Map<String, BiFunction<Player, String[], Boolean>> getSetMap() {
         return setMap;
     }
+
+    public abstract void savePlaySpace();
 }

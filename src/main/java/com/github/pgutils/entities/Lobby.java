@@ -89,6 +89,11 @@ public class Lobby {
     }
 
     public void update() {
+        players.stream()
+                .forEach(player -> {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 5, 1, true, false));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5, 5, true, false));
+                });
         if (status == LobbyStatus.WAITING_FOR_PLAYERS) {
             if (players.size() >= minPlayers && mode == LobbyMode.AUTO) {
                 startSequence();
@@ -262,8 +267,6 @@ public class Lobby {
         player.teleport(pos);
         PlayerChestReward.saveInv(player);
         PlayerManager.disablePVP(player);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1000000, 1, true, false));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 5, true, false));
         players.add(player);
         if(status == LobbyStatus.IN_PROGRESS){
             waitingPlayers.add(player);

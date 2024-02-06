@@ -138,7 +138,8 @@ public class AtomizerEffect extends GodlessEffect{
         armorStand.getPersistentDataContainer().set(Keys.atomizer, PersistentDataType.BOOLEAN, true);
         armorStand.getPersistentDataContainer().set(Keys.noSteal, PersistentDataType.BOOLEAN, true);
         armorStand.getPersistentDataContainer().set(Keys.dynamicObject, PersistentDataType.BOOLEAN, true);
-
+        armorStand.setRemoveWhenFarAway(false);
+        new DynamicEffect(armorStand);
         // Set right arm pose
         armorStand.setRightArmPose(new EulerAngle(0, Math.toRadians(270), Math.toRadians(120))); // Adjust angle as needed
 

@@ -1,5 +1,7 @@
 package com.github.pgutils;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.github.pgutils.commands.PGUtilsCommand;
 import com.github.pgutils.customitems.CustomEffect;
 import com.github.pgutils.customitems.CustomEffectUpdater;
@@ -8,11 +10,16 @@ import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
 import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
 import com.github.pgutils.entities.entity_utils.LobbyUtils;
+import com.github.pgutils.entities.entity_utils.TNTRArenaUtils;
 import com.github.pgutils.entities.games.KOTHArena;
+import com.github.pgutils.entities.games.TNTRArena;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
 import com.github.pgutils.utils.*;
+import com.github.pgutils.utils.updaters.LobbyUpdater;
+import com.github.pgutils.utils.updaters.LowPriorityUpdater;
+import com.github.pgutils.utils.updaters.ParticleUpdater;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -27,6 +34,8 @@ public class PGUtilsLoader {
     public RewardManager rewardManager = null;
     public PortalManager PM = null;
     public PGUtilsCommand PGCommands = null;
+
+    public static ProtocolManager protocolManager = null;
 
     public List<PlayerPlaySpaceSelector> selectedPlaySpace = new ArrayList<>();
     public List<PlayerLobbySelector> selectedLobby = new ArrayList<>();
@@ -67,8 +76,9 @@ public class PGUtilsLoader {
         this.registerTimers();
         this.loadGames();
 
+        protocolManager = ProtocolLibrary.getProtocolManager();
+
         CustomItemLibrary.onStart();
-        GeneralUtils.cleanupArmorStands();
 
         this.registerGames();
     }
@@ -102,11 +112,13 @@ public class PGUtilsLoader {
 
     private void registerGames() {
         PlaySpace.playSpaceTypes.put("koth", KOTHArena.class);
+        PlaySpace.playSpaceTypes.put("tntr" , TNTRArena.class);
     }
 
     private void loadGames() {
         LobbyUtils.loadLobbies();
         KOTHArenaUtils.loadArenas();
+        TNTRArenaUtils.loadArenas();
     }
 
     private void registerEvents(){
@@ -118,6 +130,7 @@ public class PGUtilsLoader {
         new LobbyUpdater().runTaskTimer(this.instance, 20, 1);
         new CustomEffectUpdater().runTaskTimer(this.instance, 20, 1);
         new ParticleUpdater().runTaskTimer(this.instance, 20, 1);
+        new LowPriorityUpdater().runTaskTimer(this.instance, 20, 200);
     }
 
     private void registerCommands() {

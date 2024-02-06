@@ -456,4 +456,38 @@ public class KOTHArenaUtils {
         db.connect();
         return isUpdated;
     }
+
+    public static void saveArena(KOTHArena playSpace) {
+        KOTHArenaUtils.createTables();
+        DatabaseManager db = PGUtils.getPlugin(PGUtils.class).loader.sqlDB;
+        db.connect();
+        String insertSQL = "INSERT INTO " + db.fixName("koth") + " (name, gameUID, lobbyUID, teams_amount, location_x, location_y, location_z, location_pitch, location_yaw, location_world, match_time, initial_points_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String selectSQL = "SELECT * FROM " + db.fixName("koth") + " WHERE gameUID=?";
+
+
+        List<Object[]> results = db.executeQuery(selectSQL, playSpace.getUID());
+        if (results == null || results.isEmpty()) {
+            Location loc = playSpace.getLocation();
+            int TeamAmount = ((KOTHArena) playSpace).getTeamsAmount();
+            db.execute(
+                    insertSQL,
+                    playSpace.getName(),
+                    playSpace.getUID(),
+                    ((playSpace.getLobby() == null) ? "-1" : playSpace.getLobby().getUID()),
+                    TeamAmount,
+                    ((loc == null) ? -1 : loc.getX()),
+                    ((loc == null) ? -1 : loc.getY()),
+                    ((loc == null) ? -1 : loc.getZ()),
+                    ((loc == null) ? -1 : loc.getPitch()),
+                    ((loc == null) ? -1 : loc.getYaw()),
+                    ((loc == null) ? "-1" : loc.getWorld().getName()),
+                    playSpace.getMatchTime(),
+                    playSpace.getInitialPointsActive()
+            );
+            KOTHArenaUtils.savePoints(playSpace.getPoints(), playSpace.getUID());
+            KOTHArenaUtils.saveSpawns(playSpace.getSpawns(), playSpace.getUID());
+        }
+
+        db.disconnect();
+    }
 }

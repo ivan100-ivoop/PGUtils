@@ -15,7 +15,6 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,11 +31,7 @@ public class KOTHArena extends PlaySpace {
 
     private int startingTick = 0;
 
-    private int testMessageTime = 10;
-
-    private int testMessageTick = 0;
-
-    private int endingTime = 100;
+    private int endingTime = 200;
 
     private int endingTick = 0;
 
@@ -124,7 +119,7 @@ public class KOTHArena extends PlaySpace {
             else if (startingTick == nameOfGameTime ) {
                 teams.forEach(team -> {
                     team.getPlayers().forEach(player -> {
-                        player.sendTitle(Messages.getMessage("game-koth-team", GeneralUtils.hexToMinecraftColor(team.getColorString()) + Messages.messageWithPrefix("game-koth-team-announce","You are on team ")+team.getID(), false), "", 0, 20, 0);
+                        player.sendTitle(Messages.getMessage("game-koth-team", GeneralUtils.hexToMinecraftColor(team.getColorString()) + Messages.getMessage("game-koth-team-announce","You are on team ",false)+team.getID(), false), "", 0, 20, 0);
                         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                     });
                 });
@@ -172,8 +167,8 @@ public class KOTHArena extends PlaySpace {
             }
             points.stream().forEach(point -> point.update());
         } else if (status == GameStatus.IS_ENDING) {
-            endingTick++;
-            if (endingTick >= endingTime) {
+                endingTick++;
+                if (endingTick >= endingTime) {
                 List<Player> players = new ArrayList<>(winner.getPlayers());
                 end(players);
             }
@@ -192,8 +187,12 @@ public class KOTHArena extends PlaySpace {
         });
         teams.clear();
         startingTick = 0;
-        testMessageTick = 0;
         endingTick = 0;
+    }
+
+    @Override
+    public void deletePlaySpace() {
+        KOTHArenaUtils.deleteArena(this.getUID());
     }
 
     @Override
@@ -212,9 +211,10 @@ public class KOTHArena extends PlaySpace {
         KOTHArenaUtils.updateLocation(this.getUID(), this.getPos());
     }
 
+
+
     @Override
-    public void removePlayer(Player player) {
-        players.remove(player);
+    public void onRemovePlayer(Player player) {
         teams.stream().forEach(team -> team.removePlayer(player));
         getSbManager().removeScoreboard(player);
     }
@@ -223,19 +223,19 @@ public class KOTHArena extends PlaySpace {
     public String passesChecks() {
 
         if (points.size() < initial_points_active + 2) {
-            return Messages.messageWithPrefix("game-koth-points-amount-error-message", "&c&lThere must be at least %points% points! Currently : %current%").replace("%points%", initial_points_active + 2 + "").replace("%current%", points.size() + "");
+            return Messages.getMessage("game-koth-points-amount-error-message", "&c&lThere must be at least %points% points! Currently : %current%",false).replace("%points%", initial_points_active + 2 + "").replace("%current%", points.size() + "");
         }
 
         for (int i = 1; i <= teamsAmount; i++) {
             int finalI = i;
             if (spawns.stream().noneMatch(spawn -> spawn.getTeamID() == finalI)) {
-                return Messages.messageWithPrefix("game-koth-spawn-amount-error-message", "&c&lThere must be a spawn for team %id%").replace("%id%", i + "");
+                return Messages.getMessage("game-koth-spawn-amount-error-message", "&c&lThere must be a spawn for team %id%",false).replace("%id%", i + "");
             }
         }
 
         if (getLobby() != null) {
             if (getLobby().getPlayers().size() % teamsAmount != 0) {
-                return Messages.messageWithPrefix("game-koth-players-amount-error-message", "&c&lPlayers amount must be divisible by teams amount! Currently : %current% | Needed : %needed%").replace("%current%", getLobby().getPlayers().size() + "").replace("%needed%", (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount)) + "");
+                return Messages.getMessage("game-koth-players-amount-error-message", "&c&lPlayers amount must be divisible by teams amount! Currently : %current% | Needed : %needed%",false).replace("%current%", getLobby().getPlayers().size() + "").replace("%needed%", (getLobby().getPlayers().size() + (teamsAmount - getLobby().getPlayers().size() % teamsAmount)) + "");
             }
         }
 
@@ -572,6 +572,11 @@ public class KOTHArena extends PlaySpace {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    @Override
+    public void savePlaySpace() {
+        KOTHArenaUtils.saveArena(this);
     }
 
     public void addSpawn(KOTHSpawn spawn) {

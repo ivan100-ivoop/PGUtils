@@ -24,6 +24,8 @@ public class CustomItemRepository {
         custom_item_name.put("Godless", CustomItemRepository::createGodless);
         custom_item_name.put("Atomizer", CustomItemRepository::createAtomizer);
         custom_item_name.put("The Golden Harp", CustomItemRepository::createGoldenHarp);
+        custom_item_name.put("Fist full of bomb", CustomItemRepository::createBombhead);
+        custom_item_name.put("Quantum LTF-337", CustomItemRepository::createQuantumLTF);
     }
 
     public static ItemStack createCustomItem(String name, Material material, CustomItemRarities rarity, List<String> lore) {
@@ -47,8 +49,10 @@ public class CustomItemRepository {
         // Assuming that you have defined CustomItemRarities and Keys elsewhere in your code.
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.getPersistentDataContainer().set(Keys.partyStick, PersistentDataType.BOOLEAN, true);
+        itemMeta.getPersistentDataContainer().set(Keys.undroppable, PersistentDataType.BOOLEAN, true);
         itemMeta.addEnchant(Enchantment.KNOCKBACK, 2, true);
         itemStack.setItemMeta(itemMeta);
+
 
         return itemStack;
     }
@@ -101,5 +105,31 @@ public class CustomItemRepository {
 
         return itemStack;
 
+    }
+
+    public static ItemStack createBombhead() {
+        List<String> lore = Arrays.asList("HIT SOMEONE TO GIVE THEM THE BOMB", GeneralUtils.hexToMinecraftColor("#FFAA00") + "[Active: Hit someone to pass the bomb!]");
+        ItemStack itemStack = createCustomItem("Fist full of bomb", Material.TNT, CustomItemRarities.LEGENDARY, lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(Keys.bombHead, PersistentDataType.BOOLEAN, true);
+        itemMeta.getPersistentDataContainer().set(Keys.undroppable, PersistentDataType.BOOLEAN, true);
+        itemMeta.getPersistentDataContainer().set(Keys.unplaceable, PersistentDataType.BOOLEAN, true);
+        itemMeta.setUnbreakable(true);
+
+        itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
+    }
+
+    public static ItemStack createQuantumLTF() {
+        List<String> lore = Arrays.asList("The greatest creation of Penchev", GeneralUtils.hexToMinecraftColor("#FFAA00") + "[Passive: Unleash Destruction!]");
+        ItemStack itemStack = createCustomItem("Quantum LTF-337", Material.BOW, CustomItemRarities.MYTHIC, lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(Keys.quantumLTF, PersistentDataType.BOOLEAN, true);
+        itemMeta.setUnbreakable(true);
+
+        itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
     }
 }
