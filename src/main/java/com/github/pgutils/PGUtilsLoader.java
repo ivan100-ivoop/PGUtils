@@ -8,9 +8,6 @@ import com.github.pgutils.customitems.CustomEffectUpdater;
 import com.github.pgutils.customitems.CustomItemLibrary;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
-import com.github.pgutils.entities.entity_utils.LobbyUtils;
-import com.github.pgutils.entities.entity_utils.TNTRArenaUtils;
 import com.github.pgutils.entities.games.KOTHArena;
 import com.github.pgutils.entities.games.TNTRArena;
 import com.github.pgutils.hooks.PGLobbyHook;
@@ -20,11 +17,23 @@ import com.github.pgutils.utils.*;
 import com.github.pgutils.utils.updaters.LobbyUpdater;
 import com.github.pgutils.utils.updaters.LowPriorityUpdater;
 import com.github.pgutils.utils.updaters.ParticleUpdater;
+import com.nivixx.ndatabase.api.NDatabase;
+import com.nivixx.ndatabase.api.NDatabaseAPI;
+
+import com.nivixx.ndatabase.api.exception.NDatabaseLoadException;
+import com.nivixx.ndatabase.core.config.DatabaseType;
+import com.nivixx.ndatabase.core.config.NDatabaseConfig;
+import com.nivixx.ndatabase.core.config.SqliteConfig;
+import com.nivixx.ndatabase.platforms.appplatform.AppNDatabaseConfig;
+import com.nivixx.ndatabase.platforms.appplatform.AppPlatformLoader;
+import com.nivixx.ndatabase.platforms.coreplatform.executor.SyncExecutor;
 import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PGUtilsLoader {
     public PGUtils instance;
@@ -76,6 +85,13 @@ public class PGUtilsLoader {
         this.registerTimers();
         this.loadGames();
 
+        try {
+            loadNDB();
+        } catch (NDatabaseLoadException e) {
+            throw new RuntimeException(e);
+        }
+
+
         protocolManager = ProtocolLibrary.getProtocolManager();
 
         CustomItemLibrary.onStart();
@@ -116,9 +132,9 @@ public class PGUtilsLoader {
     }
 
     private void loadGames() {
-        LobbyUtils.loadLobbies();
-        KOTHArenaUtils.loadArenas();
-        TNTRArenaUtils.loadArenas();
+        //LobbyUtils.loadLobbies();
+        //KOTHArenaUtils.loadArenas();
+        //TNTRArenaUtils.loadArenas();
     }
 
     private void registerEvents(){
@@ -136,5 +152,28 @@ public class PGUtilsLoader {
     private void registerCommands() {
         this.instance.getCommand("pg").setExecutor(this.PGCommands);
         this.instance.getCommand("pg").setTabCompleter(this.PGCommands);
+    }
+
+    private void loadNDB() throws NDatabaseLoadException {
+        ExecutorService mainThread = Executors.newFixedThreadPool(1);
+
+        AppPlatformLoader appPlatformLoader = new AppPlatformLoader() {
+            @Override
+            public SyncExecutor supplySyncExecutor() {
+                return mainThread::execute;
+            }
+
+            @Override
+            public NDatabaseConfig supplyNDatabaseConfig() {
+                AppNDatabaseConfig bukkitNDatabaseConfig = new AppNDatabaseConfig();
+                SqliteConfig sqliteConfig = new SqliteConfig();
+                sqliteConfig.setFileFullPath("plugins/pgutils.sqlite");
+                bukkitNDatabaseConfig.setDatabaseType(DatabaseType.SQLITE);
+                bukkitNDatabaseConfig.setSqliteConfig(sqliteConfig);
+                return bukkitNDatabaseConfig;
+            }
+        };
+        File dbFile = new File("plugins/pgutils.sqlite");
+        appPlatformLoader.load();
     }
 }

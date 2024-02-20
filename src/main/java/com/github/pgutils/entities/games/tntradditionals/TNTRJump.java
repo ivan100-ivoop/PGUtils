@@ -4,7 +4,7 @@ package com.github.pgutils.entities.games.tntradditionals;
 import com.github.pgutils.customitems.CustomEffect;
 import com.github.pgutils.customitems.effects.HumanBombEffect;
 import com.github.pgutils.customitems.effects.JumpFatigueEffect;
-import com.github.pgutils.entities.helpfulutils.FloatingTextClientbound;
+import com.github.pgutils.entities.helpfulutils.ClientboundArmorstand;
 import com.github.pgutils.particles.EnhancedParticle;
 import com.github.pgutils.particles.variants.HollowCircleParticle;
 import com.github.pgutils.utils.GeneralUtils;
@@ -35,7 +35,7 @@ public class TNTRJump {
 
     private boolean enabled = false;
 
-    private Map<Player, FloatingTextClientbound> texts;
+    private Map<Player, ClientboundArmorstand> texts;
 
     private List<EnhancedParticle> particles;
 
@@ -70,7 +70,7 @@ public class TNTRJump {
         particles.get(particles.size() - 1).setOnTickReset(40);
     }
     public void reset() {
-        texts.values().forEach(FloatingTextClientbound::remove);
+        texts.values().forEach(ClientboundArmorstand::remove);
         particles.forEach(EnhancedParticle::reset);
         texts.clear();
     }
@@ -78,7 +78,7 @@ public class TNTRJump {
     public void setupForPlayers(List<Player> players) {
         players.forEach(player -> {
             System.out.println("Setting up for player " + player.getName());
-            FloatingTextClientbound text = new FloatingTextClientbound(player, pos, "§c§lWaiting to start!");
+            ClientboundArmorstand text = new ClientboundArmorstand(player, pos, "§c§lWaiting to start!");
             texts.put(player,text);
         });
     }

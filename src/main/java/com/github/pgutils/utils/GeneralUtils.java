@@ -281,4 +281,9 @@ public class GeneralUtils {
         }
         return closest;
     }
+
+
+    public static int generateEntityId() {
+        return (int) (Math.random() * Integer.MAX_VALUE);
+    }
 }

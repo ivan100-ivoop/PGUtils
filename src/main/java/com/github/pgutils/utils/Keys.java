@@ -16,4 +16,5 @@ public class Keys {
     public static final NamespacedKey quantumLTF = new NamespacedKey(PGUtils.loader.instance , "QuantumLTF");
     public static final NamespacedKey unplaceable = new NamespacedKey(PGUtils.loader.instance , "Unplaceable");
     public static final NamespacedKey undroppable = new NamespacedKey(PGUtils.loader.instance , "Undroppable");
+    public static final NamespacedKey miniBeacon = new NamespacedKey(PGUtils.loader.instance , "MiniBeacon");
 }

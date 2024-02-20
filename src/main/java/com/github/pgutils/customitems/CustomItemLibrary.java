@@ -39,9 +39,20 @@ public class CustomItemLibrary implements Listener {
         }.runTaskLater(PGUtils.loader.instance, 1);
     }
 
-    // When player sneaks
+    @EventHandler
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                checkIfCustomItemInArmor(player, event);
+                checkIfCustomItemInMainHand(player, event);
+                checkIfCustomItemInOffHand(player, event);
+                checkIfCustomItemInInventory(player, event);
+            }
+        }.runTaskLater(PGUtils.loader.instance, 1);
 
-
+    }
 
 
     @EventHandler
@@ -233,6 +244,16 @@ public class CustomItemLibrary implements Listener {
         if (container.has(Keys.quantumLTF, PersistentDataType.BOOLEAN)) {
             if (!CustomEffect.hasEffect(player, QuantumLTFHoldEffect.class))
                 new QuantumLTFHoldEffect(player);
+        }
+
+        if (container.has(Keys.miniBeacon, PersistentDataType.BOOLEAN)) {
+            if (event instanceof PlayerToggleSneakEvent || event instanceof PlayerItemHeldEvent) {
+                System.out.println(player.isSneaking());
+                if (!player.isSneaking())
+                    return;
+                if (!CustomEffect.hasEffect(player, MiniBeaconHoldSneakEffect.class))
+                    new MiniBeaconHoldSneakEffect(player);
+            }
         }
     }
 

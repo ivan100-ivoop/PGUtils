@@ -1,13 +1,19 @@
 package com.github.pgutils.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.pgutils.PGUtils;
-import com.github.pgutils.entities.entity_utils.LobbyUtils;
+import com.github.pgutils.entities.custom_serializers.LocationDeserializer;
+import com.github.pgutils.entities.custom_serializers.LocationSerializer;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.enums.LobbyStatus;
 import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.utils.PlayerManager;
+import com.nivixx.ndatabase.api.annotation.NTable;
+import com.nivixx.ndatabase.api.model.NEntity;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
@@ -18,17 +24,24 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class Lobby {
+@NTable(name = "lobbies")
+public class Lobby extends NEntity<String> {
 
     public static List<Lobby> lobbies = new ArrayList<>();
 
     private int ID;
 
+
     // Saved
+    @JsonProperty("uniqueID")
     private String uniqueID;
 
     // Saved
+    @JsonSerialize(using = LocationSerializer.class)
+    @JsonDeserialize(using = LocationDeserializer.class)
+    @JsonProperty("pos")
     private Location pos;
 
     private List<Player> players;
@@ -46,9 +59,11 @@ public class Lobby {
     private int pickedGameID = 0;
 
     // Saved
+    @JsonProperty("maxPlayers")
     private int maxPlayers = 32;
 
     // Saved
+    @JsonProperty("minPlayers")
     private int minPlayers = 2;
 
     private int lobbyStartingTime = 200;
@@ -64,15 +79,19 @@ public class Lobby {
     private int showPlayersMessageTick = 0;
 
     // Saved
+    @JsonProperty("tournamentMode")
     private boolean tournamentMode = false;
 
     // Saved
+    @JsonProperty("mode")
     private LobbyMode mode = LobbyMode.AUTO;
 
     // Saved
+    @JsonProperty("isLocked")
     private boolean isLocked = false;
 
     // Saved
+    @JsonProperty("name")
     private String name;
 
     private boolean testMode = false;
@@ -82,7 +101,6 @@ public class Lobby {
         waitingPlayers = new ArrayList<>();
         status = LobbyStatus.WAITING_FOR_PLAYERS;
         lobbies.add(this);
-        // Generate a unique ID
         ID = lobbies.size();
         uniqueID = GeneralUtils.generateUniqueID();
         name = "Unnamed Lobby " + ID;
@@ -166,18 +184,15 @@ public class Lobby {
         if (playSpaces.size() == 0) return -1;
         List<PlaySpace> possiblePlaySpaces = new ArrayList<>();
         for (PlaySpace playSpace : playSpaces) {
-            //System.out.println(checkIfPlayspaceIsValid(playSpace));
             if (checkIfPlayspaceIsValid(playSpace) == "All Done") {
                 possiblePlaySpaces.add(playSpace);
             }
         }
-        //System.out.println(possiblePlaySpaces.size());
         if (possiblePlaySpaces.size() == 0) return -1;
 
         if (possiblePlaySpaces.size() > 1)
             possiblePlaySpaces.remove(playSpaces.get(lastGame));
         int chosen = playSpaces.indexOf(possiblePlaySpaces.get((int) (Math.random() * possiblePlaySpaces.size())));
-        //System.out.println(chosen);
         return chosen;
     }
 
@@ -208,7 +223,6 @@ public class Lobby {
             }
         }
         status = LobbyStatus.IN_PROGRESS;
-        //System.out.println("Starting game " + pickedGameID);
         currentPlaySpace = playSpaces.get(pickedGameID);
         currentPlaySpace.setup(players);
     }
@@ -307,7 +321,7 @@ public class Lobby {
 
     public void setMode(LobbyMode mode) {
         this.mode = mode;
-        LobbyUtils.updateLobby("mode", this.mode, this.getUID());
+        //LobbyUtils.updateLobby("mode", this.mode, this.getUID());
     }
 
     public void addPlaySpace(PlaySpace playSpace) {
@@ -320,7 +334,7 @@ public class Lobby {
 
     public boolean delete() {
         kickAll();
-        LobbyUtils.deleteLobby(this.getUID());
+        //LobbyUtils.deleteLobby(this.getUID());
         if (getCurrentPlaySpace() != null)
             getCurrentPlaySpace().end(null);
         playSpaces.stream().forEach(
@@ -334,18 +348,17 @@ public class Lobby {
                 PGUtils.loader.selectedLobby.remove(i);
             }
         }
-        //System.out.println("Deleted lobby " + ID + " Lobbies left: " + lobbies.size());
         return true;
     }
 
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-        LobbyUtils.updateLobby("max_players", this.maxPlayers, this.getUID());
+        //LobbyUtils.updateLobby("max_players", this.maxPlayers, this.getUID());
     }
 
     public void setMinPlayers(int minPlayers) {
         this.minPlayers = minPlayers;
-        LobbyUtils.updateLobby("min_players", this.minPlayers, this.getUID());
+        //LobbyUtils.updateLobby("min_players", this.minPlayers, this.getUID());
     }
 
     public int getMinPlayers() {
@@ -404,7 +417,7 @@ public class Lobby {
 
     public void setLocked(boolean isLocked) {
         this.isLocked = isLocked;
-        LobbyUtils.updateLobby("locked", this.isLocked, this.getUID());
+        //LobbyUtils.updateLobby("locked", this.isLocked, this.getUID());
     }
 
     public void kickPlayer(Player player) {
@@ -443,12 +456,12 @@ public class Lobby {
 
     public void setLocation(Location pos) {
         this.pos = pos;
-        LobbyUtils.updateLobby("location_x", this.pos.getX(), this.getUID());
-        LobbyUtils.updateLobby("location_y", this.pos.getY(), this.getUID());
-        LobbyUtils.updateLobby("location_z", this.pos.getZ(), this.getUID());
-        LobbyUtils.updateLobby("location_pitch", this.pos.getPitch(), this.getUID());
-        LobbyUtils.updateLobby("location_yaw", this.pos.getYaw(), this.getUID());
-        LobbyUtils.updateLobby("location_world", this.pos.getWorld().getName(), this.getUID());
+        //LobbyUtils.updateLobby("location_x", this.pos.getX(), this.getUID());
+        //LobbyUtils.updateLobby("location_y", this.pos.getY(), this.getUID());
+        //LobbyUtils.updateLobby("location_z", this.pos.getZ(), this.getUID());
+        //LobbyUtils.updateLobby("location_pitch", this.pos.getPitch(), this.getUID());
+        //LobbyUtils.updateLobby("location_yaw", this.pos.getYaw(), this.getUID());
+        //LobbyUtils.updateLobby("location_world", this.pos.getWorld().getName(), this.getUID());
     }
 
     public String getUID() {
@@ -465,7 +478,7 @@ public class Lobby {
 
     public void setName(String name) {
         this.name = name;
-        LobbyUtils.updateLobby("name", this.name, this.getUID());
+        //LobbyUtils.updateLobby("name", this.name, this.getUID());
     }
 
     public void setLock(boolean lock) {

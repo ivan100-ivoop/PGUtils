@@ -26,6 +26,7 @@ public class CustomItemRepository {
         custom_item_name.put("The Golden Harp", CustomItemRepository::createGoldenHarp);
         custom_item_name.put("Fist full of bomb", CustomItemRepository::createBombhead);
         custom_item_name.put("Quantum LTF-337", CustomItemRepository::createQuantumLTF);
+        custom_item_name.put("Mini Beacon", CustomItemRepository::createMiniBeacon);
     }
 
     public static ItemStack createCustomItem(String name, Material material, CustomItemRarities rarity, List<String> lore) {
@@ -127,6 +128,18 @@ public class CustomItemRepository {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.getPersistentDataContainer().set(Keys.quantumLTF, PersistentDataType.BOOLEAN, true);
         itemMeta.setUnbreakable(true);
+
+        itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
+    }
+
+    public static ItemStack createMiniBeacon() {
+        List<String> lore = Arrays.asList("The beacon of hope", GeneralUtils.hexToMinecraftColor("#FFAA00") + "[Active: Choose the effect!]");
+        ItemStack itemStack = createCustomItem("Mini Beacon", Material.BEACON, CustomItemRarities.RARE, lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(Keys.miniBeacon, PersistentDataType.BOOLEAN, true);
+        itemMeta.getPersistentDataContainer().set(Keys.unplaceable, PersistentDataType.BOOLEAN, true);
 
         itemStack.setItemMeta(itemMeta);
 

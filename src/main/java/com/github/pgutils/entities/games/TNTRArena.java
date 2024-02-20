@@ -4,10 +4,6 @@ import com.github.pgutils.customitems.CustomEffect;
 import com.github.pgutils.customitems.effects.HumanBombEffect;
 import com.github.pgutils.customitems.effects.LostBombEffect;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
-import com.github.pgutils.entities.entity_utils.TNTRArenaUtils;
-import com.github.pgutils.entities.games.kothadditionals.KOTHPoint;
-import com.github.pgutils.entities.games.kothadditionals.KOTHSpawn;
 import com.github.pgutils.entities.games.tntradditionals.TNTRJump;
 import com.github.pgutils.entities.games.tntradditionals.TNTRPower;
 import com.github.pgutils.entities.games.tntradditionals.TNTRSpawn;
@@ -194,17 +190,17 @@ public class TNTRArena extends PlaySpace {
 
     @Override
     public void deletePlaySpace() {
-        TNTRArenaUtils.deleteArena(this.getUID());
+        //TNTRArenaUtils.deleteArena(this.getUID());
     }
 
     @Override
     protected void saveName() {
-        TNTRArenaUtils.updateArenas(this.getUID(), "koth", "name", this.getName());
+        //TNTRArenaUtils.updateArenas(this.getUID(), "koth", "name", this.getName());
     }
 
     @Override
     protected void savePos() {
-        TNTRArenaUtils.updateLocation(this.getUID(), this.getPos());
+        //TNTRArenaUtils.updateLocation(this.getUID(), this.getPos());
     }
 
     @Override
@@ -256,8 +252,6 @@ public class TNTRArena extends PlaySpace {
     }
 
     public boolean createSpawn(Player player, String[] args) {
-        // TODO: fix this
-        //KOTHArenaUtils.saveSpawn(addSpawnLocation(player.getLocation(), team_id), this.getUID());
         addSpawnLocation(player.getLocation());
         player.sendMessage(Messages.messageWithPrefix("spawn-created-message", "&aSuccessfully created spawn!"));
         return true;
@@ -302,13 +296,13 @@ public class TNTRArena extends PlaySpace {
 
     public int addSpawnLocation(Location location) {
         spawns.add(new TNTRSpawn(location));
-        TNTRArenaUtils.saveSpawn(spawns.get(spawns.size() - 1), this.getUID());
+        //TNTRArenaUtils.saveSpawn(spawns.get(spawns.size() - 1), this.getUID());
         return spawns.size() - 1;
     }
 
     public int addJumpLocation(Location location, double radius, double strength) {
         jumps.add(new TNTRJump(location, radius, strength));
-        TNTRArenaUtils.saveJump(jumps.get(jumps.size() - 1), this.getUID());
+        //TNTRArenaUtils.saveJump(jumps.get(jumps.size() - 1), this.getUID());
         return jumps.size() - 1;
     }
 
@@ -381,12 +375,12 @@ public class TNTRArena extends PlaySpace {
 
     private void removeSpawnLocation(String id) {
         spawns.removeIf(spawn -> spawn.getID().equals(id));
-        TNTRArenaUtils.delSpawn(id);
+        //TNTRArenaUtils.delSpawn(id);
     }
 
     private void removeJumpLocation(String id) {
         jumps.removeIf(jump -> jump.getID().equals(id));
-        TNTRArenaUtils.delJump(id);
+        //TNTRArenaUtils.delJump(id);
     }
 
 
@@ -417,7 +411,7 @@ public class TNTRArena extends PlaySpace {
                 return true;
             }
 
-            TNTRArenaUtils.updateArenas(this.getUID(), "koth", "match_time", this.bombRatio);
+            //TNTRArenaUtils.updateArenas(this.getUID(), "koth", "match_time", this.bombRatio);
             player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
                     .replace("%option%", args[2])
                     .replace("%value%", args[3]));
@@ -440,7 +434,7 @@ public class TNTRArena extends PlaySpace {
                 return true;
             }
 
-            TNTRArenaUtils.updateArenas(this.getUID(), "koth", "match_time", this.bombTimer);
+            //TNTRArenaUtils.updateArenas(this.getUID(), "koth", "match_time", this.bombTimer);
             player.sendMessage(Messages.messageWithPrefix("game-option-set-message", "&aSuccessfully set game option! With option : %option% and value : %value%")
                     .replace("%option%", strings[2])
                     .replace("%value%", strings[3]));
@@ -453,7 +447,7 @@ public class TNTRArena extends PlaySpace {
 
     @Override
     public void savePlaySpace() {
-        TNTRArenaUtils.saveArena(this);
+        //TNTRArenaUtils.saveArena(this);
     }
 
     public void setBombTimer(int bombTimer) {

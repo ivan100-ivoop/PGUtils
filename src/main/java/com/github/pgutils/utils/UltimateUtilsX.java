@@ -4,9 +4,8 @@ import com.github.pgutils.PGUtils;
 import com.github.pgutils.customitems.CustomItemRepository;
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.PlaySpace;
-import com.github.pgutils.entities.entity_utils.KOTHArenaUtils;
-import com.github.pgutils.entities.entity_utils.LobbyUtils;
-import com.github.pgutils.entities.helpfulutils.FloatingTextClientbound;
+import com.github.pgutils.entities.helpfulutils.ClientboundArmorstand;
+import com.github.pgutils.entities.service.LobbyService;
 import com.github.pgutils.enums.LobbyMode;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
@@ -25,7 +24,7 @@ public class UltimateUtilsX {
         Lobby lobby = new Lobby();
         lobby.setPos(player.getLocation());
         GeneralUtils.playerSelectLobby(player, lobby);
-        LobbyUtils.saveLobbies();
+        LobbyService.saveLobby(lobby);
         player.sendMessage(Messages.messageWithPrefix("create-lobby-message", "&aSuccessful created Lobby Location %size%&a!").replace("%size%", "" + Lobby.lobbies.size()));
         return true;
     }
@@ -1070,7 +1069,7 @@ public class UltimateUtilsX {
 
 
     public static boolean test(Player player, String[] args) {
-        FloatingTextClientbound floatingText = new FloatingTextClientbound(player, player.getLocation(), "Test");
+        ClientboundArmorstand floatingText = new ClientboundArmorstand(player, player.getLocation(), "Test");
         return true;
     }
 }
