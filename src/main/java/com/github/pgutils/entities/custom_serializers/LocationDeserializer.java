@@ -23,3 +23,4 @@ public class LocationDeserializer extends JsonDeserializer<Location> {
         return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
 }
+

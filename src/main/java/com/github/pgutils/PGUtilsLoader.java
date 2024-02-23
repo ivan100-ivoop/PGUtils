@@ -17,17 +17,11 @@ import com.github.pgutils.utils.*;
 import com.github.pgutils.utils.updaters.LobbyUpdater;
 import com.github.pgutils.utils.updaters.LowPriorityUpdater;
 import com.github.pgutils.utils.updaters.ParticleUpdater;
-import com.nivixx.ndatabase.api.NDatabase;
-import com.nivixx.ndatabase.api.NDatabaseAPI;
 
-import com.nivixx.ndatabase.api.exception.NDatabaseLoadException;
-import com.nivixx.ndatabase.core.config.DatabaseType;
-import com.nivixx.ndatabase.core.config.NDatabaseConfig;
-import com.nivixx.ndatabase.core.config.SqliteConfig;
-import com.nivixx.ndatabase.platforms.appplatform.AppNDatabaseConfig;
-import com.nivixx.ndatabase.platforms.appplatform.AppPlatformLoader;
-import com.nivixx.ndatabase.platforms.coreplatform.executor.SyncExecutor;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.github.icore.ICoreAPI;
+import org.github.icore.mysql.DatabaseAPI;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +37,8 @@ public class PGUtilsLoader {
     public RewardManager rewardManager = null;
     public PortalManager PM = null;
     public PGUtilsCommand PGCommands = null;
+
+    public static DatabaseAPI databaseAPI = null;
 
     public static ProtocolManager protocolManager = null;
 
@@ -66,11 +62,15 @@ public class PGUtilsLoader {
 
     public void start(){
         this.instance.saveDefaultConfig();
+        this.instance.saveResource("database.yml", false);
+
+        this.databaseAPI = new ICoreAPI(YamlConfiguration.loadConfiguration(new File(this.instance.getDataFolder(),"database.yml")),this.instance,this.instance.getLogger()).getDatabase();
 
         this.prefix = Messages.getMessage("prefix", "&7[&e&lPGUtils&7] ", false);
         this.lang = new File(this.instance.getDataFolder(), "lang");
         this.savedPlayers = new File(this.instance.getDataFolder(), "savedPlayers");
         this.saveInv = new File(this.savedPlayers, "saveInv");
+
         this.rewardsChest = new File(this.savedPlayers, "PlayerChest");
         this.sqlDB = new DatabaseManager(this.instance);
 
@@ -85,11 +85,6 @@ public class PGUtilsLoader {
         this.registerTimers();
         this.loadGames();
 
-        try {
-            loadNDB();
-        } catch (NDatabaseLoadException e) {
-            throw new RuntimeException(e);
-        }
 
 
         protocolManager = ProtocolLibrary.getProtocolManager();
@@ -154,26 +149,4 @@ public class PGUtilsLoader {
         this.instance.getCommand("pg").setTabCompleter(this.PGCommands);
     }
 
-    private void loadNDB() throws NDatabaseLoadException {
-        ExecutorService mainThread = Executors.newFixedThreadPool(1);
-
-        AppPlatformLoader appPlatformLoader = new AppPlatformLoader() {
-            @Override
-            public SyncExecutor supplySyncExecutor() {
-                return mainThread::execute;
-            }
-
-            @Override
-            public NDatabaseConfig supplyNDatabaseConfig() {
-                AppNDatabaseConfig bukkitNDatabaseConfig = new AppNDatabaseConfig();
-                SqliteConfig sqliteConfig = new SqliteConfig();
-                sqliteConfig.setFileFullPath("plugins/pgutils.sqlite");
-                bukkitNDatabaseConfig.setDatabaseType(DatabaseType.SQLITE);
-                bukkitNDatabaseConfig.setSqliteConfig(sqliteConfig);
-                return bukkitNDatabaseConfig;
-            }
-        };
-        File dbFile = new File("plugins/pgutils.sqlite");
-        appPlatformLoader.load();
-    }
 }

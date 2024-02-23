@@ -12,8 +12,7 @@ import com.github.pgutils.utils.GeneralUtils;
 import com.github.pgutils.utils.Messages;
 import com.github.pgutils.utils.PlayerChestReward;
 import com.github.pgutils.utils.PlayerManager;
-import com.nivixx.ndatabase.api.annotation.NTable;
-import com.nivixx.ndatabase.api.model.NEntity;
+
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
@@ -21,13 +20,15 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.github.icore.mysql.utils.IEntity;
+import org.github.icore.mysql.utils.ITable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@NTable(name = "lobbies")
-public class Lobby extends NEntity<String> {
+@ITable(name = "lobbies")
+public class Lobby extends IEntity<String> {
 
     public static List<Lobby> lobbies = new ArrayList<>();
 

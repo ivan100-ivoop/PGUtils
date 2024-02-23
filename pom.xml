@@ -6,13 +6,13 @@
 
     <groupId>com.github</groupId>
     <artifactId>PGUtils</artifactId>
-    <version>1.0</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
 
     <name>PGUtils</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -39,15 +39,7 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <relocations>
-                        <relocation>
-                            <pattern>fr.mrmicky.fastboard</pattern>
-                            <!-- Replace 'com.yourpackage' with the package of your plugin ! -->
-                            <shadedPattern>com.github</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
+
             </plugin>
         </plugins>
         <resources>
@@ -60,6 +52,11 @@
 
     <repositories>
         <repository>
+            <id>my-repo</id>
+            <name>my-repo</name>
+            <url>https://freedown.store/my-repo/</url>
+        </repository>
+        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -68,18 +65,13 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>dmulloy2-repo</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>maven-original</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>lukasalt-repo</id>
             <url>https://repo.lukasa.lt/repository/maven-public/</url>
         </repository>
-
     </repositories>
 
     <dependencies>
@@ -103,29 +95,20 @@
         </dependency>
 
         <dependency>
-            <groupId>ProtocolLib</groupId>
+            <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>D:/ProtocolLib.jar</systemPath>
+            <version>5.2.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.NivixX.NDatabase</groupId>
-            <artifactId>ndatabase-api</artifactId>
-            <version>1.1.9</version>
-        </dependency>
 
         <dependency>
-            <groupId>com.github.NivixX.NDatabase</groupId>
-            <artifactId>ndatabase-core</artifactId>
-            <version>1.1.9</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.NivixX.NDatabase</groupId>
-            <artifactId>app-platform</artifactId>
-            <version>1.1.9</version>
+            <groupId>org.github</groupId>
+            <artifactId>ICore</artifactId>
+            <version>4.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
 
 
