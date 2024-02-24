@@ -1,0 +1,23 @@
+name: PGUtils
+version: '${project.version}'
+main: com.github.pgutils.PGUtils
+api-version: '1.20'
+author: [Penchev, Ivan]
+website: https://github.com/ivan100-ivoop/PGUtils
+depend:
+  - ProtocolLib
+
+
+commands:
+  pg:
+    description: Reload the configuration.
+    permission: pgutils.reload
+    usage: "Usage: /pg <reload, setlobby, setpotal, tool, leave, chest>"
+
+permissions:
+  pgutils.reload:
+    permission-message: You do not have permission to use this command.
+    default: op
+  pgutils.bypass.commands:
+    permission-message: You do not have permission to use this command.
+    default: op
