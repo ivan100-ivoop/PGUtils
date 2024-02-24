@@ -20,5 +20,4 @@ public final class PGUtils extends JavaPlugin {
     public void onDisable() {
         loader.stop();
     }
-
 }
