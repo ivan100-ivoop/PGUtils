@@ -88,24 +88,11 @@ public class RewardCommand extends PGSubCommand {
         return true;
     }
     private boolean addCommand(Player player, String[] args, int lobbyID){
-        switch(args[2]){
-            case "command":
-                String cmd = parseCommand(Arrays.copyOfRange(args, 3, args.length));
-                if(!RewardManager.addCommandReward(lobbyID, cmd)){
-                    return false;
-                }
-                player.sendMessage(Messages.messageWithPrefix("rewards-success-add-message", "&aSuccessfully added a new reward!"));
-                break;
-            case "item":
-                if(!RewardManager.addItemReward(lobbyID, player.getItemInHand())){
-                    return false;
-                }
-                player.sendMessage(Messages.messageWithPrefix("rewards-success-add-message", "&aSuccessfully added a new reward!"));
-                break;
-            default:
-                player.sendMessage(Messages.messageWithPrefix("rewards-error-message", "&cYou need to include a command or item for the reward!"));
-                break;
+        String cmd = parseCommand(Arrays.copyOfRange(args, 2, args.length));
+        if(!RewardManager.addCommandReward(lobbyID, cmd)){
+            return false;
         }
+        player.sendMessage(Messages.messageWithPrefix("rewards-success-add-message", "&aSuccessfully added a new reward!"));
         return true;
     }
     private String parseCommand(String[] cmds) {
@@ -146,10 +133,6 @@ public class RewardCommand extends PGSubCommand {
 
         if (args.length == 2) {
             return Arrays.asList("add", "remove", "list", "give");
-        }
-
-        if (args.length == 3 && args[1].equals("add")) {
-            return Arrays.asList("command", "item");
         }
 
         if (args.length == 3 && args[1].equals("remove")) {

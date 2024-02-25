@@ -16,10 +16,7 @@ import com.github.pgutils.entities.service.RewardService;
 import com.github.pgutils.hooks.PGLobbyHook;
 import com.github.pgutils.selections.PlayerLobbySelector;
 import com.github.pgutils.selections.PlayerPlaySpaceSelector;
-import com.github.pgutils.utils.DatabaseManager;
 import com.github.pgutils.utils.Messages;
-import com.github.pgutils.utils.PortalManager;
-import com.github.pgutils.utils.RewardManager;
 import com.github.pgutils.utils.updaters.LobbyUpdater;
 import com.github.pgutils.utils.updaters.LowPriorityUpdater;
 import com.github.pgutils.utils.updaters.ParticleUpdater;
@@ -37,7 +34,6 @@ public class PGUtilsLoader {
     public PGUtils instance;
     public Logger logger;
     public File savedPlayers = null, saveInv = null, rewardsChest = null, lang = null;
-    public DatabaseManager sqlDB;
     public String prefix;
     public PGUtilsCommand PGCommands = null;
     public static DatabaseAPI databaseAPI = null;
@@ -78,8 +74,6 @@ public class PGUtilsLoader {
             this.logger.log(Level.SEVERE, e.getMessage());
         }
 
-        this.sqlDB = new DatabaseManager(this.instance);
-
         this.PGCommands = new PGUtilsCommand();
 
         this.registerCommands();
@@ -104,7 +98,6 @@ public class PGUtilsLoader {
         });
 
         CustomEffect.removeAllEffects();
-        this.sqlDB.disconnect();
     }
 
     public void restart(){
@@ -117,7 +110,6 @@ public class PGUtilsLoader {
         });
 
         CustomEffect.removeAllEffects();
-        this.sqlDB.disconnect();
         this.instance.reloadConfig();
     }
 
@@ -130,7 +122,6 @@ public class PGUtilsLoader {
         LobbyService.getAllLobbies();
         PortalService.getAllPortal();
         RewardService.getAllRewards();
-
         //KOTHArenaUtils.loadArenas();
         //TNTRArenaUtils.loadArenas();
     }
