@@ -2,14 +2,9 @@ package com.github.pgutils.utils;
 
 import com.github.pgutils.entities.Lobby;
 import com.github.pgutils.entities.service.RewardService;
-import com.github.pgutils.enums.RewardsType;
 import com.github.pgutils.utils.db.RewardSave;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +14,8 @@ import java.util.UUID;
 public class RewardManager {
 
     public static List<RewardSave> rewards = new ArrayList<>();
+
+
     public static List<String> getRewards(int lobbyID) {
         List<String> _rewards = new ArrayList<>();
 
@@ -50,26 +47,6 @@ public class RewardManager {
             Lobby _lobby = lobby.get();
             RewardSave reward = new RewardSave();
             reward.setCommand(command);
-            reward.setTypeReward(RewardsType.COMMAND);
-            reward.setLobbyId(_lobby.getUID());
-            reward.setKey(UUID.randomUUID());
-            rewards.add(reward);
-            RewardService.saveRewards(reward);
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean addItemReward(int lobbyID, ItemStack item) {
-        Optional<Lobby> lobby = Lobby.lobbies.stream()
-                .filter(lobby1 -> lobby1.getID() == lobbyID)
-                .findFirst();
-
-        if(lobby.isPresent()) {
-            Lobby _lobby = lobby.get();
-            RewardSave reward = new RewardSave();
-            reward.setItem(item);
-            reward.setTypeReward(RewardsType.ITEM);
             reward.setLobbyId(_lobby.getUID());
             reward.setKey(UUID.randomUUID());
             rewards.add(reward);
@@ -104,13 +81,7 @@ public class RewardManager {
             Lobby _lobby = lobby.get();
             for (RewardSave reward : rewards) {
                 if (reward.getLobbyId().equalsIgnoreCase(_lobby.getUID())){
-                    if (reward.getTypeReward() == RewardsType.COMMAND){
-                        GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommand().replace("%player%", player.getName())));
-                    }
-
-                    if (reward.getTypeReward() == RewardsType.ITEM){
-                        PlayerChestReward.addItem(reward.getItem(), player);
-                    }
+                    GeneralUtils.runCommand(Bukkit.getConsoleSender(), GeneralUtils.fixColors(reward.getCommand().replace("%player%", player.getName())));
                 }
             }
         }
@@ -131,17 +102,7 @@ public class RewardManager {
                 RewardSave reward = rewards.get(i);
                 if (reward.getLobbyId().equalsIgnoreCase(_lobby.getUID())){
                     outputList.append(Messages.getMessage("items-listing-id", "&eID: &c%id%\n", false).replace("%id%", String.valueOf(i)));
-                    outputList.append(Messages.getMessage("items-listing-type", "&eType: &c%type%\n", false).replace("%type%", reward.getTypeReward().toString().toLowerCase()));
-
-                    if (reward.getTypeReward() == RewardsType.COMMAND){
-                        outputList.append(Messages.getMessage("items-listing-command", "&eCommand: &c%command%\n", false).replace("%command%", reward.getCommand()));
-                    }
-
-                    if (reward.getTypeReward() == RewardsType.ITEM){
-                        outputList.append(Messages.getMessage("items-listing-material", "&eMaterial: &c%material%\n", false).replace("%material%", reward.getItem().getType().toString()));
-                        outputList.append(Messages.getMessage("items-listing-amount", "&eAmount: &c%amount%\n", false).replace("%amount%", String.valueOf( reward.getItem().getAmount())));
-                    }
-
+                    outputList.append(Messages.getMessage("items-listing-command", "&eCommand: &c%command%\n", false).replace("%command%", reward.getCommand()));
                 }
             }
         }
